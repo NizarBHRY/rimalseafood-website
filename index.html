@@ -1312,7 +1312,6 @@
         <h2>From the Dock to the Dining Room</h2>
       </div>
       <div class="gallery-grid">
-        <a href="#"><img src="https://images.unsplash.com/photo-1553621042-f6e147245754?q=80&w=1974&auto=format&fit=crop" alt="Seafood platter"></a>
         <a href="#"><img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&w=1974&auto=format&fit=crop" alt="Oysters on ice"></a>
         <a href="#"><img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=1974&auto=format&fit=crop" alt="Restaurant interior"></a>
         <a href="#"><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=80&w=1974&auto=format&fit=crop" alt="Grilled fish dish"></a>
@@ -1576,6 +1575,13 @@
         <h4 style="font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);margin:8px 0 14px;">All Menu &amp; Fish Market Items</h4>
         <input type="search" id="itemManageSearch" class="admin-input" style="width:100%;padding:9px 12px;background:#fff;border:1px solid #cfe2ea;border-radius:4px;margin-bottom:14px;font-family:'Poppins',sans-serif;" placeholder="Search items to edit or remove…" autocomplete="off">
         <div id="customItemsList" class="admin-list"></div>
+
+        <h3 class="admin-h3">Website Photos (Home, About, Visit, Logo &amp; Gallery)</h3>
+        <p style="color:var(--text-dim);font-size:.82rem;margin-bottom:16px;">Replace or remove the pictures on the Home page, About page, Visit page and Gallery, or add new Gallery photos. Photos for the Menu and Fish Market items are changed with each item's <b>Edit</b> button in the list above.</p>
+        <div style="margin-bottom:14px;"><button class="btn" id="addGalleryPhotoBtn" type="button">+ Add a Gallery Photo</button></div>
+        <p class="item-form-status" id="sitePhotoStatus" hidden></p>
+        <div id="sitePhotosList" class="admin-list"></div>
+        <input type="file" id="sitePhotoFile" accept="image/*" hidden>
         </div>
 
         <div class="admin-panel" id="adminPanel-inventory">
@@ -2955,8 +2961,8 @@
       img.src = url;
     });
   }
-  function uploadPhoto(file){
-    return resizeImage(file, 1000).then(function(blob){
+  function uploadPhoto(file, maxDim){
+    return resizeImage(file, maxDim || 1000).then(function(blob){
       var path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
       return window.rimalDb.storage.from(PHOTO_BUCKET).upload(path, blob, { contentType: 'image/jpeg' }).then(function(res){
         if (res.error) { throw res.error; }
@@ -2973,6 +2979,9 @@
       window.rimalDb.storage.from(PHOTO_BUCKET).remove([decodeURIComponent(url.slice(at + marker.length))]);
     }
   }
+
+  // Shared with the website-photos manager below.
+  window.rimalPhotoTools = { upload: uploadPhoto, discard: discardPhoto };
 
   formEl.addEventListener('submit', function(e){
     e.preventDefault();
@@ -3044,7 +3053,9 @@
       return reloadAll();
     }).catch(function(err){
       var msg = (err && err.message) ? err.message : 'Please try again.';
-      if (/menu_items|menu_overrides|schema cache|bucket/i.test(msg)) {
+      if (/bucket not found/i.test(msg)) {
+        msg += ' (In Supabase, open Storage and create a PUBLIC bucket named menu-photos.)';
+      } else if (/menu_items|menu_overrides|schema cache|bucket/i.test(msg)) {
         msg += ' (Run the latest supabase-setup.sql in Supabase first.)';
       }
       setStatus('Could not save: ' + msg, true);
@@ -3109,6 +3120,272 @@
   });
 })();
 
+
+(function(){
+  // Website photos outside the menu/market items: Home background, About
+  // photo, Visit background, Logo and the Gallery. The manager can replace or
+  // remove them, and add new Gallery photos. Changes are stored in the shared
+  // database (site_photos) and applied to this page when it loads.
+  var HERO_OVERLAY = 'linear-gradient(180deg, rgba(6,32,46,.5) 0%, rgba(6,32,46,.32) 40%, rgba(6,32,46,.85) 100%)';
+  var VISIT_OVERLAY = 'linear-gradient(180deg, rgba(8,9,12,.85), rgba(8,9,12,.85))';
+  var VISIT_ORIGINAL = 'https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=400&auto=format&fit=crop';
+
+  var video = document.querySelector('.hero-video');
+  var heroOverlay = document.querySelector('.hero-aquarium-photo');
+  var aboutImg = document.querySelector('#page-about .about-grid > img');
+  var aboutGrid = aboutImg && aboutImg.parentNode;
+  var visitSec = document.querySelector('section.reserve');
+  var logos = document.querySelectorAll('.brand-logo');
+  var galleryGrid = document.querySelector('#page-gallery .gallery-grid');
+
+  var ORIG = {
+    home_hero: video ? video.getAttribute('poster') : '',
+    about: aboutImg ? aboutImg.getAttribute('src') : '',
+    visit_bg: VISIT_ORIGINAL,
+    logo: logos.length ? logos[0].getAttribute('src') : ''
+  };
+  var SLOTS = [
+    { key: 'home_hero', label: 'Home page background', removable: true },
+    { key: 'about',     label: 'About page photo', removable: true },
+    { key: 'visit_bg',  label: 'Visit page background', removable: true },
+    { key: 'logo',      label: 'Logo (top and bottom of every page)', removable: false }
+  ];
+
+  // The gallery pictures written into the page, in their original order.
+  var galleryBuiltIns = [];
+  if (galleryGrid) {
+    Array.prototype.forEach.call(galleryGrid.children, function(a, i){
+      var img = a.querySelector('img');
+      if (!img) return;
+      galleryBuiltIns.push({ key: 'gallery-' + (i + 1), a: a, marker: null, removed: false, origSrc: img.getAttribute('src') });
+    });
+  }
+
+  var overrides = {};   // photo_key -> row (built-in slots)
+  var addedRows = [];   // gallery photos the manager added
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function applyPhotos(){
+    var o = overrides;
+
+    var h = o.home_hero;
+    if (video && heroOverlay) {
+      if (h && (h.removed || h.image_url)) {
+        video.style.display = 'none';
+        try { video.pause(); } catch (e) {}
+        heroOverlay.style.background = h.removed ? HERO_OVERLAY : HERO_OVERLAY + ', url("' + h.image_url + '") center/cover';
+      } else {
+        video.style.display = '';
+        heroOverlay.style.background = '';
+        if (video.paused) { var p = video.play(); if (p && p.catch) { p.catch(function(){}); } }
+      }
+    }
+
+    var a = o.about;
+    if (aboutImg) {
+      if (a && a.removed) {
+        aboutImg.style.display = 'none';
+        aboutGrid.style.gridTemplateColumns = '1fr';
+      } else {
+        aboutImg.style.display = '';
+        aboutGrid.style.gridTemplateColumns = '';
+        aboutImg.setAttribute('src', a && a.image_url ? a.image_url : ORIG.about);
+      }
+    }
+
+    var v = o.visit_bg;
+    if (visitSec) {
+      if (v && v.removed) { visitSec.style.background = '#0c1116'; }
+      else if (v && v.image_url) { visitSec.style.background = VISIT_OVERLAY + ', url("' + v.image_url + '") center/cover fixed'; }
+      else { visitSec.style.background = ''; }
+    }
+
+    var l = o.logo;
+    logos.forEach(function(img){ img.setAttribute('src', l && l.image_url ? l.image_url : ORIG.logo); });
+
+    galleryBuiltIns.forEach(function(g){
+      var ov = o[g.key];
+      var wantRemoved = !!(ov && ov.removed);
+      if (wantRemoved && !g.removed) {
+        g.marker = document.createComment('removed by manager');
+        g.a.parentNode.replaceChild(g.marker, g.a);
+        g.removed = true;
+      } else if (!wantRemoved && g.removed) {
+        g.marker.parentNode.replaceChild(g.a, g.marker);
+        g.marker = null;
+        g.removed = false;
+      }
+      g.a.querySelector('img').setAttribute('src', ov && ov.image_url ? ov.image_url : g.origSrc);
+    });
+
+    if (galleryGrid) {
+      Array.prototype.slice.call(galleryGrid.querySelectorAll('[data-new-gallery]')).forEach(function(el){ el.remove(); });
+      addedRows.forEach(function(r){
+        if (!r.image_url || r.removed) return;
+        var link = document.createElement('a');
+        link.setAttribute('href', '#');
+        link.setAttribute('data-new-gallery', r.photo_key);
+        var img = document.createElement('img');
+        img.setAttribute('src', r.image_url);
+        img.setAttribute('alt', 'Rimal Seafood photo');
+        link.appendChild(img);
+        galleryGrid.appendChild(link);
+      });
+    }
+  }
+
+  function load(){
+    if (!window.rimalDb) return Promise.resolve();
+    return window.rimalDb.from('site_photos').select('*').order('created_at', { ascending: true }).then(function(res){
+      overrides = {};
+      addedRows = [];
+      ((res && res.data) || []).forEach(function(row){
+        if (row.photo_key.indexOf('gallery-new-') === 0) { addedRows.push(row); }
+        else { overrides[row.photo_key] = row; }
+      });
+      applyPhotos();
+      renderList();
+    }).catch(function(){});
+  }
+
+  // ---------- Manager list ----------
+  var listEl = document.getElementById('sitePhotosList');
+  var fileEl = document.getElementById('sitePhotoFile');
+  var statusEl = document.getElementById('sitePhotoStatus');
+  var addBtn = document.getElementById('addGalleryPhotoBtn');
+  var rows = [];
+  var pendingKey = null;
+
+  function setStatus(msg, isError){
+    if (!statusEl) return;
+    statusEl.hidden = !msg;
+    statusEl.textContent = msg || '';
+    statusEl.style.color = isError ? '#a8433a' : 'var(--gold-light)';
+  }
+
+  function buildRows(){
+    rows = [];
+    SLOTS.forEach(function(s){
+      rows.push({ key: s.key, label: s.label, removable: s.removable, orig: ORIG[s.key], ov: overrides[s.key] || null, added: false });
+    });
+    galleryBuiltIns.forEach(function(g, i){
+      rows.push({ key: g.key, label: 'Gallery photo ' + (i + 1) + ' (original)', removable: true, orig: g.origSrc, ov: overrides[g.key] || null, added: false });
+    });
+    addedRows.forEach(function(r, i){
+      rows.push({ key: r.photo_key, label: 'Gallery photo you added #' + (i + 1), removable: true, orig: '', ov: r, added: true });
+    });
+  }
+
+  function renderList(){
+    if (!listEl) return;
+    buildRows();
+    listEl.innerHTML = rows.map(function(r, i){
+      var removed = !!(r.ov && r.ov.removed);
+      var replaced = !!(r.ov && r.ov.image_url) && !r.added;
+      var thumb = (r.ov && r.ov.image_url) || r.orig;
+      var tags = (removed ? ' <b style="color:#a8433a;">Removed</b>' : '') + (replaced ? ' <b>Replaced</b>' : '') + (r.added ? ' <b>Added by you</b>' : '');
+      var btns;
+      if (removed) {
+        btns = '<button class="btn status-toggle-btn" type="button" data-photo-act="restore" data-i="' + i + '">Restore</button>';
+      } else {
+        btns = '<button class="btn status-toggle-btn" type="button" data-photo-act="replace" data-i="' + i + '">Replace</button>' +
+          (replaced ? '<button class="btn status-toggle-btn" type="button" data-photo-act="restore" data-i="' + i + '">Undo</button>' : '') +
+          (r.removable ? '<button class="btn status-toggle-btn" type="button" data-photo-act="remove" data-i="' + i + '" style="color:#a8433a;border-color:#a8433a;">Remove</button>' : '');
+      }
+      return '<div class="admin-row"' + (removed ? ' style="opacity:.6;"' : '') + '>' +
+        (thumb ? '<img class="custom-item-thumb" style="width:64px;height:48px;" src="' + esc(thumb) + '" alt="">' : '') +
+        '<div class="admin-row-main"><div class="admin-row-title">' + esc(r.label) + '</div>' +
+        '<div class="admin-row-meta">' + tags + '</div></div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">' + btns + '</div></div>';
+    }).join('');
+  }
+
+  function fail(err){
+    var msg = (err && err.message) ? err.message : 'Please try again.';
+    if (/bucket not found/i.test(msg)) { msg += ' (In Supabase, open Storage and create a PUBLIC bucket named menu-photos.)'; }
+    else if (/site_photos|schema cache|bucket/i.test(msg)) { msg += ' (Run the latest supabase-setup.sql in Supabase first.)'; }
+    setStatus('Could not save: ' + msg, true);
+  }
+  function reloadAll(){ return load(); }
+
+  if (!listEl || !fileEl) { load(); return; }
+
+  addBtn.addEventListener('click', function(){
+    pendingKey = 'gallery-new-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    fileEl.value = '';
+    fileEl.click();
+  });
+
+  fileEl.addEventListener('change', function(){
+    var file = fileEl.files && fileEl.files[0];
+    var key = pendingKey;
+    pendingKey = null;
+    if (!file || !key || !window.rimalDb || !window.rimalPhotoTools) return;
+    setStatus('Uploading photo…', false);
+    var existing = overrides[key] || null;
+    window.rimalPhotoTools.upload(file, 1600).then(function(url){
+      return window.rimalDb.from('site_photos').upsert({ photo_key: key, image_url: url, removed: false }, { onConflict: 'photo_key' }).then(function(res){
+        if (res.error) { throw res.error; }
+        var oldUrl = existing ? existing.image_url : null;
+        if (oldUrl && oldUrl !== url) { window.rimalPhotoTools.discard(oldUrl); }
+      });
+    }).then(function(){
+      setStatus('✓ Photo saved — it is now live on the website.', false);
+      return reloadAll();
+    }).catch(fail);
+  });
+
+  listEl.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-photo-act]');
+    if (!btn || !window.rimalDb) return;
+    var row = rows[parseInt(btn.getAttribute('data-i'), 10)];
+    if (!row) return;
+    var act = btn.getAttribute('data-photo-act');
+    var oldUrl = row.ov ? row.ov.image_url : null;
+
+    if (act === 'replace') {
+      pendingKey = row.key;
+      fileEl.value = '';
+      fileEl.click();
+      return;
+    }
+
+    if (act === 'remove') {
+      var msg = row.added
+        ? 'Delete this gallery photo? This cannot be undone.'
+        : 'Remove "' + row.label + '" from the website? You can bring it back with Restore.';
+      if (!confirm(msg)) return;
+      btn.disabled = true;
+      var p = row.added
+        ? window.rimalDb.from('site_photos').delete().eq('photo_key', row.key)
+        : window.rimalDb.from('site_photos').upsert({ photo_key: row.key, image_url: null, removed: true }, { onConflict: 'photo_key' });
+      p.then(function(res){
+        if (res.error) { throw res.error; }
+        if (oldUrl) { window.rimalPhotoTools.discard(oldUrl); }
+        setStatus('✓ Removed.', false);
+        return reloadAll();
+      }).catch(function(err){ btn.disabled = false; fail(err); });
+      return;
+    }
+
+    if (act === 'restore') {
+      if (!confirm('Put "' + row.label + '" back to the original photo?')) return;
+      btn.disabled = true;
+      window.rimalDb.from('site_photos').delete().eq('photo_key', row.key).then(function(res){
+        if (res.error) { throw res.error; }
+        if (oldUrl) { window.rimalPhotoTools.discard(oldUrl); }
+        setStatus('✓ Original photo restored.', false);
+        return reloadAll();
+      }).catch(function(err){ btn.disabled = false; fail(err); });
+    }
+  });
+
+  window.rimalLoadSitePhotos = load;
+  load();
+})();
 
 (function(){
   // Manager Dashboard > Reports: sales grouped by day, week, month or year.

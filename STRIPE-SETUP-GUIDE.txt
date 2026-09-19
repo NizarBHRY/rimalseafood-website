@@ -1,0 +1,124 @@
+RIMAL SEAFOOD — ACCEPTING ONLINE CARD PAYMENTS (STRIPE)
+=========================================================
+This is optional. Without it, "Place Order" still works exactly as
+before — customers pay at pickup or in person. This guide adds a
+second button, "Pay Online with Card", so customers can pay by card
+right on the website before they arrive.
+
+Do SETUP-GUIDE.txt first if you haven't already — this depends on
+the database from that guide already being connected.
+
+Total time: about 15 minutes. Stripe has no monthly fee — you're
+only charged when a payment goes through: 2.9% + 30 cents per
+transaction (standard rate, same as most restaurants pay).
+
+
+STEP 1 — CREATE YOUR STRIPE ACCOUNT
+-------------------------------------
+  1. Go to stripe.com and click "Start now" / "Sign up"
+  2. Enter your business info (Rimal Seafood, your address, your bank
+     account for payouts). Stripe deposits your money to your bank
+     automatically, usually within 2 business days of each payment.
+  3. You can finish this later — Stripe lets you test everything in
+     "Test mode" first, before your account is fully approved.
+
+
+STEP 2 — ADD THE DATABASE COLUMN
+-----------------------------------
+  1. In Supabase, click "SQL Editor" > "New query"
+  2. Open stripe-setup.sql (in this folder) in Notepad, copy all of it
+  3. Paste into the SQL Editor, click "Run"
+
+This adds one column so the database can tell which orders were
+paid online vs. paid at pickup.
+
+
+STEP 3 — GET YOUR STRIPE TEST KEYS
+-------------------------------------
+  1. In your Stripe Dashboard, make sure the toggle in the top right
+     says "Test mode" (this lets you try everything with fake cards
+     before using real money)
+  2. Click "Developers" > "API keys"
+  3. Copy the "Secret key" (starts with sk_test_...) — you'll paste
+     this into Netlify in Step 4, NEVER into any website file.
+
+
+STEP 4 — ADD YOUR KEY TO NETLIFY
+------------------------------------
+  1. Go to app.netlify.com, click into your Rimal Seafood site
+  2. Go to: Site configuration > Environment variables
+  3. Click "Add a variable" and add these one at a time:
+
+       STRIPE_SECRET_KEY            = (the sk_test_... key from Step 3)
+       SUPABASE_URL                 = (same Project URL from config.js)
+       SUPABASE_SERVICE_ROLE_KEY    = (see note below)
+
+     For SUPABASE_SERVICE_ROLE_KEY: in Supabase, go to Project
+     Settings > API, and copy the "service_role" "secret" key — the
+     one you were told NEVER to put in config.js. This is the one
+     place it's safe to use it, because Netlify environment variables
+     are never visible to website visitors, only to your own server
+     functions.
+
+  4. Click "Deploy" > "Trigger deploy" > "Deploy site" so Netlify
+     picks up the new variables.
+
+
+STEP 5 — CONNECT THE WEBHOOK (so payments always get recorded)
+-------------------------------------------------------------------
+This step tells Stripe to notify your site the instant a payment
+succeeds, even if the customer closes their browser right after
+paying.
+
+  1. In Stripe Dashboard (still in Test mode), go to:
+     Developers > Webhooks > "Add endpoint"
+  2. Endpoint URL:  https://YOUR-NETLIFY-SITE.netlify.app/.netlify/functions/stripe-webhook
+     (replace YOUR-NETLIFY-SITE with your actual Netlify address, or
+     your real domain once it's connected)
+  3. Click "Select events", choose "checkout.session.completed",
+     click "Add events"
+  4. Click "Add endpoint"
+  5. Click into the endpoint you just made, find "Signing secret",
+     click "Reveal", copy it (starts with whsec_...)
+  6. Back in Netlify > Environment variables, add:
+
+       STRIPE_WEBHOOK_SECRET = (the whsec_... value)
+
+  7. Trigger another deploy in Netlify so it picks this up too.
+
+
+STEP 6 — TEST IT (still in Test mode — no real money moves)
+----------------------------------------------------------------
+  1. On your live Netlify site, add something to the cart
+  2. Click "Pay Online with Card"
+  3. On the Stripe checkout page, use this test card:
+       Card number: 4242 4242 4242 4242
+       Expiry: any future date       CVC: any 3 digits
+       ZIP: any 5 digits
+  4. Complete payment — you should land back on the site with a
+     "Payment received" message
+  5. In Supabase, open the "orders" table, find that order, confirm
+     its "payment_status" column now says "paid"
+
+
+STEP 7 — GO LIVE (real payments)
+-------------------------------------
+  1. Finish your Stripe account setup (business details, bank
+     account) if you haven't already
+  2. In Stripe, switch the toggle from "Test mode" to live, go to
+     Developers > API keys again, copy the LIVE secret key
+     (starts with sk_live_...)
+  3. Repeat Step 5 once more in live mode (webhooks are separate
+     between test and live) to get a live whsec_... secret
+  4. In Netlify, update STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET
+     with the live values from steps 2-3
+  5. Trigger a deploy. Real cards will now be charged for real.
+
+
+WHAT CUSTOMERS SEE
+----------------------
+"Place Order" (pay at pickup) and "Pay Online with Card" (pay now)
+both appear in the cart. Either way, the order goes to your Manager
+Dashboard the same way. Orders paid online are marked "paid" —
+everything else defaults to "unpaid" since that just means "not
+paid through the website yet," not that anything is wrong.

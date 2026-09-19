@@ -1,0 +1,96 @@
+RIMAL SEAFOOD — HOW TO PUT THIS SITE ON rimalseafood.com
+=========================================================
+
+DO SETUP-GUIDE.txt FIRST
+--------------------------
+Before deploying, read and follow SETUP-GUIDE.txt in this same folder.
+It connects the site to a real database so that orders placed on a
+customer's own phone actually reach your Manager Dashboard. Skipping
+it means the site will look right but "Place Order" will show an
+error, since there's nowhere for the order to go yet.
+
+Once SETUP-GUIDE.txt is done (config.js has your real database keys
+pasted in), come back here.
+
+
+WHAT'S IN THIS FOLDER
+---------------------
+  index.html            <- the whole website (this is the main file)
+  rimal-logo.jpg        <- your logo (also used as the browser tab icon)
+  config.js             <- your database connection keys (from setup guide)
+  supabase-setup.sql     <- one-time database setup script (from setup guide)
+  SETUP-GUIDE.txt        <- online ordering setup (do this first)
+  netlify.toml            <- tells Netlify where to find the files below
+  netlify/functions/      <- powers online card payments (optional)
+  stripe-setup.sql        <- one-time database update for online payments
+  STRIPE-SETUP-GUIDE.txt  <- online card payment setup (optional, do after online ordering works)
+  delivery-setup.sql      <- one-time database update for the Delivery option
+
+Keep ALL of these files together in the same folder, including the
+netlify folder — don't rename or remove anything.
+
+
+STEP 1 — BUY THE DOMAIN (about 5 minutes, ~$12/year)
+----------------------------------------------------
+Go to any of these and search for "rimalseafood.com":
+  - namecheap.com        (simple, good prices)
+  - cloudflare.com/products/registrar   (cheapest, no markup)
+  - godaddy.com          (most common, watch for upsells)
+
+Buy it. Decline the extra add-ons they try to sell you
+(website builder, email, SEO packages) — you don't need them.
+
+
+STEP 2 — CREATE FREE HOSTING (about 5 minutes, $0)
+---------------------------------------------------
+Recommended: NETLIFY (easiest — no technical setup)
+
+  1. Go to netlify.com and click "Sign up" (free account)
+  2. Once logged in, find the box that says
+     "Drag and drop your site output folder here"
+  3. Drag THIS ENTIRE FOLDER (rimalseafood-website) into that box
+  4. Wait ~20 seconds. Netlify gives you a temporary address like
+     random-name-12345.netlify.app — click it and confirm the site works.
+
+Your site is now live on the internet (just not on your domain yet).
+
+
+STEP 3 — CONNECT YOUR DOMAIN (about 5 minutes)
+-----------------------------------------------
+  1. In Netlify, go to:  Site settings > Domain management > Add domain
+  2. Type: rimalseafood.com  and click Verify / Add
+  3. Netlify will show you DNS records (usually nameservers, or an A record
+     pointing to 75.2.60.5 plus a CNAME for "www")
+  4. Log in to where you bought the domain (Step 1)
+     Find "DNS settings" or "Nameservers"
+     Enter exactly what Netlify told you
+  5. Save. Wait 10 minutes to a few hours for it to take effect.
+
+HTTPS (the padlock icon) turns on automatically once the domain connects.
+You don't have to buy an SSL certificate.
+
+
+STEP 4 — UPDATING THE SITE LATER
+---------------------------------
+Any time the menu or prices change:
+  - Get the updated index.html
+  - In Netlify, go to your site > Deploys tab
+  - Drag the folder in again. It replaces the old version instantly.
+  - Your domain and QR codes keep working — nothing else to change.
+
+config.js and supabase-setup.sql don't need to be touched again once
+Step 1–4 of SETUP-GUIDE.txt is done — your database keeps running on
+Supabase's servers independently of Netlify.
+
+
+HOW ORDERING WORKS NOW
+-------------------------
+Once SETUP-GUIDE.txt is complete, orders placed from ANY device —
+a customer's phone at home, a tablet at the counter, your own laptop —
+are saved to one shared database and appear in the Manager Dashboard
+on every signed-in device within a couple of seconds. Rewards balances,
+order history, and fish market stock levels are shared the same way.
+
+The Manager Dashboard requires a real email + password login (created
+in Supabase, see SETUP-GUIDE.txt Step 4) instead of the old 4-digit PIN,
+since it now shows real customer names and phone numbers.

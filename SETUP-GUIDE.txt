@@ -1,0 +1,107 @@
+RIMAL SEAFOOD — SETTING UP REAL ONLINE ORDERING
+=================================================
+Do this BEFORE deploying to rimalseafood.com (see DEPLOY-INSTRUCTIONS.txt
+for the domain/hosting part). This is what makes an order placed on a
+customer's own phone actually show up in your Manager Dashboard.
+
+Total time: about 15–20 minutes. Free (Supabase's free tier covers a
+single restaurant easily — tens of thousands of orders/month).
+
+
+STEP 1 — CREATE YOUR DATABASE (Supabase)
+-----------------------------------------
+  1. Go to supabase.com and click "Start your project"
+  2. Sign up (GitHub or email) — free, no credit card needed
+  3. Click "New Project"
+       Name:      rimal-seafood
+       Password:  (generate one, SAVE IT somewhere safe — you may
+                   need it later, though day-to-day you won't type it)
+       Region:    pick the one closest to Brooklyn (US East)
+  4. Wait ~2 minutes while it provisions.
+
+
+STEP 2 — CREATE THE TABLES (one paste, one click)
+---------------------------------------------------
+  1. In your new project, click "SQL Editor" in the left sidebar
+  2. Click "New query"
+  3. Open the file supabase-setup.sql (in this same folder) in Notepad,
+     select all (Ctrl+A), copy (Ctrl+C)
+  4. Paste it into the Supabase SQL Editor
+  5. Click "Run" (bottom right, or Ctrl+Enter)
+  6. You should see "Success. No rows returned."
+
+That one script creates everything: the orders table, the rewards
+table, the inventory table, and the security rules that keep customer
+phone numbers private from random visitors while still letting orders
+go through.
+
+
+STEP 3 — CONNECT THE WEBSITE TO YOUR DATABASE
+------------------------------------------------
+  1. In Supabase, click the gear icon "Project Settings" > "API"
+  2. Copy the "Project URL" (looks like https://abcdefgh.supabase.co)
+  3. Copy the "anon" "public" key (a long string starting with "eyJ...")
+     -- Do NOT copy the "service_role" key. That one must never appear
+        in a website file — it can bypass all the security rules.
+  4. Open config.js (in this folder) in Notepad
+  5. Paste the URL between the quotes after SUPABASE_URL:
+  6. Paste the anon key between the quotes after SUPABASE_ANON_KEY:
+  7. Save the file.
+
+
+STEP 4 — CREATE YOUR MANAGER LOGIN
+-------------------------------------
+The Manager Dashboard no longer uses the "5817" PIN. Since it now shows
+real customer names and phone numbers pulled from a shared database,
+it needs an actual login so a stranger can't just guess a 4-digit code
+and see your customer list.
+
+  1. In Supabase, click "Authentication" in the left sidebar
+  2. Click "Add user" > "Create new user"
+  3. Enter an email (can be anything, e.g. manager@rimalseafood.com —
+     it does not need to be a real inbox) and a real password
+  4. Leave "Auto Confirm User" checked, click "Create user"
+
+That email + password is what you type into the Manager Dashboard's
+sign-in screen from now on. Create one per person who needs access
+(you can add more anytime the same way).
+
+
+STEP 5 — TEST IT BEFORE GOING LIVE
+-------------------------------------
+  1. Open index.html directly (double-click it)
+  2. Go to the Menu, add something to the cart, fill in a name/phone,
+     click "Place Order"
+  3. Go to the footer > "Manager" link > sign in with the email/password
+     from Step 4
+  4. Your test order should appear in "Recent Orders" within a couple
+     of seconds — no page refresh needed
+  5. Go to the Fish Market page, set an item's stock to 0 in the
+     dashboard, confirm "Sold Out" appears on that item
+  6. Go to Rewards, look up the phone number you used, confirm it shows
+     your test order in "Your Order History"
+
+If the order does NOT appear in the dashboard:
+  - Double check config.js has the real URL and key, not the
+    placeholder text
+  - Open the browser's console (press F12) and look for red errors —
+    they usually say exactly what's wrong (e.g. "Invalid API key")
+
+
+ONGOING: WHO CAN SEE WHAT
+----------------------------
+  - Any visitor to the site: can place orders, check their own rewards
+    and order history by phone number, see the fish market's "Sold Out"
+    badges. They can never see other customers' names, phones, or orders.
+  - Signed-in managers only: can see the full order list, change order
+    status, edit inventory stock, export sales CSV, see everyone's
+    reward balances.
+
+
+COSTS GOING FORWARD
+----------------------
+Supabase free tier includes 500MB of database storage and 50,000
+monthly active users, which is far more than a single restaurant
+location needs. If you ever outgrow it, paid tiers start around
+$25/month — you'll get an email from Supabase well before that's
+ever necessary.
