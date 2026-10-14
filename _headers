@@ -1,0 +1,33 @@
+# Netlify response headers. This file lives in the published folder (site/), so it
+# applies however the site is deployed: linked to GitHub, or by dragging the
+# site folder into Netlify.
+#
+# Content-Security-Policy lists every outside address the pages may load from:
+#   cdn.jsdelivr.net (Supabase library, pinned and integrity-checked in the HTML),
+#   fonts.googleapis.com / fonts.gstatic.com (fonts), images.unsplash.com (built-in photos),
+#   efdclcbhsvlnvmjfqnin.supabase.co (database, live updates, the Manager's photos),
+#   www.google.com / maps.google.com (the map on the Visit page).
+# The two sha256 values are the small inline <script> at the top of index.html, with
+# Unix and with Windows line endings. If that script changes, update both hashes.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/ 'sha256-hrb1lNPQHmJLbcWufXgVQBgo5CTr4941EnjKjTh+YcA=' 'sha256-TtIKrZtx+0bZXlR1zI6mY9T4jjNBsCzB1XFUtIEVoqE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://efdclcbhsvlnvmjfqnin.supabase.co; connect-src 'self' https://efdclcbhsvlnvmjfqnin.supabase.co wss://efdclcbhsvlnvmjfqnin.supabase.co; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# The logo, mark, icon and menu QR rarely change (the Manager swaps the logo
+# through the dashboard, not these files), so browsers may keep them for a week.
+# HTML and JS keep Netlify's default: always revalidated, so updates show at once.
+/rimal-logo.webp
+  Cache-Control: public, max-age=604800
+/rimal-logo-240.webp
+  Cache-Control: public, max-age=604800
+/rimal-mark.webp
+  Cache-Control: public, max-age=604800
+/rimal-icon-180.png
+  Cache-Control: public, max-age=604800
+/rimal-menu-qr.png
+  Cache-Control: public, max-age=604800

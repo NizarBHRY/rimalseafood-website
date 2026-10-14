@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rimal Seafood Menu</title>
+  <meta name="description" content="Rimal Seafood menu and fish market prices. 7812 5th Ave, Brooklyn, NY.">
+  <link rel="icon" type="image/png" href="rimal-icon-180.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://efdclcbhsvlnvmjfqnin.supabase.co" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* Printable menu. Every item and price comes from menu-data.js, the same
+       file the website uses, so the two can never disagree. */
+    :root{
+      --ocean-900:#14284B; --ocean-700:#1B6C72; --ivory:#F6F1E7; --white:#fff;
+      --slate:#56627A; --line:#E2D7C1;
+      --font-display:'Cormorant Garamond','Times New Roman',serif;
+      --font-body:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--ivory);color:var(--ocean-900);font:400 15px/1.55 var(--font-body);}
+    .wrap{max-width:860px;margin:0 auto;padding:32px 20px 48px;}
+    .toolbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px;}
+    .toolbar a,.toolbar button{
+      display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:6px;
+      border:1px solid var(--ocean-900);background:transparent;color:var(--ocean-900);font:600 15px var(--font-body);cursor:pointer;text-decoration:none;
+    }
+    .toolbar button{background:var(--ocean-900);color:#fff;}
+    .toolbar :focus-visible{outline:2px solid #1B6C72;outline-offset:2px;}
+    header{text-align:center;padding-bottom:20px;border-bottom:1px solid var(--line);}
+    header img{width:220px;height:auto;margin:0 auto 12px;display:block;}
+    header p{color:var(--slate);font-weight:500;}
+    header a{color:var(--ocean-900);text-decoration:underline;text-underline-offset:3px;}
+    section{margin-top:28px;break-inside:avoid-page;}
+    h2{font-family:var(--font-display);font-size:30px;font-weight:700;line-height:1.1;}
+    .note{color:var(--slate);font-weight:600;font-size:14px;margin-top:2px;}
+    ul{list-style:none;margin-top:10px;columns:2;column-gap:40px;}
+    li{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);break-inside:avoid;}
+    li .name{font-weight:700;}
+    li .desc{display:block;font-weight:400;color:var(--slate);font-size:13px;}
+    li .dots{flex:1;}
+    li .price{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;}
+    footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);text-align:center;color:var(--slate);font-size:13px;}
+    @media (max-width:640px){ ul{columns:1;} }
+    @media print{
+      @page{margin:14mm;}
+      body{background:#fff;font-size:12.5px;}
+      .wrap{max-width:none;padding:0;}
+      .toolbar{display:none;}
+      header img{width:170px;}
+      h2{font-size:24px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="toolbar">
+      <a href="index.html#menu">Order online</a>
+      <button type="button" id="printBtn">Print / Save as PDF</button>
+    </div>
+    <header>
+      <img src="rimal-logo.webp" alt="Rimal Seafood" width="480" height="278">
+      <p id="info"></p>
+    </header>
+    <main id="menu"></main>
+    <footer id="foot"></footer>
+  </div>
+
+  <script src="menu-data.js"></script>
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js" integrity="sha384-BWcjm9OdFth9TbhCxZPdm+gAOUMAzQy9nmTs12ioXdCcbVnJaPMn+fMUoQCLt60R" crossorigin="anonymous"></script>
+  <script src="rimal-menu.js"></script>
+</body>
+</html>
