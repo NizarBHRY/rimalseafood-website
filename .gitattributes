@@ -1,0 +1,10 @@
+# Keep website files with Unix line endings in every checkout, so the
+# Content-Security-Policy hash of the inline script in site/index.html matches.
+*.html text eol=lf
+*.js   text eol=lf
+*.css  text eol=lf
+*.toml text eol=lf
+*.sql  text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+site/_headers text eol=lf

@@ -1,2 +1,13 @@
+# Only the site/ folder is published. Everything else in this repository
+# (setup guides, database scripts, old price lists) never reaches the web.
+# Security and cache headers are in site/_headers, so they also apply when the
+# site folder is dragged into Netlify by hand. Missing pages show site/404.html.
 [build]
+  publish = "site"
   functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"

@@ -1,0 +1,14 @@
+{
+  "name": "rimal-seafood-storefront",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npx --yes netlify-cli@27.13.0 dev",
+    "check:functions": "node --check site/menu-data.js && node --check site/app.js && node --check netlify/functions/_shared/supabase.js && node --check netlify/functions/_shared/catalog.js && node --check netlify/functions/stripe-config.js && node --check netlify/functions/stripe-checkout.js && node --check netlify/functions/stripe-webhook.js && node --check netlify/functions/stripe-status.js && node --check netlify/functions/stripe-cancel.js"
+  },
+  "dependencies": {
+    "stripe": "^18.5.0"
+  }
+}

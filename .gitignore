@@ -1,0 +1,7 @@
+# Local editor / tool settings
+.claude/
+.env
+.env.*
+!.env.example
+node_modules/
+.netlify/
