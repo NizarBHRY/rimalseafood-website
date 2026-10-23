@@ -30,7 +30,7 @@
   "url": "https://rimalseafood.com/",
   "servesCuisine": ["Seafood", "Mediterranean", "Middle Eastern"],
   "priceRange": "$$",
-  "telephone": "+1-347-497-4002",
+  "telephone": "+1-347-497-4004",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "7812 5th Ave",
@@ -43,8 +43,8 @@
     {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-      "opens": "08:00",
-      "closes": "23:00"
+      "opens": "12:00",
+      "closes": "21:00"
     }
   ]
 }
@@ -896,7 +896,7 @@
       </div>
       <figure class="arch home-photo">
         <img src="https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=900&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=600&amp;auto=format&amp;fit=crop 600w, https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=900&amp;auto=format&amp;fit=crop 900w, https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 380px, 440px" alt="A whole grilled fish" width="880" height="1100" fetchpriority="high">
-        <div class="seal"><span>Open daily</span><b>8 AM</b><span>to 11 PM</span></div>
+        <div class="seal"><span>Open daily</span><b data-hours-open>12 PM</b><span>to <span data-hours-close>9 PM</span></span></div>
       </figure>
     </div>
   </section>
@@ -910,11 +910,11 @@
         </div>
         <div>
           <h2 class="caps-label">Hours</h2>
-          <p>Open daily<br>8:00 AM – 11:00 PM</p>
+          <p>Open daily<br><span data-hours-range>12:00 PM – 9:00 PM</span></p>
         </div>
         <div>
           <h2 class="caps-label">Call</h2>
-          <p><a href="tel:+13474974002">(347) 497-4002</a></p>
+          <p><a href="tel:+13474974004">(347) 497-4004</a></p>
         </div>
         <div>
           <h2 class="caps-label">Walk-ins welcome</h2>
@@ -945,7 +945,7 @@
           <figure class="arch"><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="" width="480" height="640" loading="lazy"></figure>
           <p class="way-num">II</p>
           <h3>Order ahead</h3>
-          <p>Order online for pickup and pay at the counter. There's no online payment.</p>
+          <p>Order online for pickup and pay securely with a debit or credit card, or at the counter.</p>
           <a href="#menu" class="link-caps">Start an order <span aria-hidden="true">→</span></a>
         </article>
         <article class="way">
@@ -1019,10 +1019,10 @@
           <div class="section-eyebrow">Restaurant menu</div>
           <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">قائمة الطعام</p>
           <h1 id="menuTitle">Menu</h1>
-          <p class="lede">Order ahead for pickup, or from your table when you're dining in. You pay at the counter or at your table. There's no online payment.</p>
+          <p class="lede">Order ahead for pickup or from your table. Pay securely online with a debit or credit card, or pay at the counter or table.</p>
           <ul class="menu-facts">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-info="hours">Daily 8:00 AM – 11:00 PM</span></li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><a data-info="phone" href="tel:+13474974002">(347) 497-4002</a></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-info="hours">Daily 12:00 PM – 9:00 PM</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1-2-2"/></svg><a data-info="phone" href="tel:+13474974004">(347) 497-4004</a></li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span>Prices exclude 8.875% NYC sales tax</span></li>
           </ul>
         </div>
@@ -1044,7 +1044,7 @@
       <p class="menu-status" id="menuStatus" role="status" aria-live="polite"></p>
 
       <div id="menuCatalog"></div>
-      <noscript><p class="menu-empty">Online ordering needs JavaScript. Please call (347) 497-4002 to order.</p></noscript>
+      <noscript><p class="menu-empty">Online ordering needs JavaScript. Please call (347) 497-4004 to order.</p></noscript>
 
       <div class="menu-empty" id="menuEmpty" hidden>
         <h2>No dishes match “<span id="menuEmptyTerm"></span>”</h2>
@@ -1063,7 +1063,7 @@
         <div class="section-eyebrow">Fresh Fish Market</div>
         <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">سوق السمك</p>
         <h2>Take the Catch Home</h2>
-        <p style="max-width:640px;margin:var(--s3) auto 0;color:var(--text-dim);">Fresh fish and shellfish to take home, priced by the pound or by the piece. Availability changes daily, so call <a href="tel:+13474974002" style="text-decoration:underline;text-underline-offset:3px;">(347) 497-4002</a> to check what's in.</p>
+        <p style="max-width:640px;margin:var(--s3) auto 0;color:var(--text-dim);">Fresh fish and shellfish to take home, priced by the pound or by the piece. Availability changes daily, so call <a href="tel:+13474974004" style="text-decoration:underline;text-underline-offset:3px;">(347) 497-4004</a> to check what's in.</p>
       </div>
 
       <div class="menu-search-wrap">
@@ -1109,11 +1109,11 @@
         </div>
         <div>
           <h4>Hours</h4>
-          <p>Open daily<br>8:00 AM – 11:00 PM</p>
+          <p>Open daily<br><span data-hours-range>12:00 PM – 9:00 PM</span></p>
         </div>
         <div>
           <h4>Phone</h4>
-          <p><a href="tel:+13474974002">(347) 497-4002</a></p>
+          <p><a href="tel:+13474974004">(347) 497-4004</a></p>
         </div>
       </div>
     </div>
@@ -1241,6 +1241,7 @@
           <button class="admin-tab" type="button" data-admin-tab="additem">Add a Menu or Fish Market Item</button>
           <button class="admin-tab" type="button" data-admin-tab="inventory">Fish Market Inventory</button>
           <button class="admin-tab" type="button" data-admin-tab="rewards">Rewards</button>
+          <button class="admin-tab" type="button" data-admin-tab="hours">Opening Hours</button>
           <button class="admin-tab" type="button" data-admin-tab="security">Sign-In Security</button>
         </div>
 
@@ -1408,6 +1409,25 @@
         </div>
         </div>
 
+        <div class="admin-panel" id="adminPanel-hours">
+        <h3 class="admin-h3">Opening Hours</h3>
+        <p style="color:var(--text-dim);font-size:.82rem;margin-bottom:16px;">Set the daily opening and closing times. Changes update the website and printable menu.</p>
+        <form id="businessHoursForm" class="item-form">
+          <div class="item-form-row">
+            <div>
+              <label for="businessHoursOpen">Opens</label>
+              <input type="time" id="businessHoursOpen" class="admin-input" value="12:00" required>
+            </div>
+            <div>
+              <label for="businessHoursClose">Closes</label>
+              <input type="time" id="businessHoursClose" class="admin-input" value="21:00" required>
+            </div>
+          </div>
+          <p id="businessHoursStatus" class="item-form-status" role="status" hidden></p>
+          <div><button class="btn btn-solid" id="businessHoursSave" type="submit">Save Opening Hours</button></div>
+        </form>
+        </div>
+
         <div style="text-align:center;margin-top:44px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
           <button class="btn" id="adminLockBtn" type="button">Lock Dashboard</button>
           <button class="btn" id="adminResetBtn" type="button" style="color:#a8433a;border-color:#a8433a;">Clear All Sales Data</button>
@@ -1431,8 +1451,8 @@
         <h4>Visit</h4>
         <ul>
           <li><a href="https://www.google.com/maps/search/?api=1&amp;query=7812+5th+Ave,+Brooklyn,+NY+11209" target="_blank" rel="noopener">7812 5th Ave<br>Brooklyn, NY 11209<span class="visually-hidden"> (opens Google Maps)</span></a></li>
-          <li>Open daily, 8:00 AM – 11:00 PM</li>
-          <li><a href="tel:+13474974002">(347) 497-4002</a></li>
+          <li>Open daily, <span data-hours-range>12:00 PM – 9:00 PM</span></li>
+          <li><a href="tel:+13474974004">(347) 497-4004</a></li>
         </ul>
       </div>
       <div>
@@ -1495,8 +1515,10 @@
       </form>
       <div class="form-error" id="orderError" role="alert" hidden></div>
       <button class="btn btn-solid btn-block" id="placeOrderBtn" type="submit" form="orderForm">Place order</button>
+      <button class="btn btn-block" id="payOnlineBtn" type="button" disabled>Pay online by debit or credit card</button>
+      <p class="cart-note" id="cardPaymentNote" role="status" aria-live="polite">Online card checkout is not configured yet.</p>
       <p class="cart-note" style="text-align:center;">Your order goes straight to the kitchen. Pay at the counter or at your table.</p>
-      <p class="cart-call">Prefer to order by phone? <a id="callOrderBtn" href="tel:+13474974002">Call (347) 497-4002</a></p>
+      <p class="cart-call">Prefer to order by phone? <a id="callOrderBtn" href="tel:+13474974004">Call (347) 497-4004</a></p>
     </div>
   </div>
   <div class="cart-confirm" id="cartConfirm" hidden tabindex="-1">
