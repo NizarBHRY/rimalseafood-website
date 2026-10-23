@@ -34,6 +34,16 @@
   // Manager dashboard's saved changes.
   var cfg = window.RIMAL_CONFIG || {};
   var db = (cfg.SUPABASE_URL && cfg.SUPABASE_ANON_KEY && window.supabase) ? window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY) : null;
+  if (db) {
+    db.from('business_settings').select('setting_value').eq('setting_key', 'hours').maybeSingle().then(function(res){
+      var hours = res.data && res.data.setting_value;
+      if (!res.error && hours && window.rimalFormatHours(hours)) {
+        INFO.hours = window.rimalFormatHours(hours);
+        document.getElementById('info').innerHTML =
+          esc(INFO.street + ', ' + INFO.cityLine) + ' · <a href="tel:' + INFO.phoneTel + '">' + esc(INFO.phoneDisplay) + '</a><br>' + esc(INFO.hours);
+      }
+    }).catch(function(){});
+  }
   var ready = db
     ? Promise.all([db.from('menu_overrides').select('*'), db.from('menu_items').select('*')]).then(function(r){
         if (r[0].error || r[1].error) throw r[0].error || r[1].error;

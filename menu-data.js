@@ -1,6 +1,12 @@
 // ============================================================
 // RIMAL SEAFOOD — MENU & BUSINESS INFO
 // ============================================================
+// This data file is also consumed by the server-side Stripe catalog.
+// In browsers globalThis.window is the normal window object; in Node a
+// private object is used and exported below.
+var window = (typeof globalThis !== 'undefined')
+  ? (globalThis.window || (globalThis.window = {}))
+  : {};
 // The website's built-in menu. The live menu is these items PLUS the
 // changes made in the Manager dashboard (renames, prices, photos, options,
 // removals and added dishes), which are stored in the shared database and
@@ -29,11 +35,24 @@ window.RIMAL_INFO = {
   name: 'Rimal Seafood',
   street: '7812 5th Ave',
   cityLine: 'Brooklyn, NY 11209',
-  phoneDisplay: '(347) 497-4002',
-  phoneTel: '+13474974002',
-  hours: 'Daily 8:00 AM – 11:00 PM',
+  phoneDisplay: '(347) 497-4004',
+  phoneTel: '+13474974004',
+  hours: 'Daily 12:00 PM – 9:00 PM',
   taxRate: 0.08875,
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=7812+5th+Ave,+Brooklyn,+NY+11209'
+};
+
+window.rimalFormatTime = function(value){
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || ''))) return '';
+  var parts = value.split(':');
+  var hour = Number(parts[0]);
+  var minute = parts[1];
+  return (hour % 12 || 12) + (minute === '00' ? '' : ':' + minute) + ' ' + (hour < 12 ? 'AM' : 'PM');
+};
+window.rimalFormatHours = function(hours){
+  var opens = hours && window.rimalFormatTime(hours.opens);
+  var closes = hours && window.rimalFormatTime(hours.closes);
+  return opens && closes ? 'Daily ' + opens + ' – ' + closes : window.RIMAL_INFO.hours;
 };
 
 // The sides customers pick from when a dish includes sides.
@@ -252,3 +271,13 @@ window.rimalApplyDashboard = function(overrides, customItems){
   });
   return { menu: menu, market: market };
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    info: window.RIMAL_INFO,
+    menu: window.RIMAL_MENU,
+    market: window.RIMAL_MARKET,
+    sides: window.RIMAL_SIDES,
+    applyDashboard: window.rimalApplyDashboard
+  };
+}

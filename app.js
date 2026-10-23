@@ -38,6 +38,83 @@ window.rimalCopyNode = function(node){
     console.warn('Rimal Seafood: Supabase is not configured yet (see config.js). Online ordering will not reach the kitchen until it is set up.');
   }
 })();
+
+(function(){
+  var DEFAULT_HOURS = { opens: '12:00', closes: '21:00' };
+  var openInput = document.getElementById('businessHoursOpen');
+  var closeInput = document.getElementById('businessHoursClose');
+  var form = document.getElementById('businessHoursForm');
+  var saveButton = document.getElementById('businessHoursSave');
+  var status = document.getElementById('businessHoursStatus');
+
+  function validTime(value){ return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || '')); }
+  function validHours(hours){ return hours && validTime(hours.opens) && validTime(hours.closes); }
+  function setStatus(message, isError){
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
+    status.style.color = isError ? 'var(--error)' : 'var(--success)';
+  }
+  function applyHours(hours){
+    if (!validHours(hours)) return;
+    var display = window.rimalFormatHours(hours);
+    var range = window.rimalFormatTime(hours.opens) + ' – ' + window.rimalFormatTime(hours.closes);
+    window.RIMAL_INFO.hours = display;
+    document.querySelectorAll('[data-info="hours"]').forEach(function(el){ el.textContent = display; });
+    document.querySelectorAll('[data-hours-range]').forEach(function(el){ el.textContent = range; });
+    var openLabel = document.querySelector('[data-hours-open]');
+    var closeLabel = document.querySelector('[data-hours-close]');
+    if (openLabel) openLabel.textContent = window.rimalFormatTime(hours.opens);
+    if (closeLabel) closeLabel.textContent = window.rimalFormatTime(hours.closes);
+
+    var schemaScript = document.querySelector('script[type="application/ld+json"]');
+    if (schemaScript) {
+      try {
+        var schema = JSON.parse(schemaScript.textContent);
+        schema.openingHoursSpecification[0].opens = hours.opens;
+        schema.openingHoursSpecification[0].closes = hours.closes;
+        schemaScript.textContent = JSON.stringify(schema);
+      } catch(e){}
+    }
+  }
+  function loadHours(showErrors){
+    if (!window.rimalDb) return Promise.resolve(DEFAULT_HOURS);
+    return window.rimalDb.from('business_settings').select('setting_value').eq('setting_key', 'hours').maybeSingle()
+      .then(function(res){
+        if (res.error) throw res.error;
+        var hours = res.data && res.data.setting_value;
+        if (!validHours(hours)) hours = DEFAULT_HOURS;
+        applyHours(hours);
+        if (openInput) openInput.value = hours.opens;
+        if (closeInput) closeInput.value = hours.closes;
+        if (showErrors) setStatus('', false);
+        return hours;
+      }).catch(function(){
+        if (showErrors) setStatus('Could not load saved hours. Run the updated setup/supabase-setup.sql in Supabase.', true);
+        return DEFAULT_HOURS;
+      });
+  }
+  window.rimalLoadBusinessHours = function(){ return loadHours(true); };
+  loadHours(false);
+
+  if (form) form.addEventListener('submit', function(event){
+    event.preventDefault();
+    var hours = { opens: openInput.value, closes: closeInput.value };
+    if (!validHours(hours)) { setStatus('Enter valid opening and closing times.', true); return; }
+    if (!window.rimalDb) { setStatus('Business settings database is not configured.', true); return; }
+    saveButton.disabled = true;
+    setStatus('Saving…', false);
+    window.rimalDb.from('business_settings').upsert({
+      setting_key: 'hours', setting_value: hours, updated_at: new Date().toISOString()
+    }, { onConflict: 'setting_key' }).then(function(res){
+      if (res.error) throw res.error;
+      applyHours(hours);
+      setStatus('Opening hours updated.', false);
+    }).catch(function(){
+      setStatus('Could not save hours. Check the database setup and manager access.', true);
+    }).then(function(){ saveButton.disabled = false; });
+  });
+})();
 (function(){
   // Hash routing: each nav link shows one ".page". Back/Forward and typed
   // URLs work, and every page change starts at the top. An alias opens a page
@@ -582,6 +659,8 @@ window.rimalCopyNode = function(node){
   var cartBar = $('cartBar'), cartBarBtn = $('cartBarBtn'), cartBarLabel = $('cartBarLabel'), cartBarTotal = $('cartBarTotal');
   var orderForm = $('orderForm'), orderNameInput = $('orderNameInput'), orderPhoneInput = $('orderPhoneInput');
   var orderTableSelect = $('orderTableSelect'), orderError = $('orderError'), placeOrderBtn = $('placeOrderBtn');
+  var payOnlineBtn = $('payOnlineBtn'), cardPaymentNote = $('cardPaymentNote');
+  var stripeCheckoutReady = false, cardCheckoutBusy = false;
   var cartConfirm = $('cartConfirm'), cartConfirmDetail = $('cartConfirmDetail'), cartConfirmClose = $('cartConfirmClose');
   var toastEl = $('toast');
 
@@ -878,6 +957,17 @@ window.rimalCopyNode = function(node){
     cartTotalEl.textContent = money(tt.total);
     cartTaxNote.hidden = !cart.some(function(l){ return l.taxable === false; });
     if (!placeOrderBtn.disabled) { placeOrderBtn.textContent = 'Place order · ' + money(tt.total); }
+    if (payOnlineBtn) {
+      payOnlineBtn.textContent = 'Pay online by debit or credit card · ' + money(tt.total);
+      payOnlineBtn.disabled = !stripeCheckoutReady || cardCheckoutBusy || empty || !menuReady || tt.discount > 0;
+      if (tt.discount > 0 && stripeCheckoutReady) {
+        cardPaymentNote.textContent = 'Online checkout cannot apply a rewards discount yet. Place this order and pay at the counter or your table.';
+      } else if (!stripeCheckoutReady) {
+        cardPaymentNote.textContent = 'Online card checkout is not configured yet.';
+      } else if (!cardCheckoutBusy) {
+        cardPaymentNote.textContent = 'Secure checkout hosted by Stripe. Pay at pickup or your table is still available.';
+      }
+    }
 
     var count = itemCount();
     var countText = count + (count === 1 ? ' item' : ' items');
@@ -1204,6 +1294,7 @@ window.rimalCopyNode = function(node){
     var btn = e.target.closest('.market-card [data-add]');
     if (!btn) return;
     var card = btn.closest('.market-card[data-name]');
+    var custom = card.hasAttribute('data-custom-item');
     var kind = card.closest('#market-grill') ? 'grill' : 'market';
     var name = card.getAttribute('data-name');
     var styleSel = card.querySelector('.side-select-fixed');
@@ -1222,7 +1313,7 @@ window.rimalCopyNode = function(node){
     var unit = card.getAttribute('data-unit') || '';
     var style = styleSel ? styleSel.value : '';
     var line = {
-      v: CART_VERSION, ref: { kind: kind, name: name }, base: name, choices: {}, sides: [], size: size, style: style,
+      v: CART_VERSION, ref: { kind: kind, name: name, id: custom ? card.getAttribute('data-custom-item') : '', custom: custom }, base: name, choices: {}, sides: [], size: size, style: style,
       name: composeName(name, null, null, size, style),
       price: price, unit: unit, qty: round2(qty), taxable: kind !== 'market'
     };
@@ -1259,6 +1350,24 @@ window.rimalCopyNode = function(node){
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
       var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+
+  function stripeOrderLines(){
+    return cart.map(function(line){
+      return {
+        ref: {
+          kind: line.ref.kind,
+          id: line.ref.id || '',
+          name: line.ref.name || '',
+          custom: line.ref.custom === true
+        },
+        size: line.size || '',
+        choices: line.choices || {},
+        sides: line.sides || [],
+        style: line.style || '',
+        qty: line.qty
+      };
     });
   }
 
@@ -1317,6 +1426,29 @@ window.rimalCopyNode = function(node){
     }
   }
 
+  function setCardBusy(on){
+    cardCheckoutBusy = on;
+    if (payOnlineBtn) {
+      payOnlineBtn.setAttribute('aria-busy', String(on));
+      payOnlineBtn.textContent = on ? 'Opening secure checkout…' : 'Pay online by debit or credit card · ' + money(totals().total);
+    }
+    render();
+  }
+
+  function validateCustomerFields(){
+    var digits = orderPhoneInput.value.replace(/\D/g, '');
+    if (orderPhoneInput.value.trim() && (digits.length < 10 || digits.length > 11)) {
+      orderPhoneInput.setAttribute('aria-invalid', 'true');
+      orderError.textContent = 'Please enter a 10-digit phone number, or leave it blank.';
+      orderError.hidden = false;
+      orderPhoneInput.focus();
+      return false;
+    }
+    orderPhoneInput.removeAttribute('aria-invalid');
+    orderError.hidden = true;
+    return true;
+  }
+
   orderForm.addEventListener('submit', function(e){
     e.preventDefault();
     if (cart.length === 0 || placeOrderBtn.disabled) return;
@@ -1326,15 +1458,7 @@ window.rimalCopyNode = function(node){
       orderError.hidden = false;
       return;
     }
-    var digits = orderPhoneInput.value.replace(/\D/g, '');
-    if (orderPhoneInput.value.trim() && (digits.length < 10 || digits.length > 11)) {
-      orderPhoneInput.setAttribute('aria-invalid', 'true');
-      orderError.textContent = 'Please enter a 10-digit phone number, or leave it blank.';
-      orderError.hidden = false;
-      orderPhoneInput.focus();
-      return;
-    }
-    orderPhoneInput.removeAttribute('aria-invalid');
+    if (!validateCustomerFields()) return;
     setPlacing(true);
     submitOrder().then(function(order){
       setPlacing(false);
@@ -1351,12 +1475,107 @@ window.rimalCopyNode = function(node){
       setPlacing(false);
       // Database errors are technical, so customers get a plain message.
       orderError.textContent = 'We couldn\'t send your order.' +
-        ' Your order is still here. Please try again, or call ' + (INFO.phoneDisplay || '(347) 497-4002') + '.';
+        ' Your order is still here. Please try again, or call ' + (INFO.phoneDisplay || '(347) 497-4004') + '.';
       orderError.hidden = false;
       placeOrderBtn.focus();
     });
   });
+  if (payOnlineBtn) {
+    fetch('/.netlify/functions/stripe-config', { cache: 'no-store' })
+      .then(function(response){ return response.ok ? response.json() : null; })
+      .then(function(data){
+        stripeCheckoutReady = !!(data && data.enabled);
+        if (stripeCheckoutReady) cardPaymentNote.textContent = 'Secure checkout hosted by Stripe. Pay at pickup or your table is still available.';
+        render();
+      })
+      .catch(function(){ stripeCheckoutReady = false; render(); });
+
+    payOnlineBtn.addEventListener('click', function(){
+      if (!stripeCheckoutReady || cardCheckoutBusy || cart.length === 0 || !menuReady) return;
+      orderError.hidden = true;
+      if (!validateCustomerFields()) return;
+      var table = orderTableSelect.value;
+      setTable(table);
+      setCardBusy(true);
+      fetch('/.netlify/functions/stripe-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: orderNameInput.value.trim(),
+          phone: orderPhoneInput.value.replace(/\D/g, ''),
+          table: table,
+          items: stripeOrderLines()
+        })
+      }).then(function(response){
+        return response.json().then(function(data){
+          if (!response.ok) throw new Error(data && data.error ? data.error : 'Secure checkout is unavailable.');
+          return data;
+        });
+      }).then(function(data){
+        if (!data || typeof data.url !== 'string' || data.url.indexOf('https://checkout.stripe.com/') !== 0) {
+          throw new Error('Secure checkout did not return a valid payment link.');
+        }
+        var phone = orderPhoneInput.value.replace(/\D/g, '');
+        if (phone) { try { localStorage.setItem('rimalRewardsSession', phone); } catch(e){} }
+        window.location.assign(data.url);
+      }).catch(function(err){
+        setCardBusy(false);
+        cardPaymentNote.textContent = err.message || 'We could not start secure checkout. Your cart is unchanged.';
+      });
+    });
+  }
   orderPhoneInput.addEventListener('input', function(){ orderPhoneInput.removeAttribute('aria-invalid'); });
+
+  // Stripe itself verifies the returned Checkout Session. This only updates
+  // the customer's screen/cart; the signed webhook alone marks the DB order paid.
+  (function handleStripeReturn(){
+    var query = new URLSearchParams(window.location.search);
+    var payment = query.get('payment');
+    var sessionId = query.get('session_id');
+    if (payment !== 'success' && payment !== 'cancelled') return;
+    if (payment === 'cancelled') {
+      var orderId = query.get('order_id');
+      fetch('/.netlify/functions/stripe-cancel', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: orderId || '' })
+      }).then(function(response){ return response.json(); }).then(function(data){
+        if (data && data.state === 'paid') {
+          stripeCheckoutReady = false;
+          render();
+          cardPaymentNote.textContent = 'Stripe shows this checkout was paid. Verifying your order; please do not submit payment again.';
+        } else {
+          cardPaymentNote.textContent = 'Checkout was closed. Your cart is still saved; check your email before trying again.';
+        }
+      }).catch(function(){
+        stripeCheckoutReady = false;
+        render();
+        cardPaymentNote.textContent = 'Checkout was closed or could not be verified. Your cart is saved; please check your email before trying again.';
+      });
+      openCart();
+      history.replaceState(null, '', window.location.pathname + window.location.hash);
+      return;
+    }
+    fetch('/.netlify/functions/stripe-status?session_id=' + encodeURIComponent(sessionId || ''), { cache: 'no-store' })
+      .then(function(response){ return response.json().then(function(data){ if (!response.ok) throw new Error(); return data; }); })
+      .then(function(data){
+        if (!data || !data.paid || !data.order_id) throw new Error();
+        rememberOrder(data.order_id);
+        cart = [];
+        rewardDiscount = 0;
+        render();
+        cartConfirmDetail.textContent = 'Stripe confirms your payment. Your order is being sent to the kitchen; the secure payment notification will update the order status shortly.';
+        cartMain.hidden = true;
+        cartConfirm.hidden = false;
+        openCart();
+        cartConfirm.focus();
+        history.replaceState(null, '', window.location.pathname + window.location.hash);
+      }).catch(function(){
+        stripeCheckoutReady = false;
+        render();
+        cardPaymentNote.textContent = 'We could not verify the payment yet. Please do not pay again; check your Stripe receipt or call ' + (INFO.phoneDisplay || '(347) 497-4004') + '.';
+        openCart();
+      });
+  })();
 
   cartConfirmClose.addEventListener('click', function(){
     cartConfirm.hidden = true;
@@ -2811,7 +3030,7 @@ window.rimalCopyNode = function(node){
       '@media print{.r-print-btn{display:none;}}' +
       '</style></head><body>' +
       '<h1>RIMAL SEAFOOD</h1>' +
-      '<p class="r-sub">7812 5th Ave, Brooklyn, NY 11209<br>(347) 497-4002</p>' +
+      '<p class="r-sub">7812 5th Ave, Brooklyn, NY 11209<br>(347) 497-4004</p>' +
       '<div class="r-line"></div>' +
       '<div class="r-meta">Date: ' + new Date(order.created_at).toLocaleString() + '</div>' +
       '<div class="r-meta">Order #' + esc(String(order.id).slice(-6)) + '</div>' +
@@ -2849,6 +3068,7 @@ window.rimalCopyNode = function(node){
     gate.hidden = true;
     dash.hidden = false;
     renderDashboard();
+    if (window.rimalLoadBusinessHours) { window.rimalLoadBusinessHours(); }
     if (window.rimalRefreshMfa) { window.rimalRefreshMfa(); }
     // Data retention (see privacy.html): erases names and phones from orders
     // older than 90 days. Normally a nightly database job; this is the backup.
@@ -2860,7 +3080,7 @@ window.rimalCopyNode = function(node){
       realtimeChannel = window.rimalDb.channel('orders-live')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, function(payload){
           scheduleRender();
-          if (payload.eventType === 'UPDATE' && payload.new && payload.new.payment_method === 'card' && payload.new.payment_status === 'paid' &&
+          if (payload.eventType === 'UPDATE' && payload.new && (payload.new.payment_method === 'card' || payload.new.payment_method === 'stripe') && payload.new.payment_status === 'paid' &&
               Date.now() - new Date(payload.new.created_at).getTime() < 6 * 3600000) {
             printReceipt(payload.new);
           }
@@ -3090,7 +3310,7 @@ window.rimalCopyNode = function(node){
               '<div class="admin-row-title">' + esc(o.customer_name ? o.customer_name : 'Guest') + ' · ' + esc(new Date(o.created_at).toLocaleString()) + (o.table_number ? ' · Table ' + esc(o.table_number) : '') + '</div>' +
               '<div class="admin-row-meta">' + esc(itemsSummary) + (o.phone ? ' · 📱 ' + esc(o.phone) : ' · no phone on file') + '</div>' +
               '<span class="status-badge ' + badgeClass + '">' + esc(status) + '</span>' +
-              '<span class="status-badge ' + (o.payment_status === 'paid' ? 'status-ready' : 'status-processing') + '" style="margin-left:6px;">Cash · ' + (o.payment_status === 'paid' ? 'Paid' : 'Unpaid') + '</span>' +
+              '<span class="status-badge ' + (o.payment_status === 'paid' ? 'status-ready' : 'status-processing') + '" style="margin-left:6px;">' + (o.payment_method === 'stripe' ? 'Online card' : o.payment_method === 'card' ? 'Card' : 'Cash') + ' · ' + (o.payment_status === 'paid' ? 'Paid' : 'Unpaid') + '</span>' +
               (hasReward ? '<span class="status-badge status-ready" style="margin-left:6px;">🎁 Free Platter Waiting</span>' : '') +
             '</div>' +
             '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">' +
@@ -3100,7 +3320,7 @@ window.rimalCopyNode = function(node){
                 (status === 'Ready' ? 'Mark Processing' : 'Mark Ready') +
               '</button>' +
               (o.phone ? '<button class="btn status-toggle-btn" type="button" data-text-id="' + esc(o.id) + '">Text Customer</button>' : '') +
-              (o.payment_method !== 'card' && o.payment_status !== 'paid' ? '<button class="btn status-toggle-btn" type="button" data-cash-paid-id="' + esc(o.id) + '">Mark Cash Paid &amp; Print</button>' : '') +
+              (o.payment_method !== 'card' && o.payment_method !== 'stripe' && o.payment_status !== 'paid' ? '<button class="btn status-toggle-btn" type="button" data-cash-paid-id="' + esc(o.id) + '">Mark Cash Paid &amp; Print</button>' : '') +
               '<button class="btn status-toggle-btn" type="button" data-receipt-id="' + esc(o.id) + '">Print Receipt</button>' +
               '<button class="btn status-toggle-btn" type="button" data-delete-id="' + esc(o.id) + '" style="color:#a8433a;border-color:#a8433a;">Delete</button>' +
             '</div>';
