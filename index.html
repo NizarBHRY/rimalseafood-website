@@ -935,21 +935,21 @@
       </div>
       <div class="ways">
         <article class="way">
-          <figure class="arch"><img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="" width="480" height="640" loading="lazy"></figure>
+          <figure class="arch"><img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Salmon fillet with vegetables" width="480" height="640" loading="lazy"></figure>
           <p class="way-num">I</p>
           <h3>Dine in</h3>
           <p>Walk in and we'll seat you, then order from your table.</p>
           <a href="#visit" class="link-caps">Plan your visit <span aria-hidden="true">→</span></a>
         </article>
         <article class="way">
-          <figure class="arch"><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="" width="480" height="640" loading="lazy"></figure>
+          <figure class="arch"><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Grilled fish dish" width="480" height="640" loading="lazy"></figure>
           <p class="way-num">II</p>
           <h3>Order ahead</h3>
           <p>Order online for pickup and pay securely with a debit or credit card, or at the counter.</p>
           <a href="#menu" class="link-caps">Start an order <span aria-hidden="true">→</span></a>
         </article>
         <article class="way">
-          <figure class="arch"><img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="" width="480" height="640" loading="lazy"></figure>
+          <figure class="arch"><img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Fresh seafood on ice" width="480" height="640" loading="lazy"></figure>
           <p class="way-num">III</p>
           <h3>Take the catch home</h3>
           <p>Fresh fish and shellfish, priced by the pound or by the piece. Or pick one from the case and we'll grill it for you to eat here.</p>
@@ -971,7 +971,7 @@
         <a href="#menu" class="btn btn-solid">See the full menu</a>
         <a href="rimal-menu.html" class="link-caps" target="_blank" rel="noopener">Printable menu<span class="visually-hidden"> (opens in a new tab)</span></a>
       </div>
-      <p class="home-menu-note">Prices exclude 8.875% NYC sales tax and can change.</p>
+      <p class="home-menu-note">Prices and availability can change.</p>
     </div>
   </section>
 </div>
@@ -1023,7 +1023,6 @@
           <ul class="menu-facts">
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-info="hours">Daily 12:00 PM – 9:00 PM</span></li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1-2-2"/></svg><a data-info="phone" href="tel:+13474974004">(347) 497-4004</a></li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6"/></svg><span>Prices exclude 8.875% NYC sales tax</span></li>
           </ul>
         </div>
         <div class="menu-print">
@@ -1239,6 +1238,7 @@
           <button class="admin-tab active" type="button" data-admin-tab="orders">Recent Orders</button>
           <button class="admin-tab" type="button" data-admin-tab="reports">Reports</button>
           <button class="admin-tab" type="button" data-admin-tab="additem">Add a Menu or Fish Market Item</button>
+          <button class="admin-tab" type="button" data-admin-tab="photos">Website Photos</button>
           <button class="admin-tab" type="button" data-admin-tab="inventory">Fish Market Inventory</button>
           <button class="admin-tab" type="button" data-admin-tab="rewards">Rewards</button>
           <button class="admin-tab" type="button" data-admin-tab="hours">Opening Hours</button>
@@ -1361,9 +1361,11 @@
         <h4 style="font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);margin:8px 0 14px;">All Menu &amp; Fish Market Items</h4>
         <input type="search" id="itemManageSearch" class="admin-input" style="width:100%;padding:9px 12px;background:#fff;border:1px solid #cfe2ea;border-radius:4px;margin-bottom:14px;font-family:var(--font-body);" placeholder="Search items to edit or remove…" autocomplete="off">
         <div id="customItemsList" class="admin-list"></div>
+        </div>
 
+        <div class="admin-panel" id="adminPanel-photos">
         <h3 class="admin-h3">Website Photos (Home, About, Visit, Logo &amp; Gallery)</h3>
-        <p style="color:var(--text-dim);font-size:.82rem;margin-bottom:16px;">Replace or remove the pictures on the Home page, About page, Visit page and Gallery, or add new Gallery photos. Photos for the Menu and Fish Market items are changed with each item's <b>Edit</b> button in the list above.</p>
+        <p style="color:var(--text-dim);font-size:.82rem;margin-bottom:16px;">Replace or remove the Home page hero and each of the Dine in, Order ahead and Take the catch home photos. Use <b>Restore</b> to bring back any original photo. You can also manage the About, Visit, Logo and Gallery photos here.</p>
         <div style="margin-bottom:14px;"><button class="btn" id="addGalleryPhotoBtn" type="button">+ Add a Gallery Photo</button></div>
         <p class="item-form-status" id="sitePhotoStatus" hidden></p>
         <div id="sitePhotosList" class="admin-list"></div>

@@ -52,7 +52,7 @@
     : Promise.reject(new Error('no database'));
   ready = ready.catch(function(){ draw(window.rimalApplyDashboard([], []), false); });
   document.getElementById('foot').innerHTML =
-    'Prices exclude ' + (INFO.taxRate * 100).toFixed(3).replace(/0+$/, '') + '% NYC sales tax on prepared food. Please ask our staff about allergens.<br>© 2026 Rimal Seafood';
+    'Please ask our staff about allergens.<br>© 2026 Rimal Seafood';
 
   if (/[?&]print=1/.test(location.search)) {
     ready.then(function(){ return document.fonts ? document.fonts.ready : null; }).then(function(){ setTimeout(function(){ window.print(); }, 150); });

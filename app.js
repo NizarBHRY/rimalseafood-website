@@ -1806,6 +1806,23 @@ window.rimalCopyNode = function(node){
     return Math.max.apply(null, customItems.map(function(item){ return getCustomDisplayOrder(item); })) + 100;
   }
 
+  function saveCustomMenuItem(db, values, itemId){
+    function save(payload){
+      var request = itemId
+        ? db.from('menu_items').update(payload).eq('id', itemId)
+        : db.from('menu_items').insert(payload);
+      return request.then(function(res){
+        var message = res.error && res.error.message || '';
+        if (!Object.prototype.hasOwnProperty.call(payload, 'display_order') ||
+            !/display_order.*schema cache/i.test(message)) return res;
+        var compatiblePayload = Object.assign({}, payload);
+        delete compatiblePayload.display_order;
+        return save(compatiblePayload);
+      });
+    }
+    return save(values);
+  }
+
   function reorderCustomItem(itemId, direction){
     if (!window.rimalDb) return Promise.resolve();
     var ordered = customItems.slice().sort(sortCustomItemsByOrder);
@@ -2304,7 +2321,7 @@ window.rimalCopyNode = function(node){
     (file ? uploadPhoto(file) : Promise.resolve(null)).then(function(newUrl){
       var db = window.rimalDb;
       if (!editing) {
-        return db.from('menu_items').insert({
+        return saveCustomMenuItem(db, {
           name: name, description: desc || null, category: category, price: price, unit: unit,
           options: options.length ? options : null, image_url: newUrl, display_order: getNextCustomDisplayOrder()
         });
@@ -2312,10 +2329,10 @@ window.rimalCopyNode = function(node){
       if (editing.kind === 'custom') {
         var oldUrl = editing.item.image_url || null;
         var nextUrl = newUrl || (removePhoto ? null : oldUrl);
-        return db.from('menu_items').update({
+        return saveCustomMenuItem(db, {
           name: name, description: desc || null, category: category, price: price, unit: unit,
           options: options.length ? options : null, image_url: nextUrl, display_order: editing.item.display_order || getNextCustomDisplayOrder()
-        }).eq('id', editing.item.id).then(function(res){
+        }, editing.item.id).then(function(res){
           if (!res.error && oldUrl && nextUrl !== oldUrl) { discardPhoto(oldUrl); }
           return res;
         });
@@ -2427,6 +2444,7 @@ window.rimalCopyNode = function(node){
 
   var heroImg = document.querySelector('#page-home .home-photo img');
   var heroFig = heroImg && heroImg.closest('figure');
+  var homeWayImgs = document.querySelectorAll('#page-home .home-ways .way img');
   var aboutImg = document.querySelector('#page-about .about-photo img');
   var aboutFig = aboutImg && aboutImg.closest('figure');
   var visitSec = document.querySelector('section.reserve');
@@ -2435,12 +2453,18 @@ window.rimalCopyNode = function(node){
 
   var ORIG = {
     home_hero: heroImg ? heroImg.getAttribute('src') : '',
+    home_way_dinein: homeWayImgs[0] ? homeWayImgs[0].getAttribute('src') : '',
+    home_way_order: homeWayImgs[1] ? homeWayImgs[1].getAttribute('src') : '',
+    home_way_market: homeWayImgs[2] ? homeWayImgs[2].getAttribute('src') : '',
     about: aboutImg ? aboutImg.getAttribute('src') : '',
     visit_bg: VISIT_ORIGINAL,
     logo: logos.length ? logos[0].getAttribute('src') : ''
   };
   var SLOTS = [
     { key: 'home_hero', label: 'Home page photo', removable: true },
+    { key: 'home_way_dinein', label: 'Home page — Dine in photo', removable: true },
+    { key: 'home_way_order', label: 'Home page — Order ahead photo', removable: true },
+    { key: 'home_way_market', label: 'Home page — Take the catch home photo', removable: true },
     { key: 'about',     label: 'About page photo', removable: true },
     { key: 'visit_bg',  label: 'Visit page background', removable: true },
     { key: 'logo',      label: 'Logo (top and bottom of every page)', removable: false }
@@ -2481,6 +2505,18 @@ window.rimalCopyNode = function(node){
       heroFig.parentNode.classList.toggle('no-photo', !!(h && h.removed));
       setPhoto(heroImg, h && h.image_url, ORIG.home_hero);
     }
+
+    [
+      { key: 'home_way_dinein', img: homeWayImgs[0] },
+      { key: 'home_way_order', img: homeWayImgs[1] },
+      { key: 'home_way_market', img: homeWayImgs[2] }
+    ].forEach(function(photo){
+      if (!photo.img) return;
+      var row = o[photo.key];
+      var figure = photo.img.closest('figure');
+      figure.style.display = row && row.removed ? 'none' : '';
+      setPhoto(photo.img, row && row.image_url, ORIG[photo.key]);
+    });
 
     var a = o.about;
     if (aboutImg) {
@@ -2535,6 +2571,7 @@ window.rimalCopyNode = function(node){
   function load(){
     if (!window.rimalDb) return Promise.resolve();
     return window.rimalDb.from('site_photos').select('*').order('created_at', { ascending: true }).then(function(res){
+      if (res.error) { throw res.error; }
       overrides = {};
       addedRows = [];
       ((res && res.data) || []).forEach(function(row){
@@ -2543,7 +2580,12 @@ window.rimalCopyNode = function(node){
       });
       applyPhotos();
       renderList();
-    }).catch(function(){});
+      return true;
+    }).catch(function(err){
+      var msg = (err && err.message) ? err.message : 'Please refresh and try again.';
+      setStatus('Could not load website photos: ' + msg, true);
+      return false;
+    });
   }
 
   // ---------- Manager list ----------
@@ -2618,7 +2660,9 @@ window.rimalCopyNode = function(node){
     var file = fileEl.files && fileEl.files[0];
     var key = pendingKey;
     pendingKey = null;
-    if (!file || !key || !window.rimalDb || !window.rimalPhotoTools) return;
+    if (!file || !key) return;
+    if (!window.rimalDb) { setStatus('Could not change photo: the database is not connected. Refresh the page and sign in again.', true); return; }
+    if (!window.rimalPhotoTools) { setStatus('Could not change photo: photo upload is not ready. Refresh the page and try again.', true); return; }
     setStatus('Uploading photo…', false);
     var existing = overrides[key] || null;
     window.rimalPhotoTools.upload(file, 1600).then(function(url){
@@ -2628,8 +2672,10 @@ window.rimalCopyNode = function(node){
         if (oldUrl && oldUrl !== url) { window.rimalPhotoTools.discard(oldUrl); }
       });
     }).then(function(){
-      setStatus('✓ Photo saved — it is now live on the website.', false);
-      return reloadAll();
+      return reloadAll().then(function(loaded){
+        if (loaded) { setStatus('✓ Photo saved — it is now live on the website.', false); }
+        else { setStatus('Photo saved, but the website photo list could not reload. Refresh the page to check the update.', true); }
+      });
     }).catch(fail);
   });
 
