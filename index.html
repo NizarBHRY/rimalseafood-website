@@ -30,7 +30,7 @@
   "url": "https://rimalseafood.com/",
   "servesCuisine": ["Seafood", "Mediterranean", "Middle Eastern"],
   "priceRange": "$$",
-  "telephone": "+1-347-497-4004",
+  "telephone": "+1-347-497-4002",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "7812 5th Ave",
@@ -475,6 +475,7 @@
   .market-card-body p{color:var(--slate);margin-bottom:var(--s3);}
   .market-card-body .menu-price{font-family:var(--font-display);font-weight:600;font-size:1.3rem;color:var(--teal);font-variant-numeric:lining-nums tabular-nums;}
   .market-card-body .grill-note{font-family:var(--font-body);color:var(--slate);}
+  .market-card-body > .btn{display:flex;width:100%;margin-top:var(--s3);}
   .market-note{text-align:center;color:var(--slate);margin-top:var(--s7);}
 
   /* ============ FORM CONTROLS ============ */
@@ -874,6 +875,7 @@
       </ul>
     </nav>
     <div class="header-actions">
+      <a class="cart-toggle" href="tel:+13474974002">Call to order</a>
       <button class="cart-toggle" id="cartToggle" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="label">Order</span><span class="cart-badge" id="cartBadge" aria-hidden="true">0</span><span class="visually-hidden" id="cartToggleCount">, 0 items</span></button>
       <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
@@ -888,7 +890,7 @@
         <p class="eyebrow-rule">Restaurant &amp; Fish Market · Bay Ridge, Brooklyn</p>
         <p class="ar-word" lang="ar" dir="rtl" aria-hidden="true">رمال</p>
         <h1 id="homeTitle">Fresh off the dock, <em>onto your plate.</em></h1>
-        <p class="lede">Dine in on today's catch, order online, or grab it straight from our fish case to cook at home. No reservation, no fuss. Just walk in hungry.</p>
+        <p class="lede">Browse the menu, add your picks to the cart, then call us to place your order. Or walk in hungry—no reservation needed.</p>
         <div class="hero-ctas">
           <a href="#menu" class="btn btn-solid">See the menu</a>
           <a href="#market" class="link-caps">The fish market <span aria-hidden="true">→</span></a>
@@ -914,7 +916,7 @@
         </div>
         <div>
           <h2 class="caps-label">Call</h2>
-          <p><a href="tel:+13474974004">(347) 497-4004</a></p>
+          <p><a href="tel:+13474974002">(347) 497-4002</a></p>
         </div>
         <div>
           <h2 class="caps-label">Walk-ins welcome</h2>
@@ -931,7 +933,7 @@
       <div class="section-head">
         <div class="section-eyebrow">Welcome</div>
         <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">أهلاً وسهلاً</p>
-        <h2 id="waysTitle">Eat here, order ahead, or cook at home.</h2>
+        <h2 id="waysTitle">Browse, then call to order.</h2>
       </div>
       <div class="ways">
         <article class="way">
@@ -944,15 +946,15 @@
         <article class="way">
           <figure class="arch"><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Grilled fish dish" width="480" height="640" loading="lazy"></figure>
           <p class="way-num">II</p>
-          <h3>Order ahead</h3>
-          <p>Order online for pickup and pay securely with a debit or credit card, or at the counter.</p>
-          <a href="#menu" class="link-caps">Start an order <span aria-hidden="true">→</span></a>
+          <h3>Call ahead</h3>
+          <p>Build your cart on the menu, then call us and tell our staff what you'd like.</p>
+          <a href="tel:+13474974002" class="link-caps">Call (347) 497-4002 <span aria-hidden="true">→</span></a>
         </article>
         <article class="way">
           <figure class="arch"><img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Fresh seafood on ice" width="480" height="640" loading="lazy"></figure>
           <p class="way-num">III</p>
-          <h3>Take the catch home</h3>
-          <p>Fresh fish and shellfish, priced by the pound or by the piece. Or pick one from the case and we'll grill it for you to eat here.</p>
+          <h3>Enjoy the catch here</h3>
+          <p>Choose fresh fish or shellfish from the case. We'll grill it for you to enjoy here.</p>
           <a href="#market" class="link-caps">The fish market <span aria-hidden="true">→</span></a>
         </article>
       </div>
@@ -969,7 +971,7 @@
       <div class="home-menu-cols" id="homeMenuPreview"></div>
       <div class="home-menu-cta">
         <a href="#menu" class="btn btn-solid">See the full menu</a>
-        <a href="rimal-menu.html" class="link-caps" target="_blank" rel="noopener">Printable menu<span class="visually-hidden"> (opens in a new tab)</span></a>
+        <a class='link-caps' href='/rimal-menu' rel='noopener' target='_blank'>Printable menu<span class="visually-hidden"> (opens in a new tab)</span></a>
       </div>
       <p class="home-menu-note">Prices and availability can change.</p>
     </div>
@@ -984,8 +986,8 @@
         <div class="section-eyebrow">Our Story</div>
         <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">قصتنا</p>
         <h2>A Table by the Water, In Spirit</h2>
-        <p>Rimal Seafood is a brand-new arrival to Brooklyn, opening its doors in 2026 with one belief: seafood should taste like the sea it came from — whether it's plated at our table or wrapped up from our fish market case.</p>
-        <p>Every fillet, shell, and claw is sourced within 24 hours of landing. Our kitchen handles it with a light touch for the dining room, and our market counter cleans, scales, and cuts it fresh to order for cooking at home.</p>
+        <p>Rimal Seafood is a brand-new arrival to Brooklyn, opening its doors in 2026 with one belief: seafood should taste like the sea it came from, freshly prepared and enjoyed at our table.</p>
+        <p>Every fillet, shell, and claw is sourced within 24 hours of landing. Choose fresh fish or shellfish from our market case, and our team will prepare it for you to enjoy here.</p>
         <div class="stat-row">
           <div class="stat"><h3>2026</h3><span>Newly Opened</span></div>
           <div class="stat"><h3>24h</h3><span>Dock to Table</span></div>
@@ -1022,12 +1024,12 @@
           <p class="lede">Order ahead for pickup or from your table. Pay securely online with a debit or credit card, or pay at the counter or table.</p>
           <ul class="menu-facts">
             <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-info="hours">Daily 12:00 PM – 9:00 PM</span></li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1-2-2"/></svg><a data-info="phone" href="tel:+13474974004">(347) 497-4004</a></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1-2-2"/></svg><a data-info="phone" href="tel:+13474974002">(347) 497-4002</a></li>
           </ul>
         </div>
         <div class="menu-print">
           <img src="rimal-menu-qr.png" width="88" height="88" loading="lazy" alt="QR code that opens the Rimal Seafood menu">
-          <p>Scan to open the menu on your phone.<br><a href="rimal-menu.html?print=1" target="_blank" rel="noopener">Print the menu<span class="visually-hidden"> (opens in a new tab)</span></a></p>
+          <p>Scan to open the menu on your phone.<br><a href='/rimal-menu?print=1' rel='noopener' target='_blank'>Print the menu<span class="visually-hidden"> (opens in a new tab)</span></a></p>
         </div>
       </div>
 
@@ -1043,7 +1045,7 @@
       <p class="menu-status" id="menuStatus" role="status" aria-live="polite"></p>
 
       <div id="menuCatalog"></div>
-      <noscript><p class="menu-empty">Online ordering needs JavaScript. Please call (347) 497-4004 to order.</p></noscript>
+      <noscript><p class="menu-empty">The menu cart needs JavaScript. Please call (347) 497-4002 to place your order.</p></noscript>
 
       <div class="menu-empty" id="menuEmpty" hidden>
         <h2>No dishes match “<span id="menuEmptyTerm"></span>”</h2>
@@ -1061,8 +1063,8 @@
       <div class="section-head">
         <div class="section-eyebrow">Fresh Fish Market</div>
         <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">سوق السمك</p>
-        <h2>Take the Catch Home</h2>
-        <p style="max-width:640px;margin:var(--s3) auto 0;color:var(--text-dim);">Fresh fish and shellfish to take home, priced by the pound or by the piece. Availability changes daily, so call <a href="tel:+13474974004" style="text-decoration:underline;text-underline-offset:3px;">(347) 497-4004</a> to check what's in.</p>
+        <h2>Enjoy the Catch Here</h2>
+        <p style="max-width:640px;margin:var(--s3) auto 0;color:var(--text-dim);">Choose fresh fish and shellfish from the case, add your picks to the cart, then call to confirm availability and place your order. Market weights and final prices are confirmed by our staff. <a href="tel:+13474974002" style="text-decoration:underline;text-underline-offset:3px;">(347) 497-4002</a></p>
       </div>
 
       <div class="menu-search-wrap">
@@ -1071,11 +1073,11 @@
       </div>
 
       <div class="menu-tabs" id="marketTabsRow">
-        <button class="market-tab-btn active" data-market-group="togo" type="button">To Go</button>
-        <button class="market-tab-btn" data-market-group="grill" type="button">To Grill &amp; Stay</button>
+        <button class="market-tab-btn" data-market-group="togo" type="button" hidden>To Go</button>
+        <button class="market-tab-btn active" data-market-group="grill" type="button">To Stay</button>
       </div>
 
-      <div class="market-tab-group active" id="market-togo">
+      <div class="market-tab-group" id="market-togo">
       <h3 class="market-subhead">Fin Fish <span class="ar" lang="ar" dir="rtl" aria-hidden="true">الأسماك</span></h3>
       <div class="market-grid" style="margin-bottom:var(--s7);">
       </div>
@@ -1087,7 +1089,7 @@
       <p class="market-note">Availability changes daily. Call ahead to check what's in today.</p>
       </div>
 
-      <div class="market-tab-group" id="market-grill">
+      <div class="market-tab-group active" id="market-grill">
         <p style="text-align:center;color:var(--text-dim);max-width:560px;margin:0 auto 32px;">Pick your fish from the case, tell us how you want it cooked, and eat it fresh off the grill right here — a $4.99 grill &amp; dine-in fee is added to the market price per item.</p>
       </div>
     </div>
@@ -1112,7 +1114,7 @@
         </div>
         <div>
           <h4>Phone</h4>
-          <p><a href="tel:+13474974004">(347) 497-4004</a></p>
+          <p><a href="tel:+13474974002">(347) 497-4002</a></p>
         </div>
       </div>
     </div>
@@ -1176,7 +1178,7 @@
           <div class="rewards-actions">
             <button class="btn" id="signOutBtn" type="button">Sign Out</button>
           </div>
-          <p style="color:var(--text-dim);font-size:.72rem;margin-top:24px;">Rule: every 5 purchases earns a free gift platter. A purchase is added to your account automatically once our staff marks your order paid, using the phone number on the order. <a href="privacy.html#rewards">Rewards rules and privacy</a></p>
+          <p style="color:var(--text-dim);font-size:.72rem;margin-top:24px;">Rule: every 5 purchases earns a free gift platter. A purchase is added to your account automatically once our staff marks your order paid, using the phone number on the order. <a href='/privacy#rewards'>Rewards rules and privacy</a></p>
         </div>
       </div>
     </div>
@@ -1313,6 +1315,7 @@
                 <optgroup label="Restaurant Menu">
                   <option value="menu_lunch">Menu — Lunch Special</option>
                   <option value="menu_mains">Menu — Main Plates</option>
+                  <option value="menu_catch">Menu — Catch Your Plate</option>
                   <option value="menu_sides">Menu — Sides</option>
                   <option value="menu_salads">Menu — Salads</option>
                   <option value="menu_specials">Menu — Specials</option>
@@ -1324,6 +1327,18 @@
                   <option value="market_shellfish">Fresh Market — Shellfish &amp; More</option>
                 </optgroup>
               </select>
+            </div>
+            <div id="newItemAvailabilityWrap">
+              <label for="newItemAvailability">Available for</label>
+              <select id="newItemAvailability" class="admin-input">
+                <option value="both">To Go and To Stay</option>
+                <option value="togo">To Go only</option>
+                <option value="stay">To Stay only</option>
+              </select>
+            </div>
+            <div id="newItemAvailabilityFixed" hidden>
+              <label>Available for</label>
+              <p style="font-size:.88rem;margin:0;padding:9px 0;">To Stay only</p>
             </div>
             <div>
               <label for="newItemPrice">Price ($)</label>
@@ -1454,7 +1469,7 @@
         <ul>
           <li><a href="https://www.google.com/maps/search/?api=1&amp;query=7812+5th+Ave,+Brooklyn,+NY+11209" target="_blank" rel="noopener">7812 5th Ave<br>Brooklyn, NY 11209<span class="visually-hidden"> (opens Google Maps)</span></a></li>
           <li>Open daily, <span data-hours-range>12:00 PM – 9:00 PM</span></li>
-          <li><a href="tel:+13474974004">(347) 497-4004</a></li>
+          <li><a href="tel:+13474974002">(347) 497-4002</a></li>
         </ul>
       </div>
       <div>
@@ -1470,7 +1485,7 @@
     </div>
     <div class="footer-bottom">
       <span>© 2026 Rimal Seafood</span>
-      <a href="privacy.html">Privacy &amp; Accessibility</a>
+      <a href='/privacy'>Privacy &amp; Accessibility</a>
       <a href="#admin">Manager</a>
     </div>
   </div>
@@ -1498,36 +1513,18 @@
       <div class="sum-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
       <div class="sum-row" id="cartDiscountRow" hidden><span>Rewards discount</span><span id="cartDiscount">-$0.00</span></div>
       <div class="sum-row"><span>Sales tax (8.875%)</span><span id="cartTax">$0.00</span></div>
-      <p class="cart-note" id="cartTaxNote" hidden>Raw fish market items to go aren't taxed. Prepared food is.</p>
+      <p class="cart-note" id="cartTaxNote" hidden>Fresh Fish Market items prepared to enjoy here are taxed as prepared food.</p>
       <div class="sum-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
-      <form class="cart-form" id="orderForm" novalidate>
-        <div class="field">
-          <label for="orderNameInput">Name <span class="hint">(optional)</span></label>
-          <input class="field-input" id="orderNameInput" type="text" autocomplete="name" maxlength="60">
-        </div>
-        <div class="field">
-          <label for="orderPhoneInput">Phone <span class="hint">(optional)</span></label>
-          <input class="field-input" id="orderPhoneInput" type="tel" autocomplete="tel" inputmode="tel" aria-describedby="orderPhoneHint">
-        </div>
-        <p class="cart-note field-full" id="orderPhoneHint" style="margin-top:-6px;">Add your phone to count this order toward Rimal Rewards.</p>
+      <div class="cart-form" id="orderForm">
         <div class="field field-full">
-          <label for="orderTableSelect">Pickup or table</label>
+          <label for="orderTableSelect">Pickup or dining in</label>
           <select class="field-select" id="orderTableSelect"><option value="">Pickup at the counter</option></select>
         </div>
-      </form>
+      </div>
       <div class="form-error" id="orderError" role="alert" hidden></div>
-      <button class="btn btn-solid btn-block" id="placeOrderBtn" type="submit" form="orderForm">Place order</button>
-      <button class="btn btn-block" id="payOnlineBtn" type="button" disabled>Pay online by debit or credit card</button>
-      <p class="cart-note" id="cardPaymentNote" role="status" aria-live="polite">Online card checkout is not configured yet.</p>
-      <p class="cart-note" style="text-align:center;">Your order goes straight to the kitchen. Pay at the counter or at your table.</p>
-      <p class="cart-call">Prefer to order by phone? <a id="callOrderBtn" href="tel:+13474974004">Call (347) 497-4004</a></p>
+      <a class="btn btn-solid btn-block" id="placeOrderBtn" href="tel:+13474974002" aria-label="Call Rimal Seafood at 347-497-4002 to place your order">Call (347) 497-4002 to place order</a>
+      <p class="cart-note" style="text-align:center;">This cart is saved only on this device and is not sent to us. Tell our staff your selections when you call; final market weights and totals are confirmed by staff. No online order submission or payment.</p>
     </div>
-  </div>
-  <div class="cart-confirm" id="cartConfirm" hidden tabindex="-1">
-    <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-    <h3>Order sent</h3>
-    <p id="cartConfirmDetail"></p>
-    <button class="btn" id="cartConfirmClose" type="button">Start a new order</button>
   </div>
 </dialog>
 

@@ -20,7 +20,6 @@ window.rimalCsvSafe = function(cell){
   var s = String(cell == null ? '' : cell);
   return (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) ? "'" + s : s;
 };
-
 window.rimalCopyNode = function(node){
   var t = document.createElement('template');
   t.innerHTML = node.outerHTML;
@@ -35,7 +34,7 @@ window.rimalCopyNode = function(node){
       window.supabase && window.supabase.createClient) {
     window.rimalDb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
   } else {
-    console.warn('Rimal Seafood: Supabase is not configured yet (see config.js). Online ordering will not reach the kitchen until it is set up.');
+    console.warn('Rimal Seafood: Supabase is not configured yet (see config.js). Live menu, hours and Rewards features may be unavailable.');
   }
 })();
 
@@ -209,8 +208,8 @@ window.rimalCopyNode = function(node){
 })();
 
 (function(){
-  // Fish Market "To Go" cards, rendered from RIMAL_MARKET (menu-data.js) before
-  // the grill tab copies them and before the Manager tools scan them.
+  // Fish Market source cards, rendered from RIMAL_MARKET before the manager
+  // tools scan and the "To Stay" tab copies them.
   var data = window.RIMAL_MARKET || [];
   var grids = document.querySelectorAll('#market-togo .market-grid');
   function esc(s){ return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -218,16 +217,14 @@ window.rimalCopyNode = function(node){
     var grid = grids[gi];
     if (!grid) return;
     grid.innerHTML = group.items.map(function(it){
-      var id = 'mq-' + it.name.replace(/\W+/g, '-');
-      var step = it.step || (it.unit === 'lb' ? 0.5 : 1);
       return '<div class="market-card" data-name="' + esc(it.name) + '" data-price="' + it.price + '" data-unit="' + esc(it.unit) + '">' +
         (it.photo ? '<img src="' + esc(window.rimalPhotoUrl(it.photo, 480)) + '" alt="' + esc(it.name) + '" width="480" height="360" loading="lazy" decoding="async">' : '') +
         '<div class="market-card-body"><h4>' + esc(it.name) + '</h4>' +
         '<div class="menu-price">' + window.rimalMoney(it.price) + (it.unit ? '/' + esc(it.unit) : '') + '</div>' +
-        '<div class="qty-row"><label class="visually-hidden" for="' + id + '">' + (it.unit === 'lb' ? 'Pounds of ' : it.unit === 'dz' ? 'Dozens of ' : 'Quantity of ') + esc(it.name) + '</label>' +
-        '<input id="' + id + '" type="number" class="qty-input" value="' + (it.qty || 1) + '" min="' + step + '" step="' + step + '" inputmode="decimal">' +
+        '<div class="qty-row"><label class="visually-hidden" for="market-qty-' + gi + '-' + esc(it.name).replace(/[^a-zA-Z0-9_-]/g, '-') + '">Quantity of ' + esc(it.name) + (it.unit ? ' in ' + esc(it.unit) : '') + '</label>' +
+        '<input class="qty-input" id="market-qty-' + gi + '-' + esc(it.name).replace(/[^a-zA-Z0-9_-]/g, '-') + '" type="number" min="' + (it.step || 1) + '" step="' + (it.step || 1) + '" value="' + (it.step || 1) + '" inputmode="decimal">' +
         (it.unit ? '<span class="qty-unit">' + esc(it.unit) + '</span>' : '') +
-        '<button class="btn btn-solid btn-cart" type="button" data-add>Add</button></div></div></div>';
+        '<button class="btn btn-solid btn-cart" type="button" data-add aria-label="Add ' + esc(it.name) + ' to order">Add to order</button></div></div></div>';
     }).join('');
   });
 })();
@@ -237,9 +234,7 @@ window.rimalCopyNode = function(node){
   var source = document.getElementById('market-togo');
   var dest = document.getElementById('market-grill');
 
-  // Builds the "To Grill & Stay" tab as a copy of "To Go" with the grill fee
-  // added. Called once at load and again whenever manager-added market items
-  // are loaded, so the two tabs always list the same fish.
+  // Builds the market's dine-in tab from its source cards and adds the grill fee.
   function buildGrillTab(){
     if (!source || !dest) return;
     Array.prototype.slice.call(dest.querySelectorAll('[data-grill-clone]')).forEach(function(el){ el.remove(); });
@@ -252,6 +247,9 @@ window.rimalCopyNode = function(node){
       }
       if (clone.classList && clone.classList.contains('market-grid')) {
         Array.prototype.forEach.call(clone.querySelectorAll('.market-card[data-name]'), function(card){
+          var serviceMode = card.getAttribute('data-service-mode') || 'stay';
+          if (serviceMode === 'togo') { card.remove(); return; }
+          card.removeAttribute('hidden');
           var origPrice = parseFloat(card.getAttribute('data-price'));
           var unit = card.getAttribute('data-unit') || '';
           var newPrice = origPrice + GRILL_FEE;
@@ -266,21 +264,12 @@ window.rimalCopyNode = function(node){
             opt.setAttribute('data-price', p.toFixed(2));
             opt.textContent = opt.value + ' — $' + p.toFixed(2);
           });
-          var qtyRow = card.querySelector('.qty-row');
-          if (qtyRow) {
-            var sel = document.createElement('select');
-            sel.className = 'side-select-fixed';
-            sel.setAttribute('aria-label', 'How should we cook the ' + card.getAttribute('data-name') + '?');
-            ['Grilled','Fried','Sautéed','Middle Eastern Style'].forEach(function(style){
-              var opt = document.createElement('option');
-              opt.textContent = style;
-              sel.appendChild(opt);
-            });
-            qtyRow.parentNode.insertBefore(sel, qtyRow);
-          }
         });
       }
       dest.appendChild(clone);
+    });
+    source.querySelectorAll('.market-card[data-name]').forEach(function(card){
+      card.hidden = (card.getAttribute('data-service-mode') || 'stay') === 'stay';
     });
   }
   window.rimalBuildGrillTab = buildGrillTab;
@@ -325,7 +314,7 @@ window.rimalCopyNode = function(node){
     grids.forEach(function(grid){
       var gridHasMatch = false;
       grid.querySelectorAll('.market-card').forEach(function(card){
-        var match = card.textContent.toLowerCase().indexOf(term) !== -1;
+        var match = !card.hidden && card.textContent.toLowerCase().indexOf(term) !== -1;
         card.classList.toggle('search-hide', !match);
         if (match) { visibleCount++; gridHasMatch = true; }
       });
@@ -381,7 +370,7 @@ window.rimalCopyNode = function(node){
           return '<option value="' + esc(o.label) + '" data-price="' + Number(o.price) + '"' + builtinAttr + (i === 0 ? ' selected' : '') + '>' + esc(o.label) + ' — ' + money(o.price) + '</option>';
         }).join('') + '</select>'
       : '';
-    return '<article class="menu-item" ' + idAttr + ' data-name="' + esc(item.name) + '" data-price="' + base + '" data-unit="">' +
+    return '<article class="menu-item" ' + idAttr + ' data-name="' + esc(item.name) + '" data-price="' + base + '" data-unit="" data-service-mode="' + esc(item.serviceMode || item.service_mode || 'both') + '">' +
       (img ? '<img class="menu-item-img" src="' + esc(img) + '" alt="" width="320" height="240" loading="lazy" decoding="async">' : '') +
       '<div class="mi-placeholder" aria-hidden="true"></div>' +
       '<div class="menu-item-info">' +
@@ -390,7 +379,7 @@ window.rimalCopyNode = function(node){
         (item.desc ? '<p>' + esc(item.desc) + '</p>' : '') +
         sizeHtml +
         '<div class="item-actions"><span class="mi-meta"></span>' +
-          '<button type="button" class="btn btn-solid mi-add" data-menu-add>Add</button></div>' +
+          '<button class="btn btn-solid mi-add" type="button" data-menu-add aria-label="Add ' + esc(item.name) + ' to order">Add to order</button></div>' +
       '</div></article>';
   }
 
@@ -426,24 +415,23 @@ window.rimalCopyNode = function(node){
     return needsOptions(builtinFor(card)) || cardSizes(card).length > 1;
   }
 
-  // Keeps buttons, prices and chips in step with the cards on the page
+  // Keeps prices and chips in step with the cards on the page
   // (Manager edits can rename, re-price, remove or add cards after load).
   function syncCards(){
     catalog.querySelectorAll('.menu-item[data-name]').forEach(function(card){
       var name = card.getAttribute('data-name');
-      var btn = card.querySelector('[data-menu-add]');
       var meta = card.querySelector('.mi-meta');
       var item = builtinFor(card);
-      var dialog = cardNeedsDialog(card);
       var sizes = cardSizes(card);
       var orig = itemsById[card.getAttribute('data-item-id')];
       var img = card.querySelector('img.menu-item-img');
       if (img) { img.classList.toggle('is-stale', !!(orig && !item && orig.photo && img.getAttribute('src') === window.rimalPhotoUrl(orig.photo, 320))); }
-      if (btn) {
-        btn.textContent = dialog ? 'Choose options' : 'Add';
-        btn.setAttribute('aria-label', dialog ? 'Choose options for ' + name : 'Add ' + name + ' to your order');
+      if (meta) {
+        var details = item && item.sides ? 'Includes ' + item.sides + ' sides' : (sizes.length === 1 ? sizes[0].label : '');
+        var serviceMode = card.getAttribute('data-service-mode') || 'both';
+        var availability = serviceMode === 'togo' ? 'To Go only' : (serviceMode === 'stay' ? 'To Stay only' : '');
+        meta.textContent = [details, availability].filter(Boolean).join(' · ');
       }
-      if (meta) { meta.textContent = item && item.sides ? 'Includes ' + item.sides + ' sides' : (sizes.length === 1 ? sizes[0].label : ''); }
       var priceEl = card.querySelector('.menu-price');
       if (priceEl && sizes.length > 1) {
         var min = Math.min.apply(null, sizes.map(function(s){ return s.price; }));
@@ -641,13 +629,17 @@ window.rimalCopyNode = function(node){
 
   var cart = [];
   (function load(){
-    var saved = [];
-    try { saved = JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch(e){ saved = []; }
-    if (!Array.isArray(saved)) saved = [];
-    cart = saved.filter(function(l){ return l && l.v === CART_VERSION && l.ref && isFinite(l.price) && l.qty > 0; });
-    if (saved.length > cart.length) {
-      notice = 'Our menu and prices were updated, so items saved from an earlier visit were removed. Please add them again.';
-    }
+    try {
+      var saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      if (Array.isArray(saved)) {
+        cart = saved.filter(function(line){
+          return line && line.v === CART_VERSION && line.ref && typeof line.ref.kind === 'string' &&
+            typeof line.base === 'string' && typeof line.name === 'string' &&
+            isFinite(Number(line.price)) && Number(line.price) >= 0 &&
+            isFinite(Number(line.qty)) && Number(line.qty) > 0;
+        }).slice(0, 100);
+      }
+    } catch(e) { cart = []; }
   })();
 
   var $ = function(id){ return document.getElementById(id); };
@@ -657,11 +649,7 @@ window.rimalCopyNode = function(node){
   var cartDiscountRow = $('cartDiscountRow'), cartDiscountEl = $('cartDiscount');
   var cartBadge = $('cartBadge'), cartCount = $('cartCount'), cartTableBanner = $('cartTableBanner'), cartNotice = $('cartNotice');
   var cartBar = $('cartBar'), cartBarBtn = $('cartBarBtn'), cartBarLabel = $('cartBarLabel'), cartBarTotal = $('cartBarTotal');
-  var orderForm = $('orderForm'), orderNameInput = $('orderNameInput'), orderPhoneInput = $('orderPhoneInput');
   var orderTableSelect = $('orderTableSelect'), orderError = $('orderError'), placeOrderBtn = $('placeOrderBtn');
-  var payOnlineBtn = $('payOnlineBtn'), cardPaymentNote = $('cardPaymentNote');
-  var stripeCheckoutReady = false, cardCheckoutBusy = false;
-  var cartConfirm = $('cartConfirm'), cartConfirmDetail = $('cartConfirmDetail'), cartConfirmClose = $('cartConfirmClose');
   var toastEl = $('toast');
 
   // Delivery (not offered yet: the page has no delivery controls and the
@@ -956,18 +944,8 @@ window.rimalCopyNode = function(node){
     cartTaxEl.textContent = money(tt.tax);
     cartTotalEl.textContent = money(tt.total);
     cartTaxNote.hidden = !cart.some(function(l){ return l.taxable === false; });
-    if (!placeOrderBtn.disabled) { placeOrderBtn.textContent = 'Place order · ' + money(tt.total); }
-    if (payOnlineBtn) {
-      payOnlineBtn.textContent = 'Pay online by debit or credit card · ' + money(tt.total);
-      payOnlineBtn.disabled = !stripeCheckoutReady || cardCheckoutBusy || empty || !menuReady || tt.discount > 0;
-      if (tt.discount > 0 && stripeCheckoutReady) {
-        cardPaymentNote.textContent = 'Online checkout cannot apply a rewards discount yet. Place this order and pay at the counter or your table.';
-      } else if (!stripeCheckoutReady) {
-        cardPaymentNote.textContent = 'Online card checkout is not configured yet.';
-      } else if (!cardCheckoutBusy) {
-        cardPaymentNote.textContent = 'Secure checkout hosted by Stripe. Pay at pickup or your table is still available.';
-      }
-    }
+    placeOrderBtn.textContent = 'Call (347) 497-4002 to place order';
+    placeOrderBtn.setAttribute('aria-label', 'Call Rimal Seafood at 347-497-4002 to place your order');
 
     var count = itemCount();
     var countText = count + (count === 1 ? ' item' : ' items');
@@ -1011,7 +989,6 @@ window.rimalCopyNode = function(node){
   // ---------- drawer ----------
   var cartOpener = null;
   function openCart(){
-    fillAccountIntoCart();
     hideToast();
     if (!cartDrawer.open) { cartOpener = document.activeElement; cartDrawer.showModal(); }
   }
@@ -1021,7 +998,6 @@ window.rimalCopyNode = function(node){
   cartClose.addEventListener('click', closeCart);
   cartDrawer.addEventListener('click', function(e){ if (e.target === cartDrawer) closeCart(); });
   cartDrawer.addEventListener('close', function(){
-    if (!cartConfirm.hidden) { cartConfirm.hidden = true; cartMain.hidden = false; }
     if (notice) { notice = ''; render(); }
     var back = cartOpener && document.contains(cartOpener) && cartOpener.offsetParent ? cartOpener : cartToggle;
     cartOpener = null;
@@ -1062,7 +1038,17 @@ window.rimalCopyNode = function(node){
   var srStatus = el('div', 'visually-hidden'); srStatus.setAttribute('role', 'status'); document.body.appendChild(srStatus);
   function announce(msg){ srStatus.textContent = ''; setTimeout(function(){ srStatus.textContent = msg; }, 30); }
 
-  orderTableSelect.addEventListener('change', function(){ setTable(orderTableSelect.value); render(); });
+  orderTableSelect.addEventListener('change', function(){
+    setTable(orderTableSelect.value);
+    render();
+    var modeError = cartServiceModeError(orderTableSelect.value);
+    if (modeError) {
+      orderError.textContent = modeError;
+      orderError.hidden = false;
+    } else {
+      orderError.hidden = true;
+    }
+  });
 
   // ---------- item options dialog ----------
   var dlg = $('itemDialog'), dlgForm = $('itemDialogForm'), dlgTitle = $('itemDialogTitle'), dlgPrice = $('itemDialogPrice');
@@ -1273,7 +1259,7 @@ window.rimalCopyNode = function(node){
     confirmAdded(card, line);
   });
 
-  // Fish Market cards ("To Go" by weight, and "To Grill & Stay").
+  // Fish Market cards in the "To Stay" tab.
   function updateSizePrice(sel){
     var card = sel.closest('.market-card[data-name]');
     var priceEl = card && card.querySelector('.menu-price');
@@ -1321,268 +1307,28 @@ window.rimalCopyNode = function(node){
     confirmAdded(card, line);
   });
 
-  // ---------- ordering ----------
-  function fillAccountIntoCart(){
-    try {
-      var sessionPhone = localStorage.getItem('rimalRewardsSession');
-      if (!sessionPhone) return;
-      if (orderPhoneInput && !orderPhoneInput.value) { orderPhoneInput.value = sessionPhone; }
-      if (orderNameInput && !orderNameInput.value) {
-        var pendingName = localStorage.getItem('rimalPendingName');
-        if (pendingName) { orderNameInput.value = pendingName; }
+  // The cart is a local checklist; customers confirm orders by phone.
+  function cartServiceModeError(table){
+    for (var i = 0; i < cart.length; i++) {
+      var line = cart[i];
+      if (line.ref.kind === 'market') {
+        return 'Fresh Fish Market selections are only available To Stay. Remove To Go market items or call us to discuss options.';
       }
-    } catch(e){}
-  }
-  fillAccountIntoCart();
-
-  // The ids of orders placed from this device. An order id is unguessable, so
-  // it works as the key to that order's history (get_my_orders).
-  function rememberOrder(id){
-    try {
-      var ids = JSON.parse(localStorage.getItem('rimalMyOrders') || '[]');
-      if (!Array.isArray(ids)) { ids = []; }
-      ids.unshift(id);
-      localStorage.setItem('rimalMyOrders', JSON.stringify(ids.slice(0, 20)));
-    } catch(e){}
-  }
-
-  function newOrderId(){
-    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-      var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-    });
-  }
-
-  function stripeOrderLines(){
-    return cart.map(function(line){
-      return {
-        ref: {
-          kind: line.ref.kind,
-          id: line.ref.id || '',
-          name: line.ref.name || '',
-          custom: line.ref.custom === true
-        },
-        size: line.size || '',
-        choices: line.choices || {},
-        sides: line.sides || [],
-        style: line.style || '',
-        qty: line.qty
-      };
-    });
-  }
-
-  // Sends the order to the shared database (Supabase) so it reaches the
-  // Manager Dashboard. Customers may insert orders but not read them back,
-  // so the id is generated here instead of being returned by the database.
-  function submitOrder(){
-    if (cart.length === 0) return Promise.resolve(null);
-    if (!window.rimalDb) {
-      return Promise.reject(new Error('We couldn\'t reach the kitchen right now.'));
+      if (line.ref.kind === 'grill' && !table) {
+        return 'Select a table for Fresh Fish Market items To Stay, or call us to confirm your plans.';
+      }
+      if (line.ref.kind !== 'menu') continue;
+      var card = findCard(line.ref);
+      var mode = card && card.getAttribute('data-service-mode') || 'both';
+      if (mode === 'stay' && !table) {
+        return 'Select a table for items marked To Stay only, or call us to confirm your plans.';
+      }
+      if (mode === 'togo' && table) {
+        return 'Clear the table selection for items marked To Go only, or call us to confirm your plans.';
+      }
     }
-    var table = orderTableSelect.value;
-    setTable(table);
-    var phone = orderPhoneInput.value.replace(/\D/g, '');
-    var custName = orderNameInput.value.trim();
-    var tt = totals();
-    var id = newOrderId();
-    // Fish Market "To Go" items carry their stock name, so the shared stock
-    // count goes down when the manager marks the order paid (mark_order_paid).
-    var itemsForDb = cart.map(function(i){
-      var row = { name: i.name, qty: i.qty, unit: i.unit, price: i.price, taxable: i.taxable !== false };
-      if (i.ref.kind === 'market') { row.stock = i.base; }
-      return row;
-    });
-
-    return window.rimalDb.from('orders').insert({
-      id: id,
-      customer_name: custName || null,
-      phone: phone || null,
-      table_number: table || null,
-      items: itemsForDb,
-      subtotal: round2(tt.subtotal),
-      discount: round2(tt.discount),
-      tax: round2(tt.tax),
-      total: round2(tt.total),
-      status: 'Processing'
-    }).then(function(res){
-      if (res.error) { throw res.error; }
-      // Rewards are credited later, when the manager marks the order paid.
-      if (phone) { try { localStorage.setItem('rimalRewardsSession', phone); } catch(e){} }
-      rememberOrder(id);
-      cart = [];
-      rewardDiscount = 0;
-      render();
-      return { id: id, table: table, total: tt.total, hasRewardsPhone: !!phone };
-    });
+    return '';
   }
-
-  function setPlacing(on){
-    placeOrderBtn.disabled = on;
-    placeOrderBtn.setAttribute('aria-busy', String(on));
-    if (on) {
-      placeOrderBtn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Sending your order…';
-    } else {
-      placeOrderBtn.textContent = 'Place order · ' + money(totals().total);
-    }
-  }
-
-  function setCardBusy(on){
-    cardCheckoutBusy = on;
-    if (payOnlineBtn) {
-      payOnlineBtn.setAttribute('aria-busy', String(on));
-      payOnlineBtn.textContent = on ? 'Opening secure checkout…' : 'Pay online by debit or credit card · ' + money(totals().total);
-    }
-    render();
-  }
-
-  function validateCustomerFields(){
-    var digits = orderPhoneInput.value.replace(/\D/g, '');
-    if (orderPhoneInput.value.trim() && (digits.length < 10 || digits.length > 11)) {
-      orderPhoneInput.setAttribute('aria-invalid', 'true');
-      orderError.textContent = 'Please enter a 10-digit phone number, or leave it blank.';
-      orderError.hidden = false;
-      orderPhoneInput.focus();
-      return false;
-    }
-    orderPhoneInput.removeAttribute('aria-invalid');
-    orderError.hidden = true;
-    return true;
-  }
-
-  orderForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    if (cart.length === 0 || placeOrderBtn.disabled) return;
-    orderError.hidden = true;
-    if (!menuReady) {
-      orderError.textContent = 'Loading today\'s menu and prices. Please try again in a moment.';
-      orderError.hidden = false;
-      return;
-    }
-    if (!validateCustomerFields()) return;
-    setPlacing(true);
-    submitOrder().then(function(order){
-      setPlacing(false);
-      if (!order) return;
-      var detail = order.table
-        ? 'Table ' + order.table + ' · total ' + money(order.total) + '. Pay at your table.'
-        : 'Total ' + money(order.total) + '. Show this screen at the counter and pay there when you pick up.';
-      if (order.hasRewardsPhone) { detail += ' Once it\'s paid, this order counts toward your Rimal Rewards.'; }
-      cartConfirmDetail.textContent = detail;
-      cartMain.hidden = true;
-      cartConfirm.hidden = false;
-      cartConfirm.focus();
-    }).catch(function(err){
-      setPlacing(false);
-      // Database errors are technical, so customers get a plain message.
-      orderError.textContent = 'We couldn\'t send your order.' +
-        ' Your order is still here. Please try again, or call ' + (INFO.phoneDisplay || '(347) 497-4004') + '.';
-      orderError.hidden = false;
-      placeOrderBtn.focus();
-    });
-  });
-  if (payOnlineBtn) {
-    fetch('/.netlify/functions/stripe-config', { cache: 'no-store' })
-      .then(function(response){ return response.ok ? response.json() : null; })
-      .then(function(data){
-        stripeCheckoutReady = !!(data && data.enabled);
-        if (stripeCheckoutReady) cardPaymentNote.textContent = 'Secure checkout hosted by Stripe. Pay at pickup or your table is still available.';
-        render();
-      })
-      .catch(function(){ stripeCheckoutReady = false; render(); });
-
-    payOnlineBtn.addEventListener('click', function(){
-      if (!stripeCheckoutReady || cardCheckoutBusy || cart.length === 0 || !menuReady) return;
-      orderError.hidden = true;
-      if (!validateCustomerFields()) return;
-      var table = orderTableSelect.value;
-      setTable(table);
-      setCardBusy(true);
-      fetch('/.netlify/functions/stripe-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: orderNameInput.value.trim(),
-          phone: orderPhoneInput.value.replace(/\D/g, ''),
-          table: table,
-          items: stripeOrderLines()
-        })
-      }).then(function(response){
-        return response.json().then(function(data){
-          if (!response.ok) throw new Error(data && data.error ? data.error : 'Secure checkout is unavailable.');
-          return data;
-        });
-      }).then(function(data){
-        if (!data || typeof data.url !== 'string' || data.url.indexOf('https://checkout.stripe.com/') !== 0) {
-          throw new Error('Secure checkout did not return a valid payment link.');
-        }
-        var phone = orderPhoneInput.value.replace(/\D/g, '');
-        if (phone) { try { localStorage.setItem('rimalRewardsSession', phone); } catch(e){} }
-        window.location.assign(data.url);
-      }).catch(function(err){
-        setCardBusy(false);
-        cardPaymentNote.textContent = err.message || 'We could not start secure checkout. Your cart is unchanged.';
-      });
-    });
-  }
-  orderPhoneInput.addEventListener('input', function(){ orderPhoneInput.removeAttribute('aria-invalid'); });
-
-  // Stripe itself verifies the returned Checkout Session. This only updates
-  // the customer's screen/cart; the signed webhook alone marks the DB order paid.
-  (function handleStripeReturn(){
-    var query = new URLSearchParams(window.location.search);
-    var payment = query.get('payment');
-    var sessionId = query.get('session_id');
-    if (payment !== 'success' && payment !== 'cancelled') return;
-    if (payment === 'cancelled') {
-      var orderId = query.get('order_id');
-      fetch('/.netlify/functions/stripe-cancel', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: orderId || '' })
-      }).then(function(response){ return response.json(); }).then(function(data){
-        if (data && data.state === 'paid') {
-          stripeCheckoutReady = false;
-          render();
-          cardPaymentNote.textContent = 'Stripe shows this checkout was paid. Verifying your order; please do not submit payment again.';
-        } else {
-          cardPaymentNote.textContent = 'Checkout was closed. Your cart is still saved; check your email before trying again.';
-        }
-      }).catch(function(){
-        stripeCheckoutReady = false;
-        render();
-        cardPaymentNote.textContent = 'Checkout was closed or could not be verified. Your cart is saved; please check your email before trying again.';
-      });
-      openCart();
-      history.replaceState(null, '', window.location.pathname + window.location.hash);
-      return;
-    }
-    fetch('/.netlify/functions/stripe-status?session_id=' + encodeURIComponent(sessionId || ''), { cache: 'no-store' })
-      .then(function(response){ return response.json().then(function(data){ if (!response.ok) throw new Error(); return data; }); })
-      .then(function(data){
-        if (!data || !data.paid || !data.order_id) throw new Error();
-        rememberOrder(data.order_id);
-        cart = [];
-        rewardDiscount = 0;
-        render();
-        cartConfirmDetail.textContent = 'Stripe confirms your payment. Your order is being sent to the kitchen; the secure payment notification will update the order status shortly.';
-        cartMain.hidden = true;
-        cartConfirm.hidden = false;
-        openCart();
-        cartConfirm.focus();
-        history.replaceState(null, '', window.location.pathname + window.location.hash);
-      }).catch(function(){
-        stripeCheckoutReady = false;
-        render();
-        cardPaymentNote.textContent = 'We could not verify the payment yet. Please do not pay again; check your Stripe receipt or call ' + (INFO.phoneDisplay || '(347) 497-4004') + '.';
-        openCart();
-      });
-  })();
-
-  cartConfirmClose.addEventListener('click', function(){
-    cartConfirm.hidden = true;
-    cartMain.hidden = false;
-    closeCart();
-    if (window.rimalGoToPage) { window.rimalGoToPage('menu'); }
-  });
 
   window.rimalCart = {
     render: render,
@@ -1747,6 +1493,7 @@ window.rimalCopyNode = function(node){
   var CATS = {
     menu_lunch:       { sel: '#group-lunch .menu-grid' },
     menu_mains:       { sel: '#group-mains .menu-grid' },
+    menu_catch:       { sel: '#group-catch .menu-grid' },
     menu_sides:       { sel: '#group-sides .menu-grid' },
     menu_salads:      { sel: '#group-sides .menu-grid' },
     menu_specials:    { sel: '#group-specials .menu-grid' },
@@ -1780,13 +1527,14 @@ window.rimalCopyNode = function(node){
     var order = {
       menu_lunch: 1,
       menu_mains: 2,
-      menu_sides: 3,
-      menu_salads: 4,
-      menu_specials: 5,
-      menu_drinks: 6,
-      menu_desserts: 7,
-      market_fish: 8,
-      market_shellfish: 9
+      menu_catch: 3,
+      menu_sides: 4,
+      menu_salads: 5,
+      menu_specials: 6,
+      menu_drinks: 7,
+      menu_desserts: 8,
+      market_fish: 9,
+      market_shellfish: 10
     };
     return order[cat] || 999;
   }
@@ -1886,6 +1634,7 @@ window.rimalCopyNode = function(node){
       var key = base, n = 2;
       while (seen[key]) { key = base + '#' + (n++); }
       seen[key] = true;
+      card.setAttribute('data-service-mode', sec.id.indexOf('market-') === 0 ? 'stay' : 'both');
       builtIns.push({ key: key, section: sec.label, card: card, pristine: cloneWithSelects(card), marker: null, removed: false, touched: false });
     });
   }
@@ -1914,6 +1663,11 @@ window.rimalCopyNode = function(node){
     var h4 = card.querySelector('h4');
     var priceEl = card.querySelector('.menu-price');
     var unit = card.getAttribute('data-unit') || '';
+    if (isMarket) {
+      card.setAttribute('data-service-mode', 'stay');
+    } else if (['both', 'togo', 'stay'].indexOf(ov.service_mode) !== -1) {
+      card.setAttribute('data-service-mode', ov.service_mode);
+    }
 
     if (ov.name && h4 && ov.name !== h4.textContent.trim()) {
       h4.textContent = ov.name;
@@ -1999,24 +1753,25 @@ window.rimalCopyNode = function(node){
     var opts = cleanOptions(item.options);
     var basePrice = opts.length ? Number(opts[0].price) : Number(item.price);
     var unit = cat.market ? (item.unit || '') : '';
+    var step = unit === 'lb' ? 0.5 : 1;
     var img = item.image_url ? esc(item.image_url) : '';
     var sizeHtml = opts.length ? '<select class="size-select">' + optionsHtml(opts) + '</select>' : '';
-    var attrs = 'data-custom-item="' + esc(item.id) + '" data-name="' + esc(item.name) + '" data-price="' + basePrice + '" data-unit="' + esc(unit) + '"';
+    var attrs = 'data-custom-item="' + esc(item.id) + '" data-name="' + esc(item.name) + '" data-price="' + basePrice + '" data-unit="' + esc(unit) + '"' +
+      ' data-service-mode="' + (cat.market ? 'stay' : esc(item.service_mode || 'both')) + '"';
     if (cat.market) {
-      var step = unit === 'lb' ? 0.5 : 1;
       return '<div class="market-card" ' + attrs + '>' +
         (img ? '<img src="' + img + '" alt="' + esc(item.name) + '" width="480" height="360" loading="lazy" decoding="async">' : '') +
         '<div class="market-card-body"><h4>' + esc(item.name) + '</h4>' +
         (item.description ? '<p>' + esc(item.description) + '</p>' : '') +
         sizeHtml +
         '<div class="menu-price">' + fmt(basePrice) + (unit ? '/' + esc(unit) : '') + '</div>' +
-        '<div class="qty-row"><input type="number" class="qty-input" value="1" min="' + step + '" step="' + step + '">' +
+        '<div class="qty-row"><input class="qty-input" type="number" min="' + step + '" step="' + step + '" value="' + step + '" inputmode="decimal" aria-label="Quantity of ' + esc(item.name) + (unit ? ' in ' + esc(unit) : '') + '">' +
         (unit ? '<span class="qty-unit">' + esc(unit) + '</span>' : '') +
-        '<button class="btn btn-solid btn-cart" type="button" data-add>Add</button></div></div></div>';
+        '<button class="btn btn-solid btn-cart" type="button" data-add aria-label="Add ' + esc(item.name) + ' to order">Add to order</button></div></div></div>';
     }
     return window.rimalMenu.cardHtml({
       customId: item.id, name: item.name, price: basePrice, desc: item.description,
-      imageUrl: item.image_url || '', sizes: opts
+      imageUrl: item.image_url || '', sizes: opts, serviceMode: item.service_mode || 'both'
     });
   }
 
@@ -2140,6 +1895,8 @@ window.rimalCopyNode = function(node){
   // ---------- Form ----------
   var unitWrap = document.getElementById('newItemUnitWrap');
   var unitEl = document.getElementById('newItemUnit');
+  var availabilityWrap = document.getElementById('newItemAvailabilityWrap');
+  var availabilityEl = document.getElementById('newItemAvailability');
   var optionsEl = document.getElementById('newItemOptions');
   var photoEl = document.getElementById('newItemPhoto');
   var previewEl = document.getElementById('newItemPhotoPreview');
@@ -2151,6 +1908,7 @@ window.rimalCopyNode = function(node){
   var resetBtn = document.getElementById('newItemResetBtn');
   var titleEl = document.getElementById('newItemFormTitle');
   var fixedCatEl = document.getElementById('newItemCategoryFixed');
+  var availabilityFixedEl = document.getElementById('newItemAvailabilityFixed');
   var nameEl = document.getElementById('newItemName');
   var descEl = document.getElementById('newItemDesc');
   var priceEl = document.getElementById('newItemPrice');
@@ -2163,8 +1921,12 @@ window.rimalCopyNode = function(node){
 
   function syncUnit(){
     var cat = CATS[categoryEl.value];
-    var builtinMarketEdit = editing && editing.kind === 'builtin';
+    var builtinMarketEdit = editing && editing.kind === 'builtin' && editing.entry.key.indexOf('market-') === 0;
     unitWrap.hidden = builtinMarketEdit || !(cat && cat.market);
+    var marketItem = builtinMarketEdit || !!(cat && cat.market);
+    availabilityWrap.hidden = marketItem;
+    availabilityFixedEl.hidden = !marketItem;
+    if (marketItem) { availabilityFixedEl.textContent = 'To Stay only'; }
   }
   categoryEl.addEventListener('change', syncUnit);
 
@@ -2200,8 +1962,9 @@ window.rimalCopyNode = function(node){
     previewEl.hidden = true;
     previewEl.removeAttribute('src');
     removePhotoWrap.hidden = true;
-    fixedCatEl.hidden = true;
     categoryEl.hidden = false;
+    fixedCatEl.hidden = true;
+    availabilityEl.value = 'both';
     titleEl.textContent = 'Add a Menu or Fish Market Item';
     saveBtn.textContent = 'Add Item to Website';
     cancelBtn.hidden = true;
@@ -2225,10 +1988,14 @@ window.rimalCopyNode = function(node){
     if (row.kind === 'custom') {
       categoryEl.value = row.item.category;
       if (unitEl && row.item.unit) { unitEl.value = row.item.unit; }
+      availabilityEl.value = row.item.service_mode || 'both';
     } else {
       categoryEl.hidden = true;
-      fixedCatEl.hidden = false;
-      fixedCatEl.textContent = row.section + ' (stays in this section)';
+      document.getElementById('newItemCategoryFixed').hidden = false;
+      document.getElementById('newItemCategoryFixed').textContent = row.section + ' (stays in this section)';
+      if (row.entry.key.indexOf('market-') !== 0) {
+        availabilityEl.value = overrides[row.entry.key] && overrides[row.entry.key].service_mode || 'both';
+      }
       resetBtn.hidden = !overrides[row.entry.key];
     }
     syncUnit();
@@ -2293,8 +2060,10 @@ window.rimalCopyNode = function(node){
     var name = nameEl.value.replace(/[<>]/g, '').trim();
     var desc = descEl.value.replace(/[<>]/g, '').trim();
     var category = categoryEl.value;
-    var isMarket = !!(CATS[category] && CATS[category].market);
+    var isMarket = !!(CATS[category] && CATS[category].market) ||
+      !!(editing && editing.kind === 'builtin' && editing.entry.key.indexOf('market-') === 0);
     var unit = isMarket ? unitEl.value : null;
+    var serviceMode = isMarket ? 'stay' : availabilityEl.value;
 
     if (!name) { setStatus('Please enter the item name.', true); return; }
 
@@ -2323,7 +2092,8 @@ window.rimalCopyNode = function(node){
       if (!editing) {
         return saveCustomMenuItem(db, {
           name: name, description: desc || null, category: category, price: price, unit: unit,
-          options: options.length ? options : null, image_url: newUrl, display_order: getNextCustomDisplayOrder()
+          options: options.length ? options : null, image_url: newUrl, display_order: getNextCustomDisplayOrder(),
+          service_mode: serviceMode
         });
       }
       if (editing.kind === 'custom') {
@@ -2331,7 +2101,8 @@ window.rimalCopyNode = function(node){
         var nextUrl = newUrl || (removePhoto ? null : oldUrl);
         return saveCustomMenuItem(db, {
           name: name, description: desc || null, category: category, price: price, unit: unit,
-          options: options.length ? options : null, image_url: nextUrl, display_order: editing.item.display_order || getNextCustomDisplayOrder()
+          options: options.length ? options : null, image_url: nextUrl, display_order: editing.item.display_order || getNextCustomDisplayOrder(),
+          service_mode: serviceMode
         }, editing.item.id).then(function(res){
           if (!res.error && oldUrl && nextUrl !== oldUrl) { discardPhoto(oldUrl); }
           return res;
@@ -2341,10 +2112,12 @@ window.rimalCopyNode = function(node){
       var existing = overrides[key] || null;
       var oldOvUrl = existing ? existing.image_url : null;
       var nextOvUrl = newUrl || (removePhoto ? '' : oldOvUrl);
-      return db.from('menu_overrides').upsert({
+      var overridePayload = {
         item_key: key, name: name, description: desc, price: price, options: options,
         image_url: nextOvUrl == null ? null : nextOvUrl, removed: false, updated_at: new Date().toISOString()
-      }, { onConflict: 'item_key' }).then(function(res){
+      };
+      overridePayload.service_mode = serviceMode;
+      return db.from('menu_overrides').upsert(overridePayload, { onConflict: 'item_key' }).then(function(res){
         if (!res.error && oldOvUrl && nextOvUrl !== oldOvUrl) { discardPhoto(oldOvUrl); }
         return res;
       });
@@ -3076,7 +2849,7 @@ window.rimalCopyNode = function(node){
       '@media print{.r-print-btn{display:none;}}' +
       '</style></head><body>' +
       '<h1>RIMAL SEAFOOD</h1>' +
-      '<p class="r-sub">7812 5th Ave, Brooklyn, NY 11209<br>(347) 497-4004</p>' +
+      '<p class="r-sub">7812 5th Ave, Brooklyn, NY 11209<br>(347) 497-4002</p>' +
       '<div class="r-line"></div>' +
       '<div class="r-meta">Date: ' + new Date(order.created_at).toLocaleString() + '</div>' +
       '<div class="r-meta">Order #' + esc(String(order.id).slice(-6)) + '</div>' +
@@ -3318,7 +3091,7 @@ window.rimalCopyNode = function(node){
       var topItemsList = document.getElementById('topItemsList');
       topItemsList.innerHTML = '';
       if (topItems.length === 0) {
-        topItemsList.innerHTML = '<p class="admin-empty">No sales logged yet. Orders are logged when a customer taps "Place Order" in the cart.</p>';
+        topItemsList.innerHTML = '<p class="admin-empty">No sales have been recorded yet.</p>';
       } else {
         topItems.forEach(function(item){
           var row = document.createElement('div');

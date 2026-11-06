@@ -15,6 +15,8 @@
     return '<section><h2>' + esc(c.label) + '</h2>' + (c.note ? '<p class="note">' + esc(c.note) + '</p>' : '') +
       '<ul>' + c.items.map(function(it){
         var desc = it.desc || '';
+        if (it.service_mode === 'togo') { desc = (desc ? desc + ' · ' : '') + 'To Go only'; }
+        if (it.service_mode === 'stay') { desc = (desc ? desc + ' · ' : '') + 'To Stay only'; }
         if (it.choices && c.id !== 'catch') { desc = (desc ? desc + ' ' : '') + it.choices.map(function(ch){ return ch.values.join(' / '); }).join(' · '); }
         var price = it.sizes && it.sizes.length > 1
           ? it.sizes.map(function(s){ return esc(s.label) + ' ' + money(s.price); }).join('<br>')
@@ -23,7 +25,7 @@
         return row(it.name, desc, price);
       }).join('') + '</ul></section>';
   }).join('');
-  html += '<section><h2>Fresh Fish Market</h2><p class="note">To take home. Availability changes daily.</p><ul>' +
+  html += '<section><h2>Fresh Fish Market</h2><p class="note">Available to enjoy here. Availability changes daily.</p><ul>' +
     data.market.map(function(g){ return g.items.map(function(it){ return row(it.name, '', money(it.price) + (it.unit ? '/' + esc(it.unit) : '')); }).join(''); }).join('') +
     '</ul></section>';
   if (!live) { html = '<p class="note" style="margin-top:20px;">We couldn\'t load today\'s menu, so this list may be out of date. Please check prices with our staff.</p>' + html; }
@@ -52,7 +54,8 @@
     : Promise.reject(new Error('no database'));
   ready = ready.catch(function(){ draw(window.rimalApplyDashboard([], []), false); });
   document.getElementById('foot').innerHTML =
-    'Please ask our staff about allergens.<br>© 2026 Rimal Seafood';
+    'Please ask our staff about allergens. Prices and availability can change; market weights are confirmed by staff.<br>' +
+    'To place an order, call <a href="tel:' + INFO.phoneTel + '">' + esc(INFO.phoneDisplay) + '</a>. We do not accept orders or payments on the website.<br>© 2026 Rimal Seafood';
 
   if (/[?&]print=1/.test(location.search)) {
     ready.then(function(){ return document.fonts ? document.fonts.ready : null; }).then(function(){ setTimeout(function(){ window.print(); }, 150); });

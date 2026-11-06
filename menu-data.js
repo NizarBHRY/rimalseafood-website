@@ -35,8 +35,8 @@ window.RIMAL_INFO = {
   name: 'Rimal Seafood',
   street: '7812 5th Ave',
   cityLine: 'Brooklyn, NY 11209',
-  phoneDisplay: '(347) 497-4004',
-  phoneTel: '+13474974004',
+  phoneDisplay: '(347) 497-4002',
+  phoneTel: '+13474974002',
   hours: 'Daily 12:00 PM – 9:00 PM',
   taxRate: 0.08875,
   mapsUrl: 'https://www.google.com/maps/search/?api=1&query=7812+5th+Ave,+Brooklyn,+NY+11209'
@@ -237,6 +237,7 @@ window.rimalApplyDashboard = function(overrides, customItems){
     var renamed = o.name && o.name !== item.name;
     if (renamed) { out.name = o.name; delete out.choices; delete out.sides; }
     if (o.description != null) { out.desc = o.description; }
+    if (['both', 'togo', 'stay'].indexOf(o.service_mode) !== -1) { out.service_mode = o.service_mode; }
     if (Array.isArray(o.options)) {
       var opts = o.options.filter(function(x){ return x && x.label && isFinite(Number(x.price)); });
       if (opts.length) { out.sizes = opts.map(function(x){ return { label: x.label, price: Number(x.price) }; }); out.price = Number(opts[0].price); }
@@ -255,9 +256,20 @@ window.rimalApplyDashboard = function(overrides, customItems){
     return { id: cat.id, label: cat.label, note: cat.note, items: items };
   });
   var market = window.RIMAL_MARKET.map(function(g, gi){
-    return { label: g.label, items: g.items.map(function(it){ return apply(it, 'market-' + gi + '|' + it.name); }).filter(Boolean) };
+    return { label: g.label, items: g.items.map(function(it){
+      return apply(it, 'market-' + gi + '|' + it.name);
+    }).filter(Boolean) };
   });
-  var CAT = { menu_lunch: 'lunch', menu_mains: 'mains', menu_sides: 'sides', menu_salads: 'sides', menu_specials: 'specials', menu_drinks: 'drinks', menu_desserts: 'desserts' };
+  var CAT = {
+    menu_lunch: 'lunch',
+    menu_mains: 'mains',
+    menu_catch: 'catch',
+    menu_sides: 'sides',
+    menu_salads: 'sides',
+    menu_specials: 'specials',
+    menu_drinks: 'drinks',
+    menu_desserts: 'desserts'
+  };
   (customItems || []).slice().sort(function(a, b){ return (Number(a.display_order) || 1000) - (Number(b.display_order) || 1000); }).forEach(function(c){
     var opts = (Array.isArray(c.options) ? c.options : []).filter(function(x){ return x && x.label && isFinite(Number(x.price)); });
     var item = { name: c.name, price: opts.length ? Number(opts[0].price) : Number(c.price), desc: c.description || '' };
@@ -266,6 +278,7 @@ window.rimalApplyDashboard = function(overrides, customItems){
       item.unit = c.unit || '';
       market[c.category === 'market_fish' ? 0 : 1].items.push(item);
     } else if (CAT[c.category]) {
+      item.service_mode = c.service_mode || 'both';
       menu.filter(function(m){ return m.id === CAT[c.category]; })[0].items.push(item);
     }
   });

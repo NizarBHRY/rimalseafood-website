@@ -1,0 +1,4 @@
+Contact: tel:+1-347-497-4002
+Expires: 2027-10-12T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://rimalseafood.com/.well-known/security.txt
