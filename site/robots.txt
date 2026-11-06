@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /manage.html
+Disallow: /manage
+
+Sitemap: https://rimalseafood.com/sitemap.xml

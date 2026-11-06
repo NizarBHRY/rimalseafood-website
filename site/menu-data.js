@@ -39,7 +39,17 @@ window.RIMAL_INFO = {
   phoneTel: '+13474974002',
   hours: 'Daily 12:00 PM – 9:00 PM',
   taxRate: 0.08875,
-  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=7812+5th+Ave,+Brooklyn,+NY+11209'
+  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=7812+5th+Ave,+Brooklyn,+NY+11209',
+  // "Order Delivery" buttons (header and Visit page), in this order.
+  // Leave a url empty to hide that service.
+  orderLinks: [
+    { name: 'Order Online', url: 'https://order.online/store/-52064701/' },
+    { name: 'DoorDash',     url: 'https://www.doordash.com/store/rimal-seafood-brooklyn-52064701/' },
+    { name: 'Uber Eats',    url: 'https://www.ubereats.com/store/rimal-seafood/8Glu_iK5QqyuJ0H2Ow9g-w' },
+    { name: 'Grubhub',      url: 'https://www.grubhub.com/restaurant/rimal-seafood-7812-5th-ave-brooklyn/15770144' },
+    { name: 'Seamless',     url: 'https://www.seamless.com/menu/rimal-seafood-7812-5th-ave-brooklyn/15770144' },
+    { name: 'Postmates',    url: 'https://www.postmates.com/store/rimal-seafood/8Glu_iK5QqyuJ0H2Ow9g-w' }
+  ]
 };
 
 window.rimalFormatTime = function(value){

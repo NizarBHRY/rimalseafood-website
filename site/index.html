@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rimal Seafood | Lebanese &amp; Egyptian Seafood Restaurant &amp; Fish Market in Bay Ridge, Brooklyn</title>
+<meta name="description" content="Rimal Seafood is a restaurant and fresh fish market at 7812 5th Ave, Brooklyn, NY. Lunch specials from $9.99, fresh fish sold by the pound, grilled to order. Open daily, walk-ins welcome.">
+<link rel="canonical" href="https://rimalseafood.com/">
+<link rel="icon" type="image/png" href="rimal-icon-180.png">
+<link rel="apple-touch-icon" href="rimal-icon-180.png">
+<meta name="theme-color" content="#F6F1E7">
+
+<meta property="og:type" content="restaurant">
+<meta property="og:site_name" content="Rimal Seafood">
+<meta property="og:title" content="Rimal Seafood — Restaurant &amp; Fresh Fish Market">
+<meta property="og:description" content="Fresh fish market and seafood restaurant in Bay Ridge, Brooklyn. Dine in, take the catch home, or have it grilled fresh. Open daily.">
+<meta property="og:url" content="https://rimalseafood.com/">
+<meta property="og:image" content="https://rimalseafood.com/rimal-logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Rimal Seafood — Restaurant &amp; Fresh Fish Market">
+<meta name="twitter:description" content="Fresh fish market and seafood restaurant in Bay Ridge, Brooklyn. Open daily, walk-ins welcome.">
+<meta name="twitter:image" content="https://rimalseafood.com/rimal-logo.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "Rimal Seafood",
+  "image": "https://rimalseafood.com/rimal-logo.jpg",
+  "url": "https://rimalseafood.com/",
+  "servesCuisine": ["Seafood", "Lebanese", "Egyptian", "Mediterranean"],
+  "priceRange": "$$",
+  "telephone": "+1-347-497-4002",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "7812 5th Ave",
+    "addressLocality": "Brooklyn",
+    "addressRegion": "NY",
+    "postalCode": "11209",
+    "addressCountry": "US"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+      "opens": "12:00",
+      "closes": "21:00"
+    }
+  ]
+}
+</script>
+
+<script>
+  // Show the requested page on the very first paint, before app.js loads
+  // (app.js keeps data-page in sync as the visitor navigates).
+  (function(){
+    var p = location.hash.slice(1);
+    if (p === 'gallery') p = 'about';
+    if (!/^(home|about|menu|market|visit|rewards)$/.test(p)) p = 'home';
+    document.documentElement.setAttribute('data-page', p);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://efdclcbhsvlnvmjfqnin.supabase.co" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Amiri is only used for the short Arabic titles, so only their letters are
+     downloaded. Add any new letter here when adding Arabic text. -->
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap&text=%D8%B1%D9%85%D8%A7%D9%84%D8%A3%D9%87%D9%8B%D9%88%D8%B3%D9%82%D8%A6%D8%A9%D8%B7%D8%B9%D8%B5%D8%AA%D9%86%D9%83%D8%AB%D8%A8%D8%AD%D8%B2%D9%81%D8%A2%D8%AC%D8%BA%D8%AF%D8%A1%D9%8A%D8%B4" rel="stylesheet">
+<script defer src="menu-data.js"></script>
+<script defer src="config.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js" integrity="sha384-BWcjm9OdFth9TbhCxZPdm+gAOUMAzQy9nmTs12ioXdCcbVnJaPMn+fMUoQCLt60R" crossorigin="anonymous"></script>
+<script defer src="app.js"></script>
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  :root{
+    /* palette "Cartouche", taken from the logo: navy lettering, gold frame, teal waves */
+    --navy:#14284B;        /* ink: headings, text, primary buttons */
+    --navy-900:#0D1C36;    /* footer and deep bands */
+    --navy-700:#24406E;    /* hover on navy */
+    --gold:#B08A3E;        /* hairlines and ornaments only (not text: 2.9:1 on ivory) */
+    --gold-deep:#9C7A34;   /* large gold text such as Arabic titles, 3.5:1 */
+    --gold-ink:#7F6120;    /* small gold text on light grounds, 5:1 */
+    --gold-soft:#D4B87F;   /* gold text on navy */
+    --teal:#1B6C72;        /* prices, links, focus, 5.4:1 on ivory */
+    --teal-100:#E1ECE9;
+    --ivory:#F6F1E7;
+    --ivory-2:#EFE7D8;
+    --paper:#FBF8F2;
+    --white:#FFFFFF;
+    --slate:#56627A;       /* secondary text, 5.1:1 on ivory */
+    --line:#E2D7C1;
+    --line-gold:rgba(176,138,62,.45);
+    --line-strong:#9A8C70; /* form borders, 3.3:1 on white */
+    --success:#2F6B45;
+    --error:#A8312A;
+    --focus:#1B6C72;
+    /* older names still used around the page */
+    --ocean-900:var(--navy);
+    --ocean-800:var(--navy-700);
+    --ocean-700:var(--teal);
+    --ocean-600:var(--navy);
+    --ocean-100:var(--teal-100);
+    /* type */
+    --font-display:'Cormorant Garamond', 'Times New Roman', serif;
+    --font-caps:'Cinzel', 'Cormorant Garamond', serif;
+    --font-body:'Jost', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-ar:'Amiri', 'Times New Roman', serif;
+    --fs-xs:.8125rem; --fs-sm:.9375rem; --fs-md:1.0625rem; --fs-lg:1.25rem;
+    --fs-xl:1.75rem; --fs-2xl:clamp(2.1rem,4vw,2.75rem); --fs-3xl:clamp(2.75rem,6.2vw,4.25rem);
+    /* space, shape, depth */
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:80px;
+    --r-sm:2px; --r-md:3px; --r-pill:999px;
+    --shadow-1:0 1px 2px rgba(20,40,75,.05), 0 6px 18px rgba(20,40,75,.06);
+    --shadow-2:0 18px 50px rgba(13,28,54,.22);
+    --header-h:88px;
+    --gold-light:var(--gold-ink);
+    --bg:var(--ivory);
+    --bg-alt:var(--ivory);
+    --text:var(--navy);
+    --text-dim:var(--slate);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{overflow-x:hidden;}
+  body{
+    background:var(--ivory);
+    color:var(--ocean-900);
+    font-family:var(--font-body);
+    font-weight:400;
+    font-size:1rem;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--navy);color:var(--ivory);}
+  h1,h2,h3{font-family:var(--font-display);font-weight:500;line-height:1.05;letter-spacing:-.01em;}
+  .ar,.ar-word,.ar-sub{font-family:var(--font-ar);font-weight:400;letter-spacing:0;text-transform:none;}
+  a{color:inherit;text-decoration:none;}
+  b,strong{font-weight:600;}
+  img{max-width:100%;display:block;}
+  button,input,select,textarea{font:inherit;color:inherit;}
+  :focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .container{max-width:1200px;margin:0 auto;padding:0 var(--s5);}
+  [hidden]{display:none !important;}
+  main:focus{outline:none;}
+  #skipLink:focus{position:fixed!important;left:16px;top:12px;z-index:400;width:auto;height:auto;clip:auto;margin:0;padding:10px 16px;background:var(--ocean-900);color:#fff;border-radius:var(--r-sm);font-weight:600;}
+  .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
+  /* ============ HEADER ============ */
+  .site-header{
+    position:fixed;top:0;left:0;right:0;z-index:100;height:var(--header-h);
+    background:var(--ivory);border-bottom:1px solid var(--line-gold);
+  }
+  .site-header::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--line-gold);opacity:.55;pointer-events:none;}
+  .header-inner{
+    max-width:1280px;height:100%;margin:0 auto;padding:0 var(--s5);
+    display:flex;align-items:center;gap:var(--s5);
+  }
+  .brand{display:flex;align-items:center;flex-shrink:0;border-radius:var(--r-sm);}
+  .brand-logo{height:68px;width:auto;}
+  #siteNav{margin-left:auto;}
+  #siteNav ul{list-style:none;display:flex;gap:2px;}
+  #siteNav a{
+    display:inline-flex;align-items:center;min-height:44px;padding:0 11px;
+    font-family:var(--font-caps);font-size:.76rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--slate);position:relative;transition:color .15s;
+  }
+  #siteNav a:hover{color:var(--navy);}
+  #siteNav a.active{color:var(--navy);font-weight:600;}
+  #siteNav a.active::after{content:'';position:absolute;left:11px;right:11px;bottom:7px;height:1px;background:var(--gold);}
+  #siteNav a.active::before{
+    content:'\2726';position:absolute;left:50%;bottom:2px;transform:translateX(-50%);
+    padding:0 4px;background:var(--ivory);color:var(--gold);font:400 8px/1 var(--font-body);
+  }
+  .header-actions{display:flex;align-items:center;gap:var(--s2);}
+  .cart-toggle{
+    display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 14px 0 16px;
+    background:transparent;color:var(--navy);border:1px solid var(--navy);border-radius:0;
+    font-family:var(--font-caps);font-weight:600;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;
+    cursor:pointer;transition:background .15s,color .15s;
+  }
+  .cart-toggle:hover{background:var(--navy);color:var(--ivory);}
+  .cart-toggle svg{width:18px;height:18px;}
+  .cart-badge{
+    min-width:22px;height:22px;padding:0 6px;border-radius:var(--r-pill);
+    background:var(--navy);color:var(--ivory);font-family:var(--font-body);font-size:var(--fs-xs);font-weight:600;letter-spacing:0;
+    display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;
+  }
+  .cart-toggle:hover .cart-badge{background:var(--ivory);color:var(--navy);}
+  .cart-badge.bump{animation:bump .35s ease;}
+  @keyframes bump{40%{transform:scale(1.25);}}
+  .nav-toggle{
+    display:none;width:44px;height:44px;border:1px solid var(--navy);border-radius:0;
+    background:transparent;color:var(--navy);cursor:pointer;align-items:center;justify-content:center;
+  }
+  .nav-toggle svg{width:22px;height:22px;}
+  .order-menu{position:relative;}
+  .order-menu summary{list-style:none;}
+  .order-menu summary::-webkit-details-marker{display:none;}
+  .order-menu[open] summary{background:var(--navy);color:var(--ivory);}
+  .order-menu .order-links{position:absolute;right:0;top:calc(100% + 8px);z-index:60;flex-direction:column;align-items:stretch;min-width:220px;padding:var(--s2);background:var(--ivory);border:1px solid var(--navy);margin:0;}
+  .order-links{display:flex;flex-wrap:wrap;gap:var(--s2);justify-content:center;margin:0 0 var(--s6);}
+  .order-links:empty{display:none;}
+  .reserve .order-links .btn{color:var(--ivory);border-color:var(--gold-soft);text-decoration:none;}
+  .reserve .order-links .btn:hover{background:var(--ivory);color:var(--navy);}
+
+  /* ============ PAGES ============ */
+  .page{display:none;}
+  /* data-page is set in <head> before first paint; no data-page means no JavaScript */
+  html:not([data-page]) #page-home,
+  [data-page="home"] #page-home,[data-page="about"] #page-about,[data-page="menu"] #page-menu,
+  [data-page="market"] #page-market,[data-page="visit"] #page-visit,
+  [data-page="rewards"] #page-rewards{display:block;}
+
+  /* ============ ORNAMENTS ============ */
+  .eyebrow-rule{
+    display:flex;align-items:center;gap:14px;
+    font-family:var(--font-caps);font-size:.76rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--gold-ink);
+  }
+  .eyebrow-rule::before{content:'';width:44px;height:1px;background:var(--gold);flex-shrink:0;}
+  .ar-sub{display:block;font-size:1.6rem;line-height:1.4;color:var(--gold-deep);margin-bottom:var(--s1);}
+  /* RTL blocks would otherwise start on the right; line them up with the English */
+  .ar-word,.about-text .ar-sub,.menu-intro .ar-sub{text-align:left;}
+  .about-text p.ar-sub,.reserve p.ar-sub{font-size:1.6rem;line-height:1.4;max-width:none;margin:0 0 var(--s1);color:var(--gold-deep);}
+  .reserve p.ar-sub{margin:0 auto var(--s1);color:var(--gold-soft);}
+  .ornament{display:flex;align-items:center;gap:16px;max-width:1200px;margin:0 auto;padding:0 var(--s5);color:var(--gold);font-size:.8rem;line-height:1;}
+  .ornament::before,.ornament::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+  .ornament::after{transform:scaleX(-1);}
+  .link-caps{
+    display:inline-flex;align-items:center;gap:8px;min-height:44px;
+    font-family:var(--font-caps);font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);
+    text-decoration:underline;text-decoration-color:var(--gold);text-decoration-thickness:1px;text-underline-offset:9px;
+    transition:color .15s;
+  }
+  .link-caps:hover{color:var(--teal);text-decoration-color:var(--teal);}
+  /* the arch: the logo's framed shape, used for photos */
+  .arch{position:relative;margin:14px;}
+  .arch::before{content:'';position:absolute;inset:-14px;border:1px solid var(--gold);border-radius:999px 999px 0 0;opacity:.8;pointer-events:none;}
+  .arch img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:999px 999px 0 0;background:var(--ivory-2);}
+  .caps-label{
+    font-family:var(--font-caps);font-size:.74rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--gold-ink);line-height:1.4;margin-bottom:var(--s2);
+  }
+
+  /* ============ HOME ============ */
+  .home-hero{
+    padding:calc(var(--header-h) + var(--s7)) 0 var(--s7);
+    background:radial-gradient(900px 520px at 88% 18%, rgba(176,138,62,.10), transparent 62%), var(--ivory);
+  }
+  .home-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--s8);align-items:center;}
+  .page > .home-hero:first-child{padding-top:calc(var(--header-h) + var(--s7));}
+  .home-hero-grid.no-photo{grid-template-columns:1fr;}
+  .ar-word{font-size:clamp(2.6rem,4.8vw,3.6rem);line-height:1.25;color:var(--gold-deep);margin:var(--s5) 0 0;}
+  .home-hero h1{font-size:clamp(3rem,6.4vw,5.25rem);line-height:.98;letter-spacing:-.015em;}
+  .home-hero h1 em{font-style:italic;color:var(--teal);}
+  .home-hero .lede{font-size:clamp(1.0625rem,1.4vw,1.2rem);font-weight:300;color:#3A4A66;max-width:44ch;margin:var(--s5) 0 var(--s6);}
+  .hero-ctas{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4) var(--s6);}
+  .home-photo{justify-self:center;width:min(100% - 28px,440px);}
+  .seal{
+    position:absolute;left:-46px;bottom:40px;width:136px;height:136px;border-radius:50%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    background:var(--ivory);border:1px solid var(--gold);box-shadow:0 0 0 5px var(--ivory),0 0 0 6px var(--line-gold);
+    font-family:var(--font-caps);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);line-height:1.4;
+  }
+  .seal b{font-family:var(--font-display);font-size:1.75rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--gold-deep);line-height:1.05;margin:2px 0;font-variant-numeric:lining-nums;}
+
+  .home-strip{padding:var(--s6) 0 var(--s7);}
+  .strip-grid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line-gold);border-bottom:1px solid var(--line-gold);}
+  .strip-grid > div{padding:var(--s5);}
+  .strip-grid > div + div{border-left:1px solid var(--line-gold);}
+  .strip-grid p{color:var(--navy);}
+  .strip-grid a{color:var(--teal);text-decoration:underline;text-underline-offset:3px;}
+  .strip-grid a:hover{color:var(--navy);}
+
+  .home-ways{padding:var(--s7) 0 var(--s8);}
+  .ways{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s7);}
+  .way{display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .way .arch{width:min(100% - 28px,280px);margin-bottom:var(--s6);}
+  .way .arch img{aspect-ratio:3/4;}
+  .way-num{font-family:var(--font-caps);font-size:.74rem;font-weight:600;letter-spacing:.24em;color:var(--gold-ink);margin-bottom:var(--s2);}
+  .way h3{font-size:2.1rem;margin-bottom:var(--s3);}
+  .way p{color:var(--slate);max-width:34ch;margin-bottom:var(--s3);}
+  .way .link-caps{margin-top:auto;}
+
+  .home-menu{background:var(--ivory-2);padding:var(--s8) 0;border-top:1px solid var(--line-gold);border-bottom:1px solid var(--line-gold);}
+  .home-menu-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5) var(--s8);}
+  .hm-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4);padding-bottom:var(--s2);border-bottom:1px solid var(--gold);}
+  .hm-head h3{font-family:var(--font-caps);font-size:1rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;line-height:1.4;}
+  .hm-head .ar{font-size:1.5rem;line-height:1.3;color:var(--gold-deep);}
+  .hm-list{list-style:none;}
+  .hm-item{display:grid;grid-template-columns:minmax(0,auto) minmax(24px,1fr) auto;gap:10px;align-items:baseline;padding:14px 0;border-bottom:1px solid rgba(20,40,75,.12);}
+  .hm-item b{font-family:var(--font-display);font-size:1.4rem;font-weight:600;line-height:1.15;}
+  .hm-item i{border-bottom:1px dotted rgba(20,40,75,.45);transform:translateY(-5px);}
+  .hm-item span{font-family:var(--font-display);font-size:1.3rem;font-weight:600;color:var(--teal);white-space:nowrap;font-variant-numeric:lining-nums tabular-nums;}
+  .hm-note{margin-top:var(--s2);font-size:var(--fs-sm);color:var(--slate);}
+  .home-menu-cta{display:flex;justify-content:center;align-items:center;gap:var(--s4) var(--s6);flex-wrap:wrap;margin-top:var(--s7);}
+  .home-menu-note{text-align:center;margin-top:var(--s4);font-size:var(--fs-xs);color:var(--slate);}
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
+    min-height:48px;padding:0 26px;
+    border:1px solid var(--navy);border-radius:0;
+    background:transparent;color:var(--navy);
+    font-family:var(--font-caps);font-weight:600;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;line-height:1.2;
+    transition:background .15s, color .15s, border-color .15s;
+    cursor:pointer;text-align:center;
+  }
+  .btn:hover{background:var(--navy);color:var(--ivory);}
+  .btn-solid{background:var(--navy);border-color:var(--navy);color:var(--ivory);}
+  .btn-solid:hover{background:var(--navy-700);border-color:var(--navy-700);color:var(--ivory);}
+  .btn:disabled,.btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed;}
+  .btn-solid:disabled:hover{background:var(--navy);}
+  .btn-block{display:flex;width:100%;}
+  .btn-link{
+    background:none;border:0;padding:0;min-height:auto;color:var(--teal);
+    font-family:var(--font-body);font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;
+  }
+  .btn-link:hover{color:var(--navy);background:none;}
+
+  /* SECTION helpers */
+  section{padding:var(--s7) 0 var(--s8);}
+  .section-head{text-align:center;margin-bottom:var(--s7);}
+  .section-eyebrow{
+    display:inline-flex;align-items:center;gap:12px;
+    font-family:var(--font-caps);letter-spacing:.24em;text-transform:uppercase;font-size:.74rem;font-weight:600;
+    color:var(--gold-ink);margin-bottom:var(--s3);
+  }
+  .section-head .section-eyebrow::before,.section-head .section-eyebrow::after{content:'';width:28px;height:1px;background:var(--gold);}
+  .section-head h2{font-size:var(--fs-3xl);text-wrap:balance;}
+
+  /* ABOUT */
+  .about{background:var(--bg-alt);}
+  .about-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:var(--s8);align-items:center;}
+  .about-photo{width:min(100% - 28px,440px);justify-self:center;}
+  .about-text h2{font-size:clamp(2.4rem,4.4vw,3.5rem);margin-bottom:var(--s5);}
+  .about-text p{color:var(--slate);margin-bottom:var(--s4);font-size:var(--fs-md);max-width:58ch;}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);margin-top:var(--s6);border-top:1px solid var(--line-gold);border-bottom:1px solid var(--line-gold);}
+  .stat{padding:var(--s5) var(--s3);text-align:center;}
+  .stat + .stat{border-left:1px solid var(--line-gold);}
+  .stat h3{font-size:2.75rem;font-weight:500;line-height:1;color:var(--gold-deep);font-variant-numeric:lining-nums;}
+  .stat span{display:block;margin-top:var(--s2);font-family:var(--font-caps);font-size:.7rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--navy);}
+
+  /* ============ MENU PAGE ============ */
+  .page > section:first-child{padding-top:calc(var(--header-h) + var(--s6));}
+  .menu-page{padding-bottom:var(--s8);}
+  .menu-intro{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:end;
+    padding-bottom:var(--s5);
+  }
+  .menu-intro .section-eyebrow{margin-bottom:var(--s2);}
+  .menu-intro .menu-title{font-size:var(--fs-3xl);}
+  .menu-intro .ar-sub{margin-bottom:0;}
+  .menu-intro .lede{color:var(--slate);font-size:var(--fs-md);margin-top:var(--s2);max-width:56ch;}
+  .menu-facts{list-style:none;display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin-top:var(--s4);font-weight:500;}
+  .menu-facts li{display:flex;align-items:center;gap:var(--s2);}
+  .menu-facts svg{width:16px;height:16px;color:var(--ocean-700);flex-shrink:0;}
+  .menu-facts a{text-decoration:underline;text-underline-offset:3px;}
+  .menu-print{display:flex;align-items:center;gap:var(--s3);}
+  .menu-print img{width:88px;height:88px;padding:6px;background:var(--white);border:1px solid var(--line);border-radius:var(--r-sm);}
+  .menu-print p{font-size:var(--fs-xs);color:var(--slate);max-width:20ch;line-height:1.45;}
+  .menu-print a{display:inline-block;margin-top:var(--s1);font-weight:600;color:var(--ocean-700);text-decoration:underline;text-underline-offset:3px;}
+
+  .menu-toolbar{
+    position:sticky;top:var(--header-h);z-index:20;
+    display:flex;align-items:center;gap:var(--s4);
+    padding:var(--s3) 0;background:var(--ivory);
+    border-top:1px solid var(--line-gold);border-bottom:1px solid var(--line-gold);
+  }
+  .menu-search{position:relative;flex:0 0 300px;}
+  .menu-search input{
+    width:100%;height:44px;padding:0 44px 0 40px;
+    background:var(--white);border:1px solid var(--line-strong);border-radius:var(--r-sm);
+    font-size:var(--fs-sm);
+  }
+  .menu-search input::placeholder{color:var(--slate);}
+  .menu-search input:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--ocean-600);}
+  .menu-search input::-webkit-search-cancel-button{display:none;}
+  .menu-search .search-icon{position:absolute;left:12px;top:50%;width:18px;height:18px;transform:translateY(-50%);color:var(--slate);pointer-events:none;}
+  .search-clear{
+    position:absolute;right:0;top:0;width:44px;height:44px;border:0;background:none;
+    display:grid;place-items:center;color:var(--slate);cursor:pointer;border-radius:var(--r-sm);
+  }
+  .search-clear:hover{color:var(--ocean-900);}
+  .search-clear svg{width:16px;height:16px;}
+  .menu-chips{display:flex;gap:var(--s2);overflow-x:auto;scrollbar-width:none;flex:1;padding:3px;margin:-3px;}
+  .menu-chips::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0;min-height:44px;padding:0 var(--s4);
+    border:1px solid var(--line-strong);border-radius:0;background:var(--paper);
+    font-weight:500;font-size:var(--fs-sm);letter-spacing:.02em;color:var(--navy);white-space:nowrap;cursor:pointer;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .chip:hover{border-color:var(--ocean-900);}
+  .chip[aria-current="true"]{background:var(--ocean-900);border-color:var(--ocean-900);color:var(--white);}
+  .chip .count{margin-left:6px;font-weight:500;opacity:.75;font-variant-numeric:tabular-nums;}
+  .menu-status{min-height:1.6em;margin-top:var(--s4);color:var(--slate);font-weight:500;}
+
+  .menu-group{padding-top:var(--s7);scroll-margin-top:calc(var(--header-h) + 90px);}
+  .menu-group[hidden]{display:none;}
+  .menu-group-head{
+    position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s2) var(--s4);flex-wrap:wrap;
+    padding-bottom:var(--s3);margin-bottom:var(--s2);border-bottom:1px solid var(--gold);
+  }
+  .menu-group-head::after{content:'';position:absolute;left:0;right:0;bottom:-5px;height:1px;background:var(--line-gold);}
+  .menu-group-title{display:flex;align-items:baseline;gap:var(--s2) var(--s4);flex-wrap:wrap;}
+  .menu-group-head h2{font-family:var(--font-caps);font-size:clamp(1.1rem,2vw,1.35rem);font-weight:600;letter-spacing:.2em;text-transform:uppercase;line-height:1.3;}
+  .menu-group-head .ar{font-size:1.5rem;line-height:1.2;color:var(--gold-deep);}
+  .menu-group-head p{color:var(--slate);font-size:var(--fs-sm);}
+  .menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s7);}
+  .menu-item{
+    display:grid;grid-template-columns:104px minmax(0,1fr);gap:var(--s5);
+    padding:var(--s5) 0;border-bottom:1px solid var(--line);
+  }
+  .menu-item.search-hide,.menu-item[hidden]{display:none;}
+  .menu-item-img,.mi-placeholder{
+    width:104px;height:124px;object-fit:cover;border-radius:52px 52px 2px 2px;background:var(--ivory-2);
+  }
+  .mi-placeholder{background:var(--ivory-2) url('rimal-mark.webp') center/72% no-repeat;}
+  .menu-item > img.menu-item-img + .mi-placeholder{display:none;}
+  .menu-item > img.menu-item-img.is-stale{display:none;}
+  .menu-item > img.menu-item-img.is-stale + .mi-placeholder{display:block;}
+  .menu-item-info{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:"name price" "desc desc" "act act";grid-template-rows:auto auto 1fr;
+    column-gap:0;min-width:0;
+  }
+  .menu-item h4{
+    grid-area:name;align-self:baseline;display:flex;align-items:baseline;gap:10px;
+    font-family:var(--font-display);font-size:1.5rem;font-weight:600;line-height:1.15;
+  }
+  .menu-item h4::after{content:'';flex:1 1 20px;min-width:20px;border-bottom:1px dotted rgba(20,40,75,.45);transform:translateY(-6px);}
+  .menu-item .menu-price{
+    grid-area:price;align-self:baseline;padding-left:10px;
+    font-family:var(--font-display);font-size:1.375rem;font-weight:600;color:var(--teal);
+    font-variant-numeric:lining-nums tabular-nums;white-space:nowrap;
+  }
+  .menu-item-info p{grid-area:desc;margin-top:var(--s1);color:var(--slate);font-size:var(--fs-sm);}
+  .menu-item .size-select{display:none;}
+  .menu-item .item-actions{grid-area:act;align-self:end;display:flex;align-items:center;justify-content:space-between;gap:var(--s3);margin-top:var(--s3);}
+  .mi-meta{font-size:var(--fs-xs);font-weight:500;color:var(--slate);}
+  .menu-item .mi-add{min-width:96px;min-height:44px;margin-left:auto;padding:0 18px;font-size:.72rem;background:transparent;border-color:var(--navy);color:var(--navy);}
+  .menu-item .mi-add:hover{background:var(--navy);color:var(--ivory);}
+  .mi-add.is-added,.menu-item .mi-add.is-added{background:var(--success);border-color:var(--success);color:var(--white);}
+  .menu-empty{
+    margin-top:var(--s6);padding:var(--s8) var(--s4);text-align:center;
+    background:var(--white);border:1px dashed var(--line-strong);border-radius:var(--r-md);
+  }
+  .menu-empty h2{font-size:var(--fs-xl);}
+  .menu-empty p{color:var(--slate);margin:var(--s2) 0 var(--s4);}
+  .menu-footnote{margin-top:var(--s6);font-size:var(--fs-xs);color:var(--slate);}
+
+  /* Fish Market page search & tabs (kept from the original layout, restyled) */
+  .menu-search-wrap{max-width:440px;margin:0 auto var(--s5);text-align:center;}
+  .menu-search-input{
+    width:100%;height:44px;padding:0 var(--s4);background:var(--white);
+    border:1px solid var(--line-strong);border-radius:var(--r-sm);font-size:var(--fs-sm);
+  }
+  .menu-search-input:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .menu-search-input::placeholder{color:var(--slate);}
+  .menu-search-status{margin-top:var(--s2);font-size:var(--fs-sm);color:var(--slate);}
+  .search-hide{display:none !important;}
+  .menu-tabs{display:flex;justify-content:center;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s7);}
+  .market-tab-group{display:none;}
+  .market-tab-group.active{display:block;}
+  .market-tab-btn{
+    min-height:44px;padding:0 var(--s5);border:1px solid var(--line-strong);border-radius:0;
+    background:var(--paper);font-family:var(--font-caps);font-weight:600;font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--navy);cursor:pointer;
+  }
+  .market-tab-btn:hover{border-color:var(--ocean-900);}
+  .market-tab-btn.active{background:var(--ocean-900);border-color:var(--ocean-900);color:var(--white);}
+  .grill-note{display:block;font-size:var(--fs-xs);font-weight:500;color:var(--slate);margin-top:2px;}
+
+  /* MARKET CARDS */
+  .market-subhead{display:flex;align-items:baseline;justify-content:center;gap:var(--s4);flex-wrap:wrap;margin-bottom:var(--s5);font-size:var(--fs-2xl);text-align:center;}
+  .market-subhead .ar{font-size:1.6rem;color:var(--gold-deep);}
+  .market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--s5);}
+  .market-card{position:relative;padding:12px;background:var(--paper);border:1px solid var(--line-gold);}
+  .market-card::after{content:'';position:absolute;inset:5px;border:1px solid var(--line);pointer-events:none;}
+  .market-card.sold-out{opacity:.55;}
+  .market-card.sold-out .qty-row{display:none;}
+  .sold-out-badge{position:absolute;top:var(--s4);right:var(--s4);z-index:2;padding:4px 10px;background:var(--error);color:var(--white);font-size:var(--fs-xs);font-weight:600;letter-spacing:.04em;}
+  .market-card img{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:999px 999px 0 0;background:var(--ivory-2);}
+  .market-card-body{position:relative;z-index:1;padding:var(--s4) var(--s2) var(--s2);}
+  .market-card-body h4{font-family:var(--font-display);font-size:1.5rem;font-weight:600;line-height:1.15;margin-bottom:2px;}
+  .market-card-body p{color:var(--slate);margin-bottom:var(--s3);}
+  .market-card-body .menu-price{font-family:var(--font-display);font-weight:600;font-size:1.3rem;color:var(--teal);font-variant-numeric:lining-nums tabular-nums;}
+  .market-card-body .grill-note{font-family:var(--font-body);color:var(--slate);}
+  .market-card-body > .btn{display:flex;width:100%;margin-top:var(--s3);}
+  .market-note{text-align:center;color:var(--slate);margin-top:var(--s7);}
+
+  /* ============ FORM CONTROLS ============ */
+  .qty-row{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s3);}
+  .qty-input,.side-select-fixed,.sauce-select,.size-select,.field-input,.field-select{
+    height:44px;padding:0 var(--s3);background:var(--white);
+    border:1px solid var(--line-strong);border-radius:var(--r-sm);font-size:var(--fs-sm);color:var(--ocean-900);
+  }
+  .qty-input{width:72px;text-align:center;padding:0 var(--s1);}
+  .side-select-fixed{width:100%;margin-top:var(--s2);}
+  .field-input,.field-select{width:100%;}
+  .field-input:focus,.field-select:focus,.qty-input:focus,.side-select-fixed:focus{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--ocean-600);}
+  [aria-invalid="true"].field-select,[aria-invalid="true"].field-input{border-color:var(--error);box-shadow:inset 0 0 0 1px var(--error);}
+  select option{background:var(--white);color:var(--ocean-900);}
+  .qty-unit{font-size:var(--fs-xs);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);}
+  .btn-cart{flex:1;}
+  .market-card-body .qty-row .btn-cart{min-width:0;}
+  .field label,.field-label{display:block;margin-bottom:var(--s1);font-size:var(--fs-sm);font-weight:600;}
+  .field .hint{font-weight:500;color:var(--slate);}
+  .field-error{margin-top:var(--s2);color:var(--error);font-size:var(--fs-sm);font-weight:600;}
+  .stepper{display:inline-flex;align-items:center;background:var(--white);border:1px solid var(--line-strong);border-radius:var(--r-sm);}
+  .stepper button{
+    width:44px;height:44px;border:0;background:none;border-radius:var(--r-sm);cursor:pointer;
+    display:grid;place-items:center;color:var(--ocean-900);
+  }
+  .stepper button:hover{background:var(--ivory);}
+  .stepper button:disabled{color:var(--line-strong);cursor:not-allowed;background:none;}
+  .stepper button svg{width:16px;height:16px;}
+  .stepper output{min-width:28px;text-align:center;font-weight:600;font-variant-numeric:tabular-nums;}
+
+  /* ============ DIALOGS ============ */
+  dialog{color:var(--ocean-900);}
+  dialog::backdrop{background:rgba(13,28,54,.55);}
+  dialog.sheet{
+    width:min(560px,calc(100% - 32px));max-height:min(88vh,780px);margin:auto;padding:0;
+    background:var(--paper);border:0;border-top:3px double var(--gold);border-radius:var(--r-md);box-shadow:var(--shadow-2);
+  }
+  dialog.sheet[open]{display:flex;flex-direction:column;animation:rise .2s ease;}
+  @keyframes rise{from{transform:translateY(12px);opacity:0;}}
+  .sheet form{display:flex;flex-direction:column;min-height:0;flex:1;}
+  .sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s4);padding:var(--s5) var(--s5) var(--s4);border-bottom:1px solid var(--line);}
+  .sheet-head h2{font-size:var(--fs-xl);}
+  .sheet-head .sub{margin-top:var(--s1);color:var(--slate);font-weight:600;}
+  .icon-btn{
+    flex-shrink:0;width:44px;height:44px;margin:-10px -10px 0 0;border:0;background:none;
+    border-radius:var(--r-sm);display:grid;place-items:center;color:var(--ocean-900);cursor:pointer;
+  }
+  .icon-btn:hover{background:var(--ivory);}
+  .icon-btn svg{width:20px;height:20px;}
+  .sheet-body{flex:1;overflow-y:auto;padding:var(--s5);}
+  .sheet-foot{display:flex;align-items:center;gap:var(--s3);padding:var(--s4) var(--s5) var(--s5);border-top:1px solid var(--line);}
+  .sheet-foot .btn-solid{flex:1;}
+  .opt-group{border:0;margin:0 0 var(--s5);padding:0;min-width:0;}
+  .opt-group:last-child{margin-bottom:0;}
+  .opt-group legend{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s3);font-weight:600;font-size:var(--fs-md);}
+  .tag{padding:2px 8px;border-radius:var(--r-pill);font-size:var(--fs-xs);font-weight:600;background:var(--ivory-2);color:var(--ocean-900);}
+  .tag-req{background:var(--ocean-100);color:var(--ocean-700);}
+  .opt-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s2);}
+  .opt{position:relative;display:block;}
+  .opt input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;}
+  .opt span{
+    display:flex;align-items:center;justify-content:space-between;gap:var(--s2);min-height:48px;padding:0 var(--s3);
+    border:1px solid var(--line-strong);border-radius:var(--r-sm);font-weight:600;cursor:pointer;background:var(--white);
+  }
+  .opt span small{font-weight:500;color:var(--slate);}
+  .opt input:checked + span{border-color:var(--ocean-600);background:var(--ocean-100);box-shadow:inset 0 0 0 1px var(--ocean-600);}
+  .opt input:focus-visible + span{outline:2px solid var(--focus);outline-offset:2px;}
+  .opt-group[data-invalid] .opt span{border-color:var(--error);}
+  .sides-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);}
+
+  /* ============ CART ============ */
+  dialog.cart-drawer{
+    width:min(440px,100%);height:100%;max-height:100%;max-width:100%;margin:0 0 0 auto;padding:0;
+    border:0;border-left:1px solid var(--gold);border-radius:0;background:var(--paper);box-shadow:var(--shadow-2);
+  }
+  dialog.cart-drawer[open]{display:flex;flex-direction:column;animation:slide .22s ease;}
+  @keyframes slide{from{transform:translateX(28px);opacity:0;}}
+  .cart-banner,.cart-notice{margin:var(--s3) var(--s5) 0;padding:var(--s2) var(--s3);border-radius:var(--r-sm);font-weight:600;font-size:var(--fs-sm);}
+  .cart-banner{background:var(--ocean-100);color:var(--ocean-700);}
+  .cart-notice{background:var(--ivory-2);color:var(--ocean-900);}
+  #cartMain{overflow-y:auto;overscroll-behavior:contain;}
+  #cartMain > *{flex-shrink:0;}
+  .cart-items{padding:0 var(--s5);list-style:none;}
+  .cart-footer #placeOrderBtn{position:sticky;bottom:var(--s3);z-index:1;box-shadow:0 6px 18px rgba(16,47,58,.18);}
+  .cart-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s3);padding:var(--s4) 0;border-bottom:1px solid var(--line);}
+  .cart-row-name{font-weight:600;font-size:var(--fs-md);}
+  .cart-row-meta{color:var(--slate);font-size:var(--fs-sm);}
+  .cart-row-price{font-weight:600;font-variant-numeric:tabular-nums;text-align:right;}
+  .cart-row-controls{grid-column:1/-1;display:flex;align-items:center;gap:var(--s4);margin-top:var(--s2);}
+  .cart-row-controls .btn-link{min-height:44px;display:inline-flex;align-items:center;}
+  .cart-row-remove{color:var(--error);}
+  .cart-empty{padding:var(--s8) var(--s4);text-align:center;color:var(--slate);}
+  .cart-empty .mark{width:120px;height:80px;margin:0 auto var(--s4);background:url('rimal-mark.webp') center/contain no-repeat;}
+  .cart-empty h3{font-size:var(--fs-xl);color:var(--ocean-900);margin-bottom:var(--s2);}
+  .cart-empty .btn{margin-top:var(--s4);}
+  .cart-footer{margin-top:auto;padding:var(--s4) var(--s5) var(--s5);border-top:1px solid var(--line);background:var(--ivory);}
+  .sum-row{display:flex;justify-content:space-between;padding:2px 0;color:var(--slate);font-variant-numeric:tabular-nums;}
+  .sum-total{display:flex;justify-content:space-between;margin-top:var(--s2);padding-top:var(--s2);border-top:1px solid var(--line-strong);font-weight:600;font-size:var(--fs-lg);font-variant-numeric:tabular-nums;}
+  .cart-note{margin-top:var(--s2);font-size:var(--fs-xs);color:var(--slate);}
+  .cart-form{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);margin:var(--s4) 0;}
+  .cart-form .field-full{grid-column:1/-1;}
+  .form-error{margin-bottom:var(--s3);padding:var(--s3);border-radius:var(--r-sm);background:#FCEDEC;color:var(--error);font-weight:600;font-size:var(--fs-sm);}
+  .cart-call{margin-top:var(--s3);text-align:center;font-size:var(--fs-sm);color:var(--slate);}
+  .cart-call a{color:var(--ocean-700);font-weight:600;text-decoration:underline;text-underline-offset:3px;}
+  .cart-confirm{flex:1;padding:var(--s7) var(--s5);text-align:center;overflow-y:auto;}
+  .cart-confirm .check{width:56px;height:56px;margin:0 auto var(--s4);border-radius:50%;display:grid;place-items:center;background:#E6F2EC;color:var(--success);}
+  .cart-confirm .check svg{width:28px;height:28px;}
+  .cart-confirm h3{font-size:var(--fs-2xl);margin-bottom:var(--s2);}
+  .cart-confirm p{color:var(--slate);margin-bottom:var(--s5);}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .toast{
+    position:fixed;left:50%;bottom:24px;z-index:300;max-width:calc(100% - 32px);
+    display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);
+    background:var(--ocean-900);color:var(--white);border-radius:var(--r-sm);box-shadow:var(--shadow-2);font-weight:600;
+    opacity:0;transform:translate(-50%,16px);pointer-events:none;transition:opacity .2s,transform .2s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+  .toast button{min-height:36px;padding:0 var(--s2);background:none;border:0;color:var(--white);font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+  .cart-bar{position:fixed;left:12px;right:12px;bottom:12px;z-index:90;display:none;}
+  .cart-bar button{
+    width:100%;min-height:52px;padding:0 var(--s4);display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+    background:var(--ocean-900);color:var(--white);border:0;border-radius:var(--r-md);box-shadow:var(--shadow-2);
+    font-weight:600;font-size:var(--fs-md);cursor:pointer;
+  }
+
+  /* GALLERY */
+  .gallery{background:var(--ivory);scroll-margin-top:var(--header-h);}
+  .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:240px;gap:var(--s4);}
+  .gallery-grid > *{position:relative;margin:0;overflow:hidden;background:var(--ivory-2);}
+  .gallery-grid > *::after{content:'';position:absolute;inset:8px;border:1px solid rgba(246,241,231,.75);border-radius:inherit;pointer-events:none;}
+  .gallery-grid img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
+  .gallery-grid > *:hover img{transform:scale(1.04);}
+  .gallery-grid > :nth-child(1){grid-column:span 2;grid-row:span 2;border-radius:999px 999px 0 0;}
+  .gallery-grid > :nth-child(4){grid-column:span 2;}
+
+  /* VISIT */
+  .reserve{
+    position:relative;text-align:center;color:var(--ivory);
+    background:
+      linear-gradient(180deg, rgba(13,28,54,.9), rgba(13,28,54,.93)),
+      url('https://images.unsplash.com/photo-1559339352-11d035aa65de?q=60&w=1200&auto=format&fit=crop') center/cover;
+  }
+  .reserve::after{content:'';position:absolute;inset:18px;border:1px solid rgba(212,184,127,.45);pointer-events:none;}
+  .page > .reserve:first-child::after{top:calc(var(--header-h) + 18px);}
+  .reserve .section-eyebrow{color:var(--gold-soft);}
+  .reserve .section-eyebrow::before,.reserve .section-eyebrow::after{content:'';width:28px;height:1px;background:var(--gold-soft);}
+  .reserve .ar-sub{color:var(--gold-soft);}
+  .reserve h2{font-size:var(--fs-3xl);margin-bottom:var(--s4);color:var(--white);}
+  .reserve p{color:#D9DEE8;max-width:480px;margin:0 auto var(--s6);}
+  .reserve a{text-decoration:underline;text-decoration-color:var(--gold-soft);text-underline-offset:3px;}
+  .visit-details{
+    display:flex;justify-content:center;gap:var(--s7);flex-wrap:wrap;margin-top:var(--s7);text-align:left;
+  }
+  .visit-details > div{padding-left:var(--s4);border-left:1px solid rgba(212,184,127,.5);}
+  .visit-details h4{font-family:var(--font-caps);font-size:.74rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-soft);margin-bottom:var(--s2);}
+  .visit-details p{color:#E8EBF0;margin:0;}
+  .map-frame{padding:8px;background:var(--paper);border:1px solid var(--gold);}
+  .map-frame iframe{display:block;}
+
+  /* REWARDS */
+  .cartouche{position:relative;padding:var(--s7) var(--s6);background:var(--paper);border:1px solid var(--gold);}
+  .cartouche::before{content:'';position:absolute;inset:6px;border:1px solid var(--line-gold);pointer-events:none;}
+  .cartouche > *{position:relative;}
+  .rewards-form{display:flex;flex-direction:column;gap:var(--s3);max-width:360px;margin:0 auto;}
+  .rewards-form input{
+    height:48px;padding:0 var(--s4);background:var(--white);border:1px solid var(--line-strong);border-radius:var(--r-sm);
+    color:var(--navy);font-family:var(--font-body);font-size:1rem;
+  }
+  .rewards-form input:focus{outline:2px solid var(--focus);outline-offset:1px;}
+  .rewards-form input::placeholder{color:var(--slate);}
+  .rewards-card{max-width:520px;margin:0 auto;text-align:center;}
+  .reward-bar-track{width:100%;max-width:340px;margin:12px auto 0;height:10px;border-radius:6px;background:var(--ivory-2);border:1px solid var(--line-gold);overflow:hidden;}
+  .reward-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0%;transition:width .4s ease;}
+  .rewards-available{margin-top:20px;padding:16px;border:1px solid var(--gold);text-align:center;}
+  .rewards-available p{color:var(--gold-ink);font-family:var(--font-display);font-size:1.25rem;margin-bottom:10px;}
+  .rewards-actions{display:flex;gap:12px;margin-top:24px;justify-content:center;}
+  .cart-discount-row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--gold-ink);margin-bottom:6px;}
+
+  /* ADMIN DASHBOARD */
+  .low-stock-alert{
+    background:rgba(201,126,39,.12);border:1px solid #c97e27;border-radius:8px;
+    padding:16px 20px;margin-bottom:32px;
+  }
+  .low-stock-alert-title{color:#8a5518;font-family:var(--font-display);font-size:1rem;margin-bottom:10px;}
+  .low-stock-alert-list{display:flex;flex-wrap:wrap;gap:8px;}
+  .low-stock-chip{
+    background:rgba(201,126,39,.1);border:1px solid #c97e27;border-radius:20px;
+    padding:5px 14px;font-size:.78rem;color:var(--text);
+  }
+  .low-stock-chip b{color:#8a5518;}
+  .admin-stats-row{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:36px 0 44px;}
+  .admin-stat{background:var(--bg-alt);border:1px solid #d6e6ee;border-radius:8px;padding:18px 26px;text-align:center;min-width:130px;}
+  .admin-stat h3{color:var(--gold-light);font-size:1.7rem;margin-bottom:4px;font-family:var(--font-display);}
+  .admin-stat span{font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);}
+  .admin-h3{font-family:var(--font-display);color:var(--gold-light);font-size:1.15rem;margin:40px 0 16px;}
+  .admin-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .admin-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:var(--bg-alt);border:1px solid #d6e6ee;border-radius:6px;font-size:.85rem;}
+  .admin-row-main{flex:1;min-width:0;}
+  .admin-row-title{font-family:var(--font-display);color:var(--text);}
+  .admin-row-meta{color:var(--text-dim);font-size:.76rem;margin-top:2px;}
+  .admin-row-value{color:var(--gold-light);font-family:var(--font-display);white-space:nowrap;}
+  .admin-empty{color:var(--text-dim);font-size:.85rem;text-align:center;padding:20px;}
+  .admin-tabs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:4px 0 22px;}
+  .admin-tab{
+    padding:9px 18px;border:1px solid #cfe2ea;border-radius:30px;background:#fff;
+    font-size:.72rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-dim);
+    cursor:pointer;font-family:var(--font-body);transition:all .25s;
+  }
+  .admin-tab:hover{color:var(--gold-light);}
+  .admin-tab.active{border-color:var(--navy);color:#fff;background:var(--navy);}
+  .admin-panel{display:none;background:#fff;border:1px solid #d6e6ee;border-radius:10px;padding:22px 22px 10px;box-shadow:0 2px 14px rgba(15,60,80,.06);margin-bottom:24px;}
+  .admin-panel.active{display:block;}
+  .admin-panel > .admin-h3:first-child{margin-top:0;}
+  .report-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .report-seg{display:flex;border:1px solid #cfe2ea;border-radius:30px;overflow:hidden;}
+  .report-seg button{padding:8px 18px;border:0;background:#fff;font-family:var(--font-body);font-size:.72rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-dim);cursor:pointer;}
+  .report-seg button + button{border-left:1px solid #cfe2ea;}
+  .report-seg button.active{background:var(--navy);color:#fff;}
+  .report-chart{position:relative;height:200px;margin:14px 0 40px 52px;}
+  .report-gridline{position:absolute;left:0;right:0;height:0;border-top:1px solid #e3eef3;}
+  .report-gridline.base{border-top-color:#cfe2ea;}
+  .report-gridline span{position:absolute;right:100%;padding-right:10px;transform:translateY(-50%);font-size:.66rem;color:var(--text-dim);white-space:nowrap;}
+  .report-cols{position:absolute;inset:0;display:flex;align-items:flex-end;}
+  .report-col{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;position:relative;outline:none;}
+  .report-bar{width:min(24px,70%);background:var(--gold);border-radius:4px 4px 0 0;transition:background .15s;}
+  .report-col:hover .report-bar,.report-col:focus .report-bar{background:var(--gold-light);}
+  .report-xl{position:absolute;top:100%;margin-top:10px;left:50%;transform:translateX(-50%);font-size:.66rem;color:var(--text-dim);white-space:nowrap;}
+  .report-tip{position:absolute;z-index:5;pointer-events:none;background:#fff;border:1px solid #cfe2ea;border-radius:6px;padding:8px 12px;font-size:.74rem;box-shadow:0 4px 16px rgba(15,60,80,.14);white-space:nowrap;transform:translate(-50%,-100%);}
+  .report-tip strong{display:block;font-size:.95rem;color:var(--text);}
+  .report-tip span{color:var(--text-dim);}
+  .report-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:16px;}
+  .report-table th{text-align:left;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);font-weight:500;padding:8px 10px;border-bottom:1px solid #cfe2ea;}
+  .report-table td{padding:9px 10px;border-bottom:1px solid #e3eef3;}
+  .report-table th.num,.report-table td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .report-table tfoot td{font-weight:600;border-top:1px solid #cfe2ea;border-bottom:0;}
+  .item-form{display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--bg-alt);border:1px solid #d6e6ee;border-radius:6px;margin-bottom:16px;}
+  .item-form label{font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:4px;}
+  .item-form .admin-input{width:100%;padding:9px 12px;background:#fff;border:1px solid #cfe2ea;color:var(--text);border-radius:4px;font-family:var(--font-body);font-size:.88rem;}
+  .item-form-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .item-form-row > div{flex:1;min-width:140px;}
+  .item-option-row{display:flex;gap:8px;margin-bottom:8px;}
+  .item-option-row .admin-input:first-child{flex:2;}
+  .item-option-row .admin-input:nth-child(2){flex:1;}
+  .item-photo-preview{max-width:140px;max-height:100px;border-radius:6px;margin-top:8px;object-fit:cover;}
+  .item-form-status{font-size:.82rem;margin:0;}
+  .custom-item-thumb{width:48px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;}
+  .inv-input{width:64px;padding:6px;background:rgba(15,60,80,.05);border:1px solid #cfe2ea;color:var(--text);border-radius:4px;text-align:center;font-family:var(--font-body);}
+  .inv-row.sold-out-row{background:#2a1717;border-color:#5a3232;}
+  .status-badge{
+    display:inline-block;padding:3px 11px;border-radius:12px;font-size:.66rem;
+    text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-top:4px;
+  }
+  .status-processing{background:#3a2f12;color:#e6c866;border:1px solid #7c5713;}
+  .status-ready{background:#123a1f;color:#6ee6a0;border:1px solid #1f7c3f;}
+  .status-toggle-btn{padding:6px 14px;font-size:.68rem;letter-spacing:1px;}
+  .admin-pin-input{
+    width:100%;font-size:1.6rem;text-align:center;letter-spacing:10px;padding:16px;
+    background:rgba(15,60,80,.05);border:1px solid #cfe2ea;color:var(--text);border-radius:4px;
+  }
+
+  /* ============ FOOTER ============ */
+  footer{background:var(--navy-900);color:#C9CFDA;padding:var(--s8) 0 var(--s5);border-top:5px double var(--gold);}
+  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:var(--s7);margin-bottom:var(--s7);}
+  .footer-brand{display:inline-flex;padding:var(--s3) var(--s5);background:var(--ivory);outline:1px solid var(--gold);outline-offset:5px;margin:6px;}
+  .footer-brand .brand-logo{height:96px;}
+  .footer-blurb{margin-top:var(--s5);max-width:34ch;}
+  footer h4{margin-bottom:var(--s4);font-family:var(--font-caps);font-size:.76rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-soft);}
+  footer p,footer li{color:#C9CFDA;font-size:var(--fs-sm);}
+  footer ul{list-style:none;}
+  footer li{margin-bottom:var(--s2);}
+  footer a{text-decoration:underline;text-decoration-color:rgba(212,184,127,.45);text-underline-offset:3px;}
+  footer a:hover{color:var(--white);text-decoration-color:var(--gold-soft);}
+  .footer-links a{display:inline-flex;align-items:center;min-height:32px;text-decoration:none;}
+  .footer-bottom{
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--s3);
+    padding-top:var(--s4);border-top:1px solid rgba(212,184,127,.25);font-size:var(--fs-xs);color:#A9B2C3;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:900px){
+    .header-actions{margin-left:auto;}
+    .nav-toggle{display:inline-flex;}
+    #siteNav{
+      display:none;position:fixed;top:var(--header-h);left:0;right:0;margin:0;
+      padding:var(--s2) var(--s4) var(--s4);background:var(--ivory);
+      border-bottom:1px solid var(--line-gold);box-shadow:var(--shadow-2);
+    }
+    #siteNav.open{display:block;}
+    #siteNav ul{flex-direction:column;gap:0;}
+    #siteNav a{width:100%;min-height:48px;font-size:.88rem;border-bottom:1px solid var(--line);}
+    #siteNav li:last-child a{border-bottom:0;}
+    #siteNav a.active::after{right:auto;width:28px;bottom:10px;}
+    #siteNav a.active::before{display:none;}
+  }
+  @media (max-width:900px){
+    :root{--header-h:72px;}
+    .header-inner{padding:0 var(--s4);gap:var(--s3);}
+    .brand-logo{height:54px;}
+    .home-hero{padding-top:calc(var(--header-h) + var(--s6));}
+    .home-hero-grid{grid-template-columns:1fr;gap:var(--s7);}
+    .home-photo{width:min(100% - 28px,380px);}
+    .seal{left:-18px;bottom:28px;width:118px;height:118px;}
+    .seal b{font-size:1.5rem;}
+    .strip-grid{grid-template-columns:1fr 1fr;}
+    .strip-grid > div + div{border-left:0;}
+    .strip-grid > div:nth-child(even){border-left:1px solid var(--line-gold);}
+    .strip-grid > div:nth-child(n+3){border-top:1px solid var(--line-gold);}
+    .ways{grid-template-columns:1fr;gap:var(--s8);}
+    .home-menu-cols{grid-template-columns:1fr;gap:var(--s7);}
+    .about-grid{grid-template-columns:1fr;gap:var(--s7);}
+    .about-photo{width:min(100% - 28px,380px);}
+    .menu-intro{grid-template-columns:1fr;gap:var(--s4);}
+    /* only the chip strip sticks under the header; the search box scrolls away */
+    .menu-toolbar{display:contents;}
+    .menu-search{flex:none;margin-top:var(--s2);}
+    .menu-chips{
+      position:sticky;top:var(--header-h);z-index:20;
+      margin:var(--s3) calc(-1 * var(--s5)) 0;padding:var(--s2) var(--s5);
+      background:var(--ivory);border-bottom:1px solid var(--line-gold);
+    }
+    .menu-grid{column-gap:var(--s5);}
+    .gallery-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:200px;}
+    .gallery-grid > :nth-child(1){grid-column:span 2;}
+    .footer-grid{grid-template-columns:1fr 1fr;gap:var(--s6);}
+    .footer-grid > div:first-child{grid-column:1/-1;}
+    .visit-details{gap:var(--s6);}
+  }
+  @media (max-width:640px){
+    .container{padding:0 var(--s4);}
+    .cart-toggle{padding:0 var(--s3);}
+    .cart-toggle .label{display:none;}
+    .home-hero h1{font-size:clamp(2.6rem,12vw,3.2rem);}
+    .strip-grid > div{padding:var(--s4) var(--s3);}
+    .strip-grid p{font-size:var(--fs-sm);}
+    .hm-item b{font-size:1.25rem;}
+    .stat{padding:var(--s4) var(--s1);}
+    .stat h3{font-size:2.1rem;}
+    .stat span{font-size:.62rem;letter-spacing:.12em;}
+    .menu-print{display:none;}
+    .menu-status{margin-top:var(--s2);}
+    .menu-group{padding-top:var(--s6);}
+    .page > section:first-child{padding-top:calc(var(--header-h) + var(--s5));}
+    .menu-intro .menu-title{font-size:2.5rem;}
+    .menu-intro .lede{font-size:var(--fs-sm);}
+    .menu-facts{gap:var(--s1) var(--s4);margin-top:var(--s3);font-size:var(--fs-sm);}
+    .menu-chips{margin-left:calc(-1 * var(--s4));margin-right:calc(-1 * var(--s4));padding-left:var(--s4);padding-right:var(--s4);}
+    .ways{gap:var(--s6);}
+    .way{display:grid;grid-template-columns:116px minmax(0,1fr);column-gap:var(--s4);align-items:start;text-align:left;}
+    .way > :not(.arch){grid-column:2;}
+    .way .arch{grid-column:1;grid-row:1 / span 4;width:auto;margin:10px 10px 0;}
+    .way .arch::before{inset:-8px;}
+    .way h3{font-size:1.75rem;margin-bottom:var(--s2);}
+    .way p{max-width:none;margin-bottom:var(--s2);}
+    .way .link-caps{margin-top:0;justify-self:start;}
+    .menu-grid{grid-template-columns:1fr;}
+    .menu-item{grid-template-columns:84px minmax(0,1fr);gap:var(--s4);padding:var(--s4) 0;}
+    .menu-item-img,.mi-placeholder{width:84px;height:100px;border-radius:42px 42px 2px 2px;}
+    .menu-item h4{font-size:1.3rem;}
+    .menu-item .menu-price{font-size:1.2rem;}
+    .menu-group-head{flex-direction:column;align-items:flex-start;gap:2px;}
+    .market-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s3);}
+    .market-card{padding:8px;}
+    .market-card::after{inset:3px;}
+    .market-card-body{padding:var(--s3) var(--s1) var(--s1);}
+    .market-card-body h4{font-size:1.25rem;}
+    .market-card-body .qty-row{flex-wrap:wrap;}
+    .market-card-body .qty-row .btn-cart{flex:1 0 100%;}
+    .cartouche{padding:var(--s6) var(--s4);}
+    dialog.sheet{width:100%;max-width:100%;max-height:92dvh;margin:auto 0 0;border-radius:var(--r-md) var(--r-md) 0 0;}
+    .sides-grid,.cart-form{grid-template-columns:1fr;}
+    .cart-bar.show{display:block;}
+    body.has-cart-bar .page.active{padding-bottom:76px;}
+    body.has-cart-bar .toast{bottom:84px;}
+    .footer-grid{grid-template-columns:1fr;}
+    .reserve::after{inset:10px;}
+    .page > .reserve:first-child::after{top:calc(var(--header-h) + 10px);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<a class="visually-hidden" href="#main" id="skipLink">Skip to content</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a href="#home" class="brand"><img src="rimal-logo.webp" srcset="rimal-logo-240.webp 240w, rimal-logo.webp 480w" sizes="(max-width:900px) 94px, 118px" alt="Rimal Seafood — home" class="brand-logo" width="480" height="278"></a>
+    <nav id="siteNav" aria-label="Main">
+      <ul>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#market">Fish Market</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#visit">Visit</a></li>
+        <li><a href="#rewards">Rewards</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <details class="order-menu" hidden>
+        <summary class="cart-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/></svg><span class="label">Delivery</span><span class="visually-hidden"> and pickup apps</span></summary>
+        <div class="order-links" data-order-links></div>
+      </details>
+      <a class="cart-toggle" href="tel:+13474974002">Call to order</a>
+      <button class="cart-toggle" id="cartToggle" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg><span class="label">Order</span><span class="cart-badge" id="cartBadge" aria-hidden="true">0</span><span class="visually-hidden" id="cartToggleCount">, 0 items</span></button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="Open navigation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+<main id="main" tabindex="-1">
+
+<div class="page" id="page-home">
+  <section class="home-hero" aria-labelledby="homeTitle">
+    <div class="container home-hero-grid">
+      <div class="home-hero-copy">
+        <p class="eyebrow-rule">Restaurant &amp; Fish Market · Bay Ridge, Brooklyn</p>
+        <p class="ar-word" lang="ar" dir="rtl" aria-hidden="true">رمال</p>
+        <h1 id="homeTitle">Fresh off the dock, <em>onto your plate.</em></h1>
+        <p class="lede">Browse the menu, add your picks to the cart, then call us to place your order. Walk-ins welcome, or call <a href="tel:+13474974002">(347) 497-4002</a> to reserve.</p>
+        <div class="hero-ctas">
+          <a href="#menu" class="btn btn-solid">See the menu</a>
+          <a href="#market" class="link-caps">The fish market <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+      <figure class="arch home-photo">
+        <img src="https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=900&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=600&amp;auto=format&amp;fit=crop 600w, https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=900&amp;auto=format&amp;fit=crop 900w, https://images.unsplash.com/photo-1600699899970-b1c9fadd8f9e?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 380px, 440px" alt="A whole grilled fish" width="880" height="1100" fetchpriority="high">
+        <div class="seal"><span>Open daily</span><b data-hours-open>12 PM</b><span>to <span data-hours-close>9 PM</span></span></div>
+      </figure>
+    </div>
+  </section>
+
+  <section class="home-strip" aria-label="Visit details">
+    <div class="container">
+      <div class="strip-grid">
+        <div>
+          <h2 class="caps-label">Find us</h2>
+          <p>7812 5th Ave, Brooklyn, NY 11209<br><a href="https://www.google.com/maps/search/?api=1&amp;query=7812+5th+Ave,+Brooklyn,+NY+11209" target="_blank" rel="noopener">Get directions<span class="visually-hidden"> (opens Google Maps)</span></a></p>
+        </div>
+        <div>
+          <h2 class="caps-label">Hours</h2>
+          <p>Open daily<br><span data-hours-range>12:00 PM – 9:00 PM</span></p>
+        </div>
+        <div>
+          <h2 class="caps-label">Call</h2>
+          <p><a href="tel:+13474974002">(347) 497-4002</a></p>
+        </div>
+        <div>
+          <h2 class="caps-label">Walk-ins welcome</h2>
+          <p>Walk-ins welcome, or call <a href="tel:+13474974002">(347) 497-4002</a> to reserve.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament" aria-hidden="true">✦</div>
+
+  <section class="home-ways" aria-labelledby="waysTitle">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">Welcome</div>
+        <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">أهلاً وسهلاً</p>
+        <h2 id="waysTitle">Browse, then call to order.</h2>
+      </div>
+      <div class="ways">
+        <article class="way">
+          <figure class="arch"><img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Salmon fillet with vegetables" width="480" height="640" loading="lazy"></figure>
+          <p class="way-num">I</p>
+          <h3>Dine in</h3>
+          <p>Walk in and we'll seat you, then order from your table.</p>
+          <a href="#visit" class="link-caps">Plan your visit <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="way">
+          <figure class="arch"><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Grilled fish dish" width="480" height="640" loading="lazy"></figure>
+          <p class="way-num">II</p>
+          <h3>Call ahead</h3>
+          <p>Build your cart on the menu, then call us and tell our staff what you'd like.</p>
+          <a href="tel:+13474974002" class="link-caps">Call (347) 497-4002 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="way">
+          <figure class="arch"><img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=80&amp;w=640&amp;auto=format&amp;fit=crop" alt="Fresh seafood on ice" width="480" height="640" loading="lazy"></figure>
+          <p class="way-num">III</p>
+          <h3>Enjoy the catch here</h3>
+          <p>Choose fresh fish or shellfish from the case. We'll grill it for you to enjoy here.</p>
+          <a href="#market" class="link-caps">The fish market <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-menu" aria-labelledby="homeMenuTitle">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">From the menu</div>
+        <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">قائمة الطعام</p>
+        <h2 id="homeMenuTitle">A few from the kitchen</h2>
+      </div>
+      <div class="home-menu-cols" id="homeMenuPreview"></div>
+      <div class="home-menu-cta">
+        <a href="#menu" class="btn btn-solid">See the full menu</a>
+        <a class='link-caps' href='/rimal-menu' rel='noopener' target='_blank'>Printable menu<span class="visually-hidden"> (opens in a new tab)</span></a>
+      </div>
+      <p class="home-menu-note">Prices and availability can change.</p>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-about">
+  <section class="about">
+    <div class="container about-grid">
+      <figure class="arch about-photo"><img src="https://images.unsplash.com/photo-1559847844-5315695dadae?q=75&amp;w=900&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1559847844-5315695dadae?q=75&amp;w=600&amp;auto=format&amp;fit=crop 600w, https://images.unsplash.com/photo-1559847844-5315695dadae?q=75&amp;w=900&amp;auto=format&amp;fit=crop 900w, https://images.unsplash.com/photo-1559847844-5315695dadae?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 380px, 440px" alt="A chef preparing fresh seafood" width="800" height="1000" loading="lazy" decoding="async"></figure>
+      <div class="about-text">
+        <div class="section-eyebrow">Our Story</div>
+        <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">قصتنا</p>
+        <h2>A Table by the Water, In Spirit</h2>
+        <p>Rimal Seafood is a brand-new arrival to Brooklyn, opening its doors in 2026 with one belief: seafood should taste like the sea it came from, freshly prepared and enjoyed at our table.</p>
+        <p>Every fillet, shell, and claw is sourced within 24 hours of landing. Choose fresh fish or shellfish from our market case, and our team will prepare it for you to enjoy here.</p>
+        <div class="stat-row">
+          <div class="stat"><h3>2026</h3><span>Newly Opened</span></div>
+          <div class="stat"><h3>24h</h3><span>Dock to Table</span></div>
+          <div class="stat"><h3>7</h3><span>Days a Week</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="ornament" aria-hidden="true">✦</div>
+  <section class="gallery" id="aboutGallery" aria-labelledby="galleryTitle">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">A Look Inside</div>
+        <h2 id="galleryTitle">From the Dock to the Dining Room</h2>
+      </div>
+      <div class="gallery-grid">
+        <figure><img src="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=75&amp;w=800&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=75&amp;w=400&amp;auto=format&amp;fit=crop 400w, https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=75&amp;w=800&amp;auto=format&amp;fit=crop 800w, https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 100vw, 600px" alt="Oysters on ice" loading="lazy" decoding="async"></figure>
+        <figure><img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=75&amp;w=800&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=75&amp;w=400&amp;auto=format&amp;fit=crop 400w, https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=75&amp;w=800&amp;auto=format&amp;fit=crop 800w, https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 50vw, 300px" alt="Salmon fillet with vegetables" loading="lazy" decoding="async"></figure>
+        <figure><img src="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=75&amp;w=800&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=75&amp;w=400&amp;auto=format&amp;fit=crop 400w, https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=75&amp;w=800&amp;auto=format&amp;fit=crop 800w, https://images.unsplash.com/photo-1580959375944-abd7e991f971?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 50vw, 300px" alt="Grilled fish dish" loading="lazy" decoding="async"></figure>
+        <figure><img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=75&amp;w=800&amp;auto=format&amp;fit=crop" srcset="https://images.unsplash.com/photo-1544025162-d76694265947?q=75&amp;w=400&amp;auto=format&amp;fit=crop 400w, https://images.unsplash.com/photo-1544025162-d76694265947?q=75&amp;w=800&amp;auto=format&amp;fit=crop 800w, https://images.unsplash.com/photo-1544025162-d76694265947?q=75&amp;w=1200&amp;auto=format&amp;fit=crop 1200w" sizes="(max-width:900px) 100vw, 600px" alt="Lobster dish" loading="lazy" decoding="async"></figure>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-menu">
+  <section class="menu-page" aria-labelledby="menuTitle">
+    <div class="container">
+      <div class="menu-intro">
+        <div>
+          <div class="section-eyebrow">Restaurant menu</div>
+          <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">قائمة الطعام</p>
+          <h2 id="menuTitle" class="menu-title">Menu</h2>
+          <p class="lede">Order ahead for pickup or from your table. Pay securely online with a debit or credit card, or pay at the counter or table.</p>
+          <ul class="menu-facts">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-info="hours">Daily 12:00 PM – 9:00 PM</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1-2-2"/></svg><a data-info="phone" href="tel:+13474974002">(347) 497-4002</a></li>
+          </ul>
+        </div>
+        <div class="menu-print">
+          <img src="rimal-menu-qr.png" width="88" height="88" loading="lazy" alt="QR code that opens the Rimal Seafood menu">
+          <p>Scan to open the menu on your phone.<br><a href='/rimal-menu?print=1' rel='noopener' target='_blank'>Print the menu<span class="visually-hidden"> (opens in a new tab)</span></a></p>
+        </div>
+      </div>
+
+      <div class="menu-toolbar">
+        <div class="menu-search" role="search">
+          <label for="menuSearchInput" class="visually-hidden">Search the menu</label>
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input type="search" id="menuSearchInput" placeholder="Search dishes" autocomplete="off" enterkeyhint="search" aria-controls="menuCatalog">
+          <button type="button" class="search-clear" id="menuSearchClear" aria-label="Clear search" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+        </div>
+        <div class="menu-chips" id="menuChips" role="group" aria-label="Filter by category"></div>
+      </div>
+      <p class="menu-status" id="menuStatus" role="status" aria-live="polite"></p>
+
+      <div id="menuCatalog"></div>
+      <noscript><p class="menu-empty">The menu cart needs JavaScript. Please call (347) 497-4002 to place your order.</p></noscript>
+
+      <div class="menu-empty" id="menuEmpty" hidden>
+        <h2>No dishes match “<span id="menuEmptyTerm"></span>”</h2>
+        <p>Try another word, or browse every category.</p>
+        <button type="button" class="btn" id="menuEmptyClear">Clear search</button>
+      </div>
+      <p class="menu-footnote">Photos are representative and may differ from the dish served. Prices and availability can change. Please ask our staff about allergens.</p>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-market">
+  <section class="about">
+    <div class="container">
+      <div class="section-head">
+        <div class="section-eyebrow">Fresh Fish Market</div>
+        <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">سوق السمك</p>
+        <h2>Enjoy the Catch Here</h2>
+        <p style="max-width:640px;margin:var(--s3) auto 0;color:var(--text-dim);">Choose fresh fish and shellfish from the case, add your picks to the cart, then call to confirm availability and place your order. Market weights and final prices are confirmed by our staff. <a href="tel:+13474974002" style="text-decoration:underline;text-underline-offset:3px;">(347) 497-4002</a></p>
+      </div>
+
+      <div class="menu-search-wrap">
+        <input type="search" id="marketSearchInput" class="menu-search-input" placeholder="Search the fish market — try &quot;shrimp&quot; or &quot;lobster&quot;" autocomplete="off">
+        <p id="marketSearchStatus" class="menu-search-status" hidden></p>
+      </div>
+
+      <div class="menu-tabs" id="marketTabsRow">
+        <button class="market-tab-btn" data-market-group="togo" type="button" hidden>To Go</button>
+        <button class="market-tab-btn active" data-market-group="grill" type="button">To Stay</button>
+      </div>
+
+      <div class="market-tab-group" id="market-togo">
+      <h3 class="market-subhead">Fin Fish <span class="ar" lang="ar" dir="rtl" aria-hidden="true">الأسماك</span></h3>
+      <div class="market-grid" style="margin-bottom:var(--s7);">
+      </div>
+
+      <h3 class="market-subhead">Shellfish &amp; More <span class="ar" lang="ar" dir="rtl" aria-hidden="true">ثمار البحر</span></h3>
+      <div class="market-grid">
+      </div>
+
+      <p class="market-note">Availability changes daily. Call ahead to check what's in today.</p>
+      </div>
+
+      <div class="market-tab-group active" id="market-grill">
+        <p style="text-align:center;color:var(--text-dim);max-width:560px;margin:0 auto 32px;">Pick your fish from the case, tell us how you want it cooked, and eat it fresh off the grill right here — a $4.99 grill &amp; dine-in fee is added to the market price per item.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-visit">
+  <section class="reserve">
+    <div class="container">
+      <div class="section-eyebrow">Walk-Ins Welcome</div>
+      <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">زورونا</p>
+      <h2>Walk In or Call Ahead</h2>
+      <p>Walk-ins welcome, or call <a href="tel:+13474974002">(347) 497-4002</a> to reserve.</p>
+      <div class="order-links" data-order-links aria-label="Order delivery or pickup"></div>
+      <div class="visit-details">
+        <div>
+          <h4>Address</h4>
+          <p>7812 5th Ave<br>Brooklyn, NY 11209<br><a href="https://www.google.com/maps/search/?api=1&amp;query=7812+5th+Ave,+Brooklyn,+NY+11209" target="_blank" rel="noopener">Get directions<span class="visually-hidden"> (opens Google Maps)</span></a></p>
+        </div>
+        <div>
+          <h4>Hours</h4>
+          <p>Open daily<br><span data-hours-range>12:00 PM – 9:00 PM</span></p>
+        </div>
+        <div>
+          <h4>Phone</h4>
+          <p><a href="tel:+13474974002">(347) 497-4002</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="padding-top:0;">
+    <div class="container">
+      <div class="map-frame">
+        <iframe
+          data-src="https://www.google.com/maps?q=7812+5th+Ave,+Brooklyn,+NY+11209&amp;output=embed"
+          width="100%" height="420" style="border:0;" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade" title="Rimal Seafood location on Google Maps">
+        </iframe>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page" id="page-rewards">
+  <section>
+    <div class="container" style="max-width:640px;">
+      <div class="section-head">
+        <div class="section-eyebrow">Rimal Rewards</div>
+        <p class="ar-sub" lang="ar" dir="rtl" aria-hidden="true">مكافآت رمال</p>
+        <h2>Buy 5 Times, Get a Free Gift Platter</h2>
+        <p style="color:var(--text-dim);max-width:480px;margin:12px auto 0;">Join free with your name and phone number. Every 5 times you buy from us earns a free gift platter.</p>
+      </div>
+
+      <div id="rewardsSignedOut" class="cartouche">
+        <div class="rewards-form">
+          <input type="text" id="rewardsName" placeholder="Full Name" aria-label="Full name" autocomplete="name" maxlength="60">
+          <input type="tel" id="rewardsPhone" placeholder="Phone Number" aria-label="Phone number" autocomplete="tel" inputmode="tel">
+          <button class="btn btn-solid" id="rewardsJoinBtn" type="button">Join / Sign In</button>
+        </div>
+        <p style="text-align:center;color:var(--text-dim);font-size:.72rem;margin-top:16px;">No password needed. Your phone number shows your progress toward the next gift platter. To protect your privacy, it never shows your name or past orders.</p>
+      </div>
+
+      <div id="rewardsSignedIn" hidden>
+        <div class="rewards-card cartouche">
+          <h3 id="rewardsWelcome" style="font-family:var(--font-display);color:var(--gold-light);margin-bottom:6px;"></h3>
+          <p style="color:var(--text-dim);margin-bottom:10px;" id="rewardsPhoneDisplay"></p>
+          <div class="reward-bar-track"><div class="reward-bar-fill" id="rewardBarFill"></div></div>
+          <p style="color:var(--text-dim);font-size:.85rem;margin-top:10px;" id="rewardSpendLabel"></p>
+          <div class="rewards-available" id="rewardsAvailableBox" hidden>
+            <p id="rewardsAvailableText"></p>
+            <p style="color:var(--text-dim);font-size:.82rem;margin-top:8px;">Tell our staff at the counter and they'll hand you your platter.</p>
+          </div>
+
+          <div style="margin-top:26px;padding-top:22px;border-top:1px solid var(--line-gold);">
+            <h4 style="font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);margin-bottom:10px;">Dining In Tonight?</h4>
+            <p style="color:var(--text-dim);font-size:.82rem;margin-bottom:12px;">Pick your table so we bring your order straight to you.</p>
+            <select id="tableSelect" class="qty-input" style="width:auto;padding:8px 14px;">
+              <option value="">No table selected</option>
+            </select>
+          </div>
+
+          <div style="margin-top:26px;padding-top:22px;border-top:1px solid var(--line-gold);text-align:left;">
+            <h4 style="font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold-light);margin-bottom:12px;text-align:center;">Orders From This Device</h4>
+            <div id="myOrderHistory" class="admin-list"></div>
+          </div>
+
+          <div class="rewards-actions">
+            <button class="btn" id="signOutBtn" type="button">Sign Out</button>
+          </div>
+          <p style="color:var(--text-dim);font-size:.72rem;margin-top:24px;">Rule: every 5 purchases earns a free gift platter. A purchase is added to your account automatically once our staff marks your order paid, using the phone number on the order. <a href='/privacy#rewards'>Rewards rules and privacy</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<footer id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="#home" class="footer-brand"><img src="rimal-logo.webp" alt="Rimal Seafood — home" class="brand-logo" width="480" height="278" loading="lazy"></a>
+        <p class="footer-blurb">Seafood restaurant and fresh fish market in Bay Ridge, Brooklyn.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="https://www.google.com/maps/search/?api=1&amp;query=7812+5th+Ave,+Brooklyn,+NY+11209" target="_blank" rel="noopener">7812 5th Ave<br>Brooklyn, NY 11209<span class="visually-hidden"> (opens Google Maps)</span></a></li>
+          <li>Open daily, <span data-hours-range>12:00 PM – 9:00 PM</span></li>
+          <li><a href="tel:+13474974002">(347) 497-4002</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul class="footer-links">
+          <li><a href="#menu">Menu</a></li>
+          <li><a href="#market">Fish Market</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#visit">Visit</a></li>
+          <li><a href="#rewards">Rewards</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Rimal Seafood</span>
+      <a href='/privacy'>Privacy &amp; Accessibility</a>
+    </div>
+  </div>
+</footer>
+
+<dialog class="cart-drawer" id="cartDrawer" aria-labelledby="cartTitle">
+  <div class="sheet-head">
+    <div>
+      <h2 id="cartTitle">Your order</h2>
+      <p class="sub" id="cartCount">0 items</p>
+    </div>
+    <button type="button" class="icon-btn" id="cartClose" aria-label="Close your order"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <p class="cart-banner" id="cartTableBanner" hidden></p>
+  <p class="cart-notice" id="cartNotice" hidden></p>
+  <div id="cartMain" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <ul class="cart-items" id="cartItems" aria-label="Items in your order"></ul>
+    <div class="cart-empty" id="cartEmpty" hidden>
+      <div class="mark" aria-hidden="true"></div>
+      <h3>Your order is empty</h3>
+      <p>Add dishes from the menu and they'll show up here.</p>
+      <button class="btn btn-solid" id="cartBrowse" type="button">Browse the menu</button>
+    </div>
+    <div class="cart-footer" id="cartFooter">
+      <div class="sum-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+      <div class="sum-row" id="cartDiscountRow" hidden><span>Rewards discount</span><span id="cartDiscount">-$0.00</span></div>
+      <div class="sum-row"><span>Sales tax (8.875%)</span><span id="cartTax">$0.00</span></div>
+      <p class="cart-note" id="cartTaxNote" hidden>Fresh Fish Market items prepared to enjoy here are taxed as prepared food.</p>
+      <div class="sum-total"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      <div class="cart-form" id="orderForm">
+        <div class="field field-full">
+          <label for="orderTableSelect">Pickup or dining in</label>
+          <select class="field-select" id="orderTableSelect"><option value="">Pickup at the counter</option></select>
+        </div>
+      </div>
+      <div class="form-error" id="orderError" role="alert" hidden></div>
+      <a class="btn btn-solid btn-block" id="placeOrderBtn" href="tel:+13474974002" aria-label="Call Rimal Seafood at 347-497-4002 to place your order">Call (347) 497-4002 to place order</a>
+      <p class="cart-note" style="text-align:center;">This cart is saved only on this device and is not sent to us. Tell our staff your selections when you call; final market weights and totals are confirmed by staff. No online order submission or payment.</p>
+    </div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="itemDialog" aria-labelledby="itemDialogTitle">
+  <form method="dialog" id="itemDialogForm" novalidate>
+    <div class="sheet-head">
+      <div>
+        <h2 id="itemDialogTitle"></h2>
+        <p class="sub" id="itemDialogPrice"></p>
+      </div>
+      <button type="button" class="icon-btn" id="itemDialogClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="sheet-body" id="itemDialogBody"></div>
+    <div class="sheet-foot">
+      <div class="stepper" role="group" aria-label="Quantity">
+        <button type="button" data-step="-1" aria-label="Decrease quantity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+        <output id="itemQty" aria-live="polite">1</output>
+        <button type="button" data-step="1" aria-label="Increase quantity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+      </div>
+      <button type="submit" class="btn btn-solid" id="itemDialogSubmit">Add to order</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="cart-bar" id="cartBar"><button type="button" id="cartBarBtn" aria-haspopup="dialog"><span id="cartBarLabel">View order</span><span id="cartBarTotal">$0.00</span></button></div>
+
+
+</body>
+</html>

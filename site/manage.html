@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Rimal Seafood — Restaurant &amp; Fresh Fish Market | Brooklyn, NY</title>
 <meta name="description" content="Rimal Seafood is a restaurant and fresh fish market at 7812 5th Ave, Brooklyn, NY. Lunch specials from $9.99, fresh fish sold by the pound, grilled to order. Open daily, walk-ins welcome.">
-<link rel="canonical" href="https://rimalseafood.com/">
 <link rel="icon" type="image/png" href="rimal-icon-180.png">
 <link rel="apple-touch-icon" href="rimal-icon-180.png">
 <meta name="theme-color" content="#F6F1E7">
@@ -56,7 +56,8 @@
   (function(){
     var p = location.hash.slice(1);
     if (p === 'gallery') p = 'about';
-    if (!/^(home|about|menu|market|visit|rewards|admin)$/.test(p)) p = 'home';
+    if (!/^(home|about|menu|market|visit|rewards|admin)$/.test(p)) p = 'admin';
+    window.RIMAL_DEFAULT_PAGE = 'admin';
     document.documentElement.setAttribute('data-page', p);
   })();
 </script>
@@ -70,6 +71,7 @@
 <script defer src="menu-data.js"></script>
 <script defer src="config.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js" integrity="sha384-BWcjm9OdFth9TbhCxZPdm+gAOUMAzQy9nmTs12ioXdCcbVnJaPMn+fMUoQCLt60R" crossorigin="anonymous"></script>
+<script defer src="admin.js"></script>
 <script defer src="app.js"></script>
 <style>
   /* ============ DESIGN TOKENS ============ */

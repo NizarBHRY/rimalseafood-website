@@ -7,8 +7,9 @@
 #   fonts.googleapis.com / fonts.gstatic.com (fonts), images.unsplash.com (built-in photos),
 #   efdclcbhsvlnvmjfqnin.supabase.co (database, live updates, the Manager's photos),
 #   www.google.com / maps.google.com (the map on the Visit page).
-# The two sha256 values are the small inline <script> at the top of index.html, with
-# Unix and with Windows line endings. If that script changes, update both hashes.
+# The sha256 values are the small inline <script> at the top of index.html and of
+# manage.html, each with Unix and with Windows line endings. If either script
+# changes, update its two hashes.
 
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -16,7 +17,11 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/ 'sha256-hrb1lNPQHmJLbcWufXgVQBgo5CTr4941EnjKjTh+YcA=' 'sha256-TtIKrZtx+0bZXlR1zI6mY9T4jjNBsCzB1XFUtIEVoqE='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://efdclcbhsvlnvmjfqnin.supabase.co; connect-src 'self' https://efdclcbhsvlnvmjfqnin.supabase.co wss://efdclcbhsvlnvmjfqnin.supabase.co; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/ 'sha256-Ea3Bh18b4bjXffSbPjj7H3Aa+MkpbUweNmRDcyxNta0=' 'sha256-ZnJXvsQsINR2NZe+OjZM0HcrSTOOCBET51zKvJL0KT4=' 'sha256-6xWPhBp+wtwhgUr3e0tbtv2LW6Q1Qnn2tVaRT2TQNK8=' 'sha256-vjoC60Rj48W8SSInHWoXAgmaBY0Sa7SpPNfv+wAzMaA='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://images.unsplash.com https://efdclcbhsvlnvmjfqnin.supabase.co; connect-src 'self' https://efdclcbhsvlnvmjfqnin.supabase.co wss://efdclcbhsvlnvmjfqnin.supabase.co; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Staff-only dashboard: never in search results.
+/manage*
+  X-Robots-Tag: noindex, nofollow
 
 # The logo, mark, icon and menu QR rarely change (the Manager swaps the logo
 # through the dashboard, not these files), so browsers may keep them for a week.
