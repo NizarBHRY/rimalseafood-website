@@ -39,6 +39,7 @@ interface Sandbox {
     RIMAL_SIDES: string[];
     RIMAL_CONFIG?: { SUPABASE_URL?: string; SUPABASE_ANON_KEY?: string };
     rimalApplyDashboard: (overrides: unknown[], customItems: unknown[]) => { menu: MenuCategory[]; market: MarketGroup[] };
+    rimalCorrect: (d: { menu: MenuCategory[]; market: MarketGroup[] }) => { menu: MenuCategory[]; market: MarketGroup[] };
   };
 }
 interface OverrideRow { item_key: string; service_mode?: string | null }
@@ -60,6 +61,7 @@ const root = process.cwd();
 const sandbox = { window: {} } as Sandbox;
 vm.runInNewContext(readFileSync(join(root, 'site', 'menu-data.js'), 'utf8'), sandbox, { filename: 'menu-data.js' });
 vm.runInNewContext(readFileSync(join(root, 'site', 'config.js'), 'utf8'), sandbox, { filename: 'config.js' });
+vm.runInNewContext(readFileSync(join(root, 'site', 'menu-corrections.js'), 'utf8'), sandbox, { filename: 'menu-corrections.js' });
 const data = sandbox.window;
 
 // Tag every built-in item with its dashboard key ("group-lunch|Grilled Salmon",
@@ -145,9 +147,11 @@ function build() {
   }
   if (skipped) console.warn(`[menu] Skipped ${skipped} dashboard dish(es) with an unknown category or no price.`);
 
+  // Spelling fixes for dashboard text (site/menu-corrections.js).
+  const fixed = data.rimalCorrect({ menu, market });
   return {
-    menu: menu.filter((c) => c.items.length > 0),
-    market: market.filter((g) => g.items.length > 0),
+    menu: fixed.menu.filter((c) => c.items.length > 0),
+    market: fixed.market.filter((g) => g.items.length > 0),
   };
 }
 const built = build();

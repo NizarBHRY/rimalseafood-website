@@ -15,7 +15,7 @@ const dist = join(root, 'dist');
 // ---------- 1. Earlier-site pages ----------
 const LEGACY = [
   'manage.html', 'admin.js', 'app.js', 'config.js', 'menu-data.js',
-  'rimal-menu.html', 'rimal-menu.js',
+  'rimal-menu.html', 'rimal-menu.js', 'menu-corrections.js',
   'rimal-logo.jpg', 'rimal-mark.webp', 'rimal-menu-qr.png',
   '.well-known/security.txt',
 ];

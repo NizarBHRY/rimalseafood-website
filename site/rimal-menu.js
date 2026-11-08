@@ -11,6 +11,7 @@
     esc(INFO.street + ', ' + INFO.cityLine) + ' · <a href="tel:' + INFO.phoneTel + '">' + esc(INFO.phoneDisplay) + '</a><br>' + esc(INFO.hours);
 
   function draw(data, live){
+  if (window.rimalCorrect) { data = window.rimalCorrect(data); }
   var html = data.menu.filter(function(c){ return c.items.length; }).map(function(c){
     return '<section><h2>' + esc(c.label) + '</h2>' + (c.note ? '<p class="note">' + esc(c.note) + '</p>' : '') +
       '<ul>' + c.items.map(function(it){
