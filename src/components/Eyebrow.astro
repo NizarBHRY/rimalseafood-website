@@ -1,0 +1,12 @@
+---
+// Arabic label above an English heading, e.g. قائمة الطعام · Menu.
+interface Props {
+  ar: string;
+  en?: string;
+}
+const { ar, en } = Astro.props;
+---
+<p class="eyebrow">
+  <span class="ar" lang="ar" dir="rtl">{ar}</span>
+  {en && <span>{en}</span>}
+</p>

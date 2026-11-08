@@ -1,0 +1,3 @@
+# Old and short addresses for the staff dashboard.
+/admin        /manage.html  301
+/dashboard    /manage.html  301

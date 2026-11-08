@@ -1,0 +1,60 @@
+---
+// Gallery strip: the current site's gallery photos. On desktop the photos
+// glide sideways as you scroll down (src/motion/gallery.ts); elsewhere it is
+// a native scrollable strip (swipe, trackpad, or arrow keys when focused).
+import Eyebrow from './Eyebrow.astro';
+import { photoUrl } from '../data/menu';
+
+const photos = [
+  { id: '1615141982883-c7ad0e69fd62', alt: 'Oysters on ice' },
+  { id: '1519708227418-c8fd9a32b7a2', alt: 'Salmon fillet with vegetables' },
+  { id: '1580959375944-abd7e991f971', alt: 'Grilled fish dish' },
+  { id: '1544025162-d76694265947', alt: 'Lobster dish' },
+];
+---
+<section class="gallery section" aria-labelledby="gallery-title" data-gallery>
+  <div class="wrap gallery-head">
+    <Eyebrow ar="من الداخل" en="A look inside" />
+    <h2 id="gallery-title">From the dock to the dining room</h2>
+    <p class="hint" data-gallery-hint hidden>Keep scrolling to look around.</p>
+  </div>
+  <div class="strip" tabindex="0" role="region" aria-label="Photo gallery" data-gallery-strip>
+    <ul role="list" class="strip-track" data-gallery-track>
+      {photos.map((p) => (
+        <li>
+          <img
+            src={photoUrl(p.id, 800)}
+            srcset={[480, 800, 1200].map((w) => `${photoUrl(p.id, w)} ${w}w`).join(', ')}
+            sizes="(min-width: 64rem) 34vw, 80vw"
+            width="800"
+            height="600"
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+            alt={p.alt}
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gallery-head { margin-bottom: var(--s5); }
+  .hint { font-size: var(--fs-sm); color: var(--muted); margin-top: var(--s2); }
+  .strip { overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; overscroll-behavior-x: contain; }
+  .strip:focus-visible { outline-offset: -3px; }
+  .strip-track { display: flex; gap: var(--s4); width: max-content; padding-inline: max(var(--gutter), calc((100vw - var(--page-max)) / 2)); padding-bottom: var(--s3); }
+  .strip-track li { width: min(80vw, 34rem); scroll-snap-align: center; }
+  .strip-track img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: var(--hairline); user-select: none; }
+  /* Desktop: wider photos so there is always distance to glide. */
+  @media (min-width: 64rem) {
+    .strip-track li { width: 42vw; }
+  }
+  .is-gliding { overflow: hidden; }
+  .is-gliding .strip-track { will-change: transform; }
+</style>
+
+<script>
+  import '../motion/gallery';
+</script>

@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import RewardsLookup from '../components/islands/RewardsLookup';
+import { supabasePublic } from '../data/menu';
+---
+<Base
+  title="Rewards | Rimal Seafood"
+  description="Rimal Seafood rewards: every 5 paid purchases earns a free platter. Look up your progress with your phone number."
+>
+  <section class="wrap section">
+    <Eyebrow ar="المكافآت" en="Rewards" />
+    <h1>Rewards</h1>
+    <p class="intro">Every 5 paid purchases earns a free platter. Give your phone number at the counter when you pay, and each purchase adds a stamp.</p>
+    <ol class="stamps" role="list" aria-label="Five purchases earn a free platter">
+      {[1, 2, 3, 4, 5].map((n) => <li><span class="visually-hidden">Purchase </span>{n}</li>)}
+      <li class="prize">Free platter</li>
+    </ol>
+    <h2 class="lookup-title">Check your stamps</h2>
+    <RewardsLookup client:only="preact" url={supabasePublic.url} anonKey={supabasePublic.key} />
+    <noscript><p>Ask at the counter to check your stamps.</p></noscript>
+    <p><a href="/privacy#rewards">Rewards rules and privacy</a></p>
+  </section>
+</Base>
+
+<style>
+  .intro { margin-block: var(--s4) var(--s6); }
+  .stamps, :global(.stamps) { display: flex; flex-wrap: wrap; gap: var(--s3); margin-bottom: var(--s6); }
+  .stamps li, :global(.stamps li) {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 1px solid var(--brass);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+  }
+  .stamps .prize, :global(.stamps .prize) { width: auto; padding-inline: var(--s4); border-radius: 999px; background: var(--ink); color: var(--sand); font-family: var(--font-body); font-size: var(--fs-sm); }
+  .lookup-title { font-size: var(--fs-xl); margin-bottom: var(--s3); }
+  :global(.rewards-lookup) { max-width: 36rem; margin-bottom: var(--s6); }
+  :global(.rewards-form label) { display: block; font-weight: 500; margin-bottom: var(--s2); }
+  :global(.rewards-row) { display: flex; flex-wrap: wrap; gap: var(--s3); }
+  :global(.rewards-row input) {
+    flex: 1 1 14rem;
+    min-height: 48px;
+    padding: var(--s2) var(--s3);
+    border: 1px solid var(--ink);
+    border-radius: 6px;
+    background: #fffaf2;
+    font: inherit;
+  }
+  :global(.rewards-status) { margin-top: var(--s4); min-height: 1.5em; }
+  :global(.rewards-status .stamps) { margin-bottom: var(--s4); }
+  :global(.rewards-error) { color: #9b2c1f; }
+  :global(.stamps.is-live li.is-on) {
+    background: var(--saffron);
+    border-color: var(--saffron);
+    color: var(--ink);
+    animation: stamp 420ms cubic-bezier(.2, .9, .3, 1.4) both;
+    animation-delay: calc(var(--i) * 120ms);
+  }
+  @keyframes stamp { from { transform: scale(1.6) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { :global(.stamps.is-live li.is-on) { animation: none; } }
+</style>

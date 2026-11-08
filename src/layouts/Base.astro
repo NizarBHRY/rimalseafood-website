@@ -1,0 +1,79 @@
+---
+import '@fontsource-variable/fraunces/wght.css';
+import '@fontsource/ibm-plex-sans/latin-400.css';
+import '@fontsource/ibm-plex-sans/latin-500.css';
+import '@fontsource/ibm-plex-sans/latin-600.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-400.css';
+import '@fontsource/ibm-plex-sans-arabic/arabic-500.css';
+import '@fontsource/reem-kufi/arabic-400.css';
+import '../styles/global.css';
+import frauncesLatin from '@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2?url';
+
+import TopBar from '../components/TopBar.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import BottomBar from '../components/BottomBar.astro';
+import OrderSheet from '../components/OrderSheet.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const canonical = new URL(path, Astro.site).href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#efe6d6" />
+    <link rel="icon" href="/rimal-icon-180.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/rimal-icon-180.png" />
+    <link rel="preload" href={frauncesLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <!-- "motion" class: motion code will run, so hero text may start hidden (see global.css failsafe). -->
+    <script is:inline>if (matchMedia('(prefers-reduced-motion: no-preference)').matches) document.documentElement.classList.add('motion');</script>
+    <meta property="og:type" content="restaurant" />
+    <meta property="og:site_name" content="Rimal Seafood" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/rimal-logo.webp', Astro.site).href} />
+    <meta name="twitter:card" content="summary" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <TopBar />
+    <SiteHeader current={path} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+    <BottomBar />
+    <OrderSheet />
+    <script>
+      import '../motion/core';
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: var(--s3);
+    top: -100px;
+    z-index: 100;
+    padding: var(--s3) var(--s4);
+    background: var(--ink);
+    color: var(--sand);
+  }
+  .skip-link:focus { top: var(--s3); }
+  main:focus { outline: none; }
+</style>

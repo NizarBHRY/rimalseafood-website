@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { business } from '../config/business';
+import { getMenu, money, unitLabel, slug } from '../data/menu';
+
+const { market } = getMenu();
+---
+<Base
+  title="Fish Market | Rimal Seafood, Bay Ridge, Brooklyn"
+  description="Fresh fin fish and shellfish by the pound at Rimal Seafood's market in Bay Ridge: branzino, red snapper, sea bass, salmon, shrimp, crab and more."
+>
+  <div class="wrap section">
+    <Eyebrow ar="سوق السمك" en="Fish Market" />
+    <h1>Fish Market</h1>
+    <p class="intro">Fresh fish and shellfish to take home, priced by the pound or by the piece. Availability changes daily, so call <a href={`tel:${business.phone.tel}`}>{business.phone.display}</a> to check what's in.</p>
+    <!-- Phase 3: live stock (Fresh today / Sold out) is layered onto these cards. -->
+
+    {market.map((group) => (
+      <section class="group" aria-labelledby={`${slug(group.label)}-h`}>
+        <h2 id={`${slug(group.label)}-h`}>{group.label}</h2>
+        <ul role="list" class="grid">
+          {group.items.map((item) => (
+            <li class="fish">
+              <h3>{item.name}</h3>
+              <p class="price">
+                {item.sizes?.length
+                  ? item.sizes.map((s) => `${s.label} ${money(s.price)}`).join(' · ')
+                  : <>{money(item.price)}<span class="unit"> / {unitLabel(item.unit)}</span></>}
+              </p>
+              {item.desc && <p class="desc">{item.desc}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .intro { margin-block: var(--s4) var(--s6); }
+  .group + .group { margin-top: var(--s7); }
+  .group h2 { font-size: var(--fs-xl); padding-bottom: var(--s3); border-bottom: var(--hairline); margin-bottom: var(--s4); }
+  .grid { display: grid; gap: var(--s3); grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); }
+  .fish {
+    padding: var(--s4);
+    background: rgb(217 199 167 / 0.35);
+    border-top: 2px solid var(--brass);
+  }
+  .fish h3 { font-family: var(--font-body); font-size: var(--fs-md); font-weight: 600; line-height: 1.35; }
+  .price { margin-top: var(--s2); font-variant-numeric: tabular-nums; font-size: var(--fs-lg); }
+  .unit { font-size: var(--fs-sm); color: var(--muted); }
+  .desc { font-size: var(--fs-sm); color: var(--muted); margin-top: var(--s1); }
+</style>

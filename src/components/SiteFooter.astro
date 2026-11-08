@@ -1,0 +1,57 @@
+---
+import { business, hoursText, liveSocials } from '../config/business';
+---
+<footer class="site-footer on-ink">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-name">{business.name} <span lang="ar" dir="rtl" class="ar">{business.nameAr}</span></p>
+      <p>{business.tagline}.</p>
+    </div>
+    <div>
+      <h2 class="footer-h">Visit</h2>
+      <address>
+        <a href={business.mapsUrl} target="_blank" rel="noopener">{business.address.street}<br />{business.address.city}, {business.address.region} {business.address.postalCode}<span class="visually-hidden"> (opens Google Maps)</span></a><br />
+        Open daily {hoursText}<br />
+        <a href={`tel:${business.phone.tel}`}>{business.phone.display}</a>
+      </address>
+    </div>
+    <div>
+      <h2 class="footer-h">Delivery &amp; pickup</h2>
+      <ul role="list">
+        {business.orderLinks.map((link) => (
+          <li><a href={link.url} target="_blank" rel="noopener">{link.name}<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2 class="footer-h">More</h2>
+      <ul role="list">
+        {liveSocials.map((s) => (
+          <li><a href={s.url} target="_blank" rel="noopener">{s.name}</a></li>
+        ))}
+        {business.googleReviewUrl && <li><a href={business.googleReviewUrl} target="_blank" rel="noopener">Leave us a Google review</a></li>}
+        <li><a href="/privacy">Privacy &amp; Accessibility</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-base">© {new Date().getFullYear()} {business.name}</div>
+</footer>
+
+<style>
+  .site-footer { padding-block: var(--s7) var(--s5); font-size: var(--fs-sm); }
+  .footer-grid { display: grid; gap: var(--s6); grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+  .footer-name { font-family: var(--font-display); font-size: var(--fs-xl); margin-bottom: var(--s2); }
+  .footer-name .ar { font-family: var(--font-arabic-label); color: var(--brass); margin-inline-start: var(--s2); }
+  .footer-h {
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: var(--s3);
+  }
+  address { font-style: normal; line-height: 1.8; }
+  ul { line-height: 1.9; }
+  .footer-base { margin-top: var(--s7); padding-top: var(--s4); border-top: 1px solid rgb(176 141 87 / 0.4); font-size: var(--fs-xs); color: var(--wet-sand); }
+</style>

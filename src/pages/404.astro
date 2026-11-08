@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { business } from '../config/business';
+---
+<Base title="Page not found | Rimal Seafood" description="This page doesn't exist." noindex>
+  <section class="wrap section">
+    <Eyebrow ar="غير موجود" en="404" />
+    <h1>This page has swum off</h1>
+    <p class="lede">The address may be old or mistyped. Everything is still here:</p>
+    <ul class="links" role="list">
+      <li><a class="btn" href="/menu">See the menu</a></li>
+      <li><a class="btn btn--ghost" href="/">Home</a></li>
+      <li><a class="btn btn--ghost" href={`tel:${business.phone.tel}`}>Call {business.phone.display}</a></li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .lede { margin-block: var(--s4) var(--s5); }
+  .links { display: flex; flex-wrap: wrap; gap: var(--s3); }
+</style>

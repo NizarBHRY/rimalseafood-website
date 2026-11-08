@@ -1,0 +1,172 @@
+---
+// "Catch Your Plate" showpiece: three steps as a plain ordered list.
+//   No JS / phones: a native swipe carousel (scroll-snap, next card peeks).
+//   Desktop with motion: src/motion/catch-your-plate.ts pins the section and
+//     slides the steps sideways as you scroll, with a progress rail.
+//   Reduced motion: steps stack.
+// Photos are the existing site photos until the shoot (see project notes).
+import Eyebrow from './Eyebrow.astro';
+import { getMenu, money, photoUrl } from '../data/menu';
+
+const catchCat = getMenu().menu.find((c) => c.id === 'catch');
+const items = catchCat?.items ?? [];
+const fish = items.find((i) => /whole fish/i.test(i.name));
+const styles = fish?.choices?.find((c) => c.key === 'style')?.values ?? ['Grilled', 'Fried', 'Sautéed', 'Middle Eastern Style'];
+const fishNames = fish?.choices?.find((c) => c.key === 'pick')?.values.slice(0, 6) ?? [];
+
+// One existing photo per cooking style, in the menu's order.
+const STYLE_PHOTOS: Record<string, string> = {
+  Grilled: '1600699899970-b1c9fadd8f9e',
+  Fried: '1548704087-b11dab0fbec0',
+  'Sautéed': '1539136788836-5699e78bfc75',
+  'Middle Eastern Style': '1578935149228-66b184c83e69',
+};
+const PICK_PHOTO = '1764345960391-9b66a2541deb';
+const PLATE_PHOTO = '1644784643137-b9073dd262f6';
+const img = (id: string) => ({
+  src: photoUrl(id, 800),
+  srcset: [480, 800, 1200].map((w) => `${photoUrl(id, w)} ${w}w`).join(', '),
+});
+const steps = ['Pick your fish', 'Choose your style', 'Your plate'];
+---
+<section class="cyp" aria-labelledby="cyp-title" data-cyp>
+  <div class="wrap cyp-head">
+    <div>
+      <Eyebrow ar="اختر سمكتك" en="Catch Your Plate" />
+      <h2 id="cyp-title">Your fish, your way</h2>
+    </div>
+    <ol class="rail" role="list" aria-hidden="true" data-cyp-rail>
+      {steps.map((s, i) => <li class={i === 0 ? 'is-active' : undefined}><span class="dot"></span>{s}</li>)}
+    </ol>
+  </div>
+
+  <div class="viewport" data-cyp-viewport tabindex="0" aria-label="Catch Your Plate steps" role="region">
+    <ol class="track" role="list" data-cyp-track>
+      <li class="panel">
+        <figure class="media">
+          <img {...img(PICK_PHOTO)} sizes="(min-width: 64rem) 40vw, 85vw" width="800" height="1000" loading="lazy" decoding="async" alt="Whole fish on ice" />
+        </figure>
+        <div class="copy">
+          <p class="n">01</p>
+          <h3>Pick your fish</h3>
+          <p>Choose from the market case: {fishNames.join(', ')} and more, whatever came in today.</p>
+        </div>
+      </li>
+      <li class="panel">
+        <figure class="media media--styles" data-cyp-styles>
+          {styles.map((s, i) => STYLE_PHOTOS[s] && (
+            <img {...img(STYLE_PHOTOS[s])} sizes="(min-width: 64rem) 40vw, 85vw" width="800" height="1000" loading="lazy" decoding="async" alt={i === 0 ? `Fish cooked ${s.toLowerCase()}` : ''} data-style={s} />
+          ))}
+          <figcaption class="style-label" aria-hidden="true" data-cyp-style-label>{styles[0]}</figcaption>
+        </figure>
+        <div class="copy">
+          <p class="n">02</p>
+          <h3>Choose your style</h3>
+          <ul role="list" class="styles">
+            {styles.map((s) => <li>{s}</li>)}
+          </ul>
+        </div>
+      </li>
+      <li class="panel">
+        <figure class="media">
+          <img {...img(PLATE_PHOTO)} sizes="(min-width: 64rem) 40vw, 85vw" width="800" height="1000" loading="lazy" decoding="async" alt="A plated whole roasted fish" />
+        </figure>
+        <div class="copy">
+          <p class="n">03</p>
+          <h3>Your plate</h3>
+          <ul role="list" class="prices">
+            {items.map((i) => <li><span>{i.name}</span><span>{money(i.price)}</span></li>)}
+          </ul>
+          <p class="fine">Or pick any fish from the market by the pound and we'll cook it for a $4.99 grill &amp; dine-in fee. {catchCat?.note}</p>
+          <a class="btn" href="/menu#catch-your-plate">See Catch Your Plate</a>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <div class="wrap controls" data-cyp-controls hidden>
+    <button type="button" class="btn btn--ghost" data-cyp-prev aria-label="Previous step">←</button>
+    <button type="button" class="btn btn--ghost" data-cyp-next aria-label="Next step">→</button>
+  </div>
+</section>
+
+<style>
+  .cyp { padding-block: var(--s8); overflow: hidden; }
+  .cyp-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--s4); margin-bottom: var(--s6); }
+
+  .rail { display: none; gap: var(--s5); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .rail li { display: flex; align-items: center; gap: var(--s2); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--brass); }
+  .rail .is-active { color: var(--ink); }
+  .rail .is-active .dot { background: var(--brass); }
+
+  /* Default (no JS, phones, tablets): native swipe carousel, next card peeks. */
+  .viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .viewport::-webkit-scrollbar { display: none; }
+  .viewport:focus-visible { outline-offset: -3px; }
+  .track { display: flex; gap: var(--s4); padding-inline: var(--gutter); width: max-content; }
+  .panel {
+    width: min(85vw, 30rem);
+    scroll-snap-align: start;
+    display: grid;
+    align-content: start;
+    gap: var(--s4);
+  }
+  .media { position: relative; overflow: hidden; aspect-ratio: 4 / 5; border: var(--hairline); border-radius: 10rem 10rem var(--radius) var(--radius); background: var(--wet-sand); }
+  .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .media--styles img:not(:first-of-type) { opacity: 0; }
+  .style-label {
+    position: absolute;
+    left: 50%;
+    bottom: var(--s4);
+    translate: -50% 0;
+    padding: var(--s1) var(--s3);
+    background: var(--ink);
+    color: var(--sand);
+    font-size: var(--fs-sm);
+    white-space: nowrap;
+  }
+  .n { font-family: var(--font-display); font-size: var(--fs-xl); color: var(--brass-ink); line-height: 1; }
+  .copy h3 { margin-block: var(--s2) var(--s3); }
+  .styles { display: flex; flex-wrap: wrap; gap: var(--s2); }
+  .styles li { padding: var(--s1) var(--s3); border: 1px solid var(--brass); font-size: var(--fs-sm); }
+  .prices { max-width: 22rem; margin-bottom: var(--s3); }
+  .prices li { display: flex; justify-content: space-between; gap: var(--s4); padding-block: var(--s1); border-bottom: 1px dotted var(--brass); font-variant-numeric: tabular-nums; }
+  .fine { font-size: var(--fs-sm); color: var(--muted); margin-bottom: var(--s4); }
+  .controls { display: flex; justify-content: flex-end; gap: var(--s2); margin-top: var(--s4); }
+  .controls[hidden] { display: none; }
+  .controls .btn { min-width: 48px; padding: 0; font-size: var(--fs-lg); }
+
+  /* Wide screens: three steps side by side (also the no-JS desktop layout). */
+  @media (min-width: 64rem) {
+    .viewport { overflow: visible; }
+    .track { width: auto; display: grid; grid-template-columns: repeat(3, 1fr); padding-inline: 0; margin-inline: auto; max-width: var(--page-max); width: calc(100% - 2 * var(--gutter)); }
+    .panel { width: auto; }
+    .controls { display: none; }
+  }
+
+  /* Pinned horizontal mode (desktop + motion, set by the script). */
+  .is-pinned .rail { display: flex; }
+  .is-pinned .viewport { overflow: visible; }
+  .is-pinned .track { display: flex; width: max-content; max-width: none; margin: 0; padding-inline: max(var(--gutter), calc((100vw - var(--page-max)) / 2)); gap: var(--s8); will-change: transform; }
+  .is-pinned .panel { width: min(62vw, 56rem); grid-template-columns: 1fr 1fr; align-items: center; gap: var(--s6); }
+  .is-pinned .media { max-height: 62vh; }
+
+  /* Reduced motion: steps stack. */
+  @media (prefers-reduced-motion: reduce) and (max-width: 63.99rem) {
+    .viewport { overflow: visible; }
+    .track { display: grid; width: auto; }
+    .panel { width: auto; }
+    .controls { display: none !important; }
+  }
+</style>
+
+<script>
+  import '../motion/catch-your-plate';
+</script>

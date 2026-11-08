@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Rule from '../components/Rule.astro';
+import RestaurantSchema from '../components/RestaurantSchema.astro';
+import TodaysCatch from '../components/TodaysCatch.astro';
+import CatchYourPlate from '../components/CatchYourPlate.astro';
+import MenuPreview from '../components/MenuPreview.astro';
+import OurStory from '../components/OurStory.astro';
+import Gallery from '../components/Gallery.astro';
+import { business, hoursText, addressLine } from '../config/business';
+import { photoUrl } from '../data/menu';
+
+// The current site's hero photo (existing images until the photo shoot).
+const HERO_PHOTO = '1600699899970-b1c9fadd8f9e';
+---
+<Base
+  title="Rimal Seafood | Lebanese & Egyptian Seafood Restaurant & Fish Market in Bay Ridge, Brooklyn"
+  description="Lebanese & Egyptian seafood restaurant and fish market in Bay Ridge, Brooklyn. Pick your fish from the market case and have it grilled, fried or baked to order. Open daily 12–9 PM."
+>
+  <!-- Old single-page links (rimalseafood.com/#menu, printed QR codes, bookmarks) go to the new pages. -->
+  <script is:inline slot="head">(function(){var m={menu:'/menu',market:'/market',visit:'/visit',rewards:'/rewards',admin:'/manage.html',about:'/#story-title',gallery:'/#gallery-title'};var h=location.hash.slice(1);if(m.hasOwnProperty(h))location.replace(m[h]);})();</script>
+  <RestaurantSchema slot="head" />
+  <section class="hero wrap" data-hero>
+    <div class="hero-copy">
+      <div data-hero-fade><Eyebrow ar="حيث تلتقي بيروت بالقاهرة" en="Where Beirut meets Cairo" /></div>
+      <h1>Lebanese &amp; Egyptian seafood, cooked to order in Bay Ridge.</h1>
+      <p class="lede">Pick your fish from the market case, choose how it's cooked, and we'll bring it to your table. {business.reservations}</p>
+      <div class="btn-row" data-hero-fade>
+        <a class="btn" href="/market">Catch Your Plate</a>
+        <a class="btn btn--ghost" href="/menu">See the menu</a>
+        <button class="btn btn--ghost" type="button" popovertarget="order-sheet">Order delivery</button>
+      </div>
+    </div>
+    <figure class="hero-media" data-hero-media>
+      <img
+        src={photoUrl(HERO_PHOTO, 900)}
+        srcset={[600, 900, 1200, 1600].map((w) => `${photoUrl(HERO_PHOTO, w)} ${w}w`).join(', ')}
+        sizes="(min-width: 64rem) 42vw, 100vw"
+        width="900"
+        height="1100"
+        alt="Whole grilled fish on a plate"
+        fetchpriority="high"
+        decoding="async"
+      />
+    </figure>
+  </section>
+
+  <TodaysCatch />
+
+  <CatchYourPlate />
+  <MenuPreview />
+  <Rule />
+  <OurStory />
+  <Gallery />
+
+  <Rule />
+
+  <section class="wrap section visit-strip" aria-labelledby="visit-title">
+    <Eyebrow ar="زورونا" en="Visit" />
+    <h2 id="visit-title">Walk in or call ahead</h2>
+    <dl class="facts">
+      <div><dt>Address</dt><dd><a href={business.mapsUrl} target="_blank" rel="noopener">{addressLine}<span class="visually-hidden"> (opens Google Maps)</span></a></dd></div>
+      <div><dt>Hours</dt><dd>Open daily {hoursText}</dd></div>
+      <div><dt>Phone</dt><dd><a href={`tel:${business.phone.tel}`}>{business.phone.display}</a></dd></div>
+    </dl>
+  </section>
+</Base>
+
+<style>
+  .hero { display: grid; gap: var(--s6); align-items: center; padding-block: var(--s7); }
+  .hero h1 { max-width: 18ch; margin-bottom: var(--s5); }
+  .lede { font-size: var(--fs-lg); margin-bottom: var(--s6); }
+  .hero-media { overflow: hidden; border-radius: 12rem 12rem var(--radius) var(--radius); border: var(--hairline); aspect-ratio: 4 / 5; max-height: 70vh; }
+  .hero-media img { width: 100%; height: 100%; object-fit: cover; }
+  @media (min-width: 64rem) {
+    .hero { grid-template-columns: 1.15fr 0.85fr; gap: var(--s8); padding-block: var(--s8); }
+  }
+</style>
+
+<script>
+  import '../motion/hero';
+</script>
+
+<style>
+  .facts { display: grid; gap: var(--s5); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); margin-top: var(--s6); }
+  dt { font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  dd { margin: var(--s1) 0 0; font-size: var(--fs-lg); }
+</style>

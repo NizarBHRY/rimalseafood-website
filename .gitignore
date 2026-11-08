@@ -1,7 +1,17 @@
 # Local editor / tool settings
 .claude/
+
+# Astro
+node_modules/
+dist/
+.astro/
 .env
 .env.*
 !.env.example
-node_modules/
+
+# Netlify CLI link for this machine
 .netlify/
+
+# Test output
+test-results/
+playwright-report/

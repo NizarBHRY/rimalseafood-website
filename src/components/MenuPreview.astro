@@ -1,0 +1,68 @@
+---
+// Homepage menu preview: a few dishes with photos from each section.
+// Without JS all are shown; with JS, category chips filter them and GSAP Flip
+// animates the re-flow (src/motion/menu-preview.ts).
+import Eyebrow from './Eyebrow.astro';
+import { getMenu, money, fromPrice, photoUrl, slug } from '../data/menu';
+
+const PER_CATEGORY = 3;
+const { menu } = getMenu();
+const lunch = menu.find((c) => c.id === 'lunch');
+const sections = menu
+  .filter((c) => ['lunch', 'mains', 'catch', 'sides', 'desserts'].includes(c.id))
+  .map((c) => ({ ...c, items: c.items.filter((i) => i.photo).slice(0, PER_CATEGORY) }))
+  .filter((c) => c.items.length);
+---
+<section class="preview wrap section" aria-labelledby="preview-title" data-preview>
+  <Eyebrow ar="قائمة الطعام" en="Menu" />
+  <h2 id="preview-title">From the kitchen</h2>
+  {lunch && <p class="lead">Lunch specials from {money(Math.min(...lunch.items.map(fromPrice)))}{lunch.note && <>, {lunch.note}</>}.</p>}
+
+  <div class="chips" role="group" aria-label="Show dishes from" data-preview-chips hidden>
+    <button type="button" aria-pressed="true" data-filter="all">All</button>
+    {sections.map((s) => <button type="button" aria-pressed="false" data-filter={s.id}>{s.label}</button>)}
+  </div>
+
+  <ul role="list" class="cards" data-preview-grid>
+    {sections.flatMap((s) => s.items.map((item) => (
+      <li class="card" data-cat={s.id}>
+        <img src={photoUrl(item.photo!, 480)} srcset={`${photoUrl(item.photo!, 480)} 480w, ${photoUrl(item.photo!, 800)} 800w`} sizes="(min-width: 64rem) 22vw, (min-width: 40rem) 45vw, 90vw" width="480" height="360" loading="lazy" decoding="async" alt="" />
+        <div class="card-body">
+          <p class="card-cat">{s.label}</p>
+          <h3>{item.name}</h3>
+          <p class="card-price">{item.sizes?.length ? `from ${money(fromPrice(item))}` : money(item.price)}</p>
+        </div>
+      </li>
+    )))}
+  </ul>
+  <p class="more"><a class="btn" href="/menu">See the full menu</a> <a class="btn btn--ghost" href={`/menu#${slug('Catch Your Plate')}`}>Catch Your Plate</a></p>
+</section>
+
+<style>
+  .lead { margin-block: var(--s3) var(--s5); }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s2); margin-bottom: var(--s5); }
+  .chips[hidden] { display: none; }
+  .chips button {
+    min-height: 44px;
+    padding: 0 var(--s4);
+    border: 1px solid var(--brass);
+    border-radius: 999px;
+    background: transparent;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+  }
+  .chips button[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: var(--sand); }
+  .cards { display: grid; gap: var(--s4); grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+  .cards .card { padding: 0; overflow: hidden; }
+  .card[hidden] { display: none; }
+  .card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .card-body { padding: var(--s3) var(--s4) var(--s4); }
+  .card-cat { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .card h3 { font-family: var(--font-body); font-size: var(--fs-md); font-weight: 600; margin-block: var(--s1); }
+  .card-price { font-variant-numeric: tabular-nums; }
+  .more { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s6); max-width: none; }
+</style>
+
+<script>
+  import '../motion/menu-preview';
+</script>

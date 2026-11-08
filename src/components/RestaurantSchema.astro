@@ -1,0 +1,51 @@
+---
+// schema.org Restaurant for search engines, built from business.ts.
+import { business, liveSocials } from '../config/business';
+
+const site = Astro.site!;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'Restaurant',
+  '@id': new URL('/#restaurant', site).href,
+  name: business.name,
+  alternateName: business.nameAr,
+  description: `${business.tagline}.`,
+  url: site.href,
+  image: new URL('/rimal-logo.webp', site).href,
+  logo: new URL('/rimal-logo.webp', site).href,
+  telephone: business.phone.schema,
+  priceRange: '$$',
+  servesCuisine: ['Seafood', 'Lebanese', 'Egyptian', 'Mediterranean'],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: business.address.street,
+    addressLocality: business.address.city,
+    addressRegion: business.address.region,
+    postalCode: business.address.postalCode,
+    addressCountry: business.address.country,
+  },
+  geo: { '@type': 'GeoCoordinates', ...business.geo },
+  hasMap: business.mapsUrl,
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: business.hours.opens,
+      closes: business.hours.closes,
+    },
+  ],
+  hasMenu: new URL('/menu', site).href,
+  acceptsReservations: true,
+  potentialAction: {
+    '@type': 'OrderAction',
+    target: business.orderLinks.map((l) => ({
+      '@type': 'EntryPoint',
+      name: l.name,
+      urlTemplate: l.url,
+      actionPlatform: ['https://schema.org/DesktopWebPlatform', 'https://schema.org/MobileWebPlatform'],
+    })),
+  },
+  ...(liveSocials.length ? { sameAs: liveSocials.map((s) => s.url) } : {}),
+};
+---
+<script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />

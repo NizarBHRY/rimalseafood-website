@@ -1,0 +1,51 @@
+/* Design tokens: "Sand & Sea". Two dominant colors (sand, ink) plus saffron for actions. */
+:root {
+  /* Palette */
+  --ink: #0f1c26;          /* dark sections, footer, body text */
+  --sand: #efe6d6;         /* base background */
+  --wet-sand: #d9c7a7;     /* cards, dividers */
+  --sea-glass: #2f6f6a;    /* links, accents (4.7:1 on sand) */
+  --sea-glass-light: #8fc2bb; /* links on ink */
+  --saffron: #d4733f;      /* buttons only; ink text on it is 5.2:1 (plan's #C8643B was 4.4:1) */
+  --saffron-hover: #df8552;
+  --brass: #b08d57;        /* hairlines; text only on ink (5.6:1) */
+  --brass-ink: #7a5c2a;    /* brass for text on sand (5.0:1) */
+  --muted: #4a5560;        /* secondary text on sand (6.2:1) */
+
+  /* Type */
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-body: 'IBM Plex Sans', 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-arabic-label: 'Reem Kufi', 'IBM Plex Sans Arabic', sans-serif;
+
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+  --fs-2xl: clamp(2rem, 1.5rem + 2.2vw, 3rem);
+  --fs-3xl: clamp(2.5rem, 1.6rem + 4vw, 4.5rem);
+
+  /* Space (8px scale) */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+  --s8: 4.5rem;
+  --s9: 6.5rem;
+
+  --gutter: 16px;
+  --measure: 62ch;
+  --page-max: 72rem;
+  --radius: 2px;
+  --hairline: 1px solid var(--brass);
+  --focus-ring: 3px solid var(--sea-glass);
+  --topbar-h: 2.25rem;
+  --bottombar-h: 4rem;
+}
+
+@media (min-width: 48rem) {
+  :root { --gutter: 32px; }
+}

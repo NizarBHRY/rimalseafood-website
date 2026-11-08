@@ -1,0 +1,63 @@
+---
+interface Props {
+  current: string;
+}
+const { current } = Astro.props;
+
+const nav = [
+  { href: '/menu', label: 'Menu' },
+  { href: '/market', label: 'Fish Market' },
+  { href: '/visit', label: 'Visit' },
+  { href: '/rewards', label: 'Rewards' },
+];
+---
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="/" class="brand" aria-current={current === '/' ? 'page' : undefined}>
+      <img src="/rimal-logo-240.webp" srcset="/rimal-logo-240.webp 240w, /rimal-logo.webp 480w" sizes="120px" width="240" height="139" alt="Rimal Seafood — home" />
+    </a>
+    <nav aria-label="Main">
+      <ul role="list">
+        {nav.map((item) => (
+          <li><a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <button class="btn header-order" type="button" popovertarget="order-sheet">Order delivery</button>
+  </div>
+</header>
+
+<style>
+  .site-header { border-bottom: var(--hairline); }
+  .header-inner {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--s3) var(--s5);
+    padding-block: var(--s3);
+  }
+  .brand img { width: 96px; }
+  nav { grid-column: 1 / -1; overflow-x: auto; }
+  nav ul { display: flex; gap: var(--s5); padding-block: var(--s1); }
+  nav a {
+    display: inline-block;
+    padding-block: var(--s2);
+    color: var(--ink);
+    text-decoration: none;
+    font-size: var(--fs-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+  }
+  nav a:hover { border-bottom-color: var(--wet-sand); }
+  nav a[aria-current='page'] { border-bottom-color: var(--brass); }
+  .header-order { display: none; }
+
+  @media (min-width: 64rem) {
+    .header-inner { grid-template-columns: auto 1fr auto; }
+    .brand img { width: 120px; }
+    nav { grid-column: auto; justify-self: end; }
+    .header-order { display: inline-flex; }
+  }
+</style>

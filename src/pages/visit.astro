@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { business, hoursText, addressLine } from '../config/business';
+import { getMenu, money, fromPrice } from '../data/menu';
+
+// Questions answered only with facts the site already states elsewhere
+// (business.ts, the live menu, the rewards rules). No new claims.
+const { menu } = getMenu();
+const lunch = menu.find((c) => c.id === 'lunch');
+const catchItems = menu.find((c) => c.id === 'catch')?.items ?? [];
+const delivery = business.orderLinks.map((l) => l.name).join(', ');
+const faqs: { q: string; a: string }[] = [
+  { q: 'What are your hours?', a: `We're open every day, ${hoursText}.` },
+  { q: 'Do you take reservations?', a: business.reservations },
+  { q: 'Do you offer delivery or pickup?', a: `Yes. Order through ${delivery}, or call ${business.phone.display} to order for pickup.` },
+  { q: 'What kind of food do you serve?', a: 'Lebanese and Egyptian seafood: grilled, fried and sautéed fish and shellfish, plus salads, sides and desserts. See the full menu at rimalseafood.com/menu.' },
+  { q: 'Can I buy fresh fish to cook at home?', a: 'Yes. Our fish market sells fin fish and shellfish by the pound or by the piece. Availability changes daily, so call to check what came in.' },
+  ...(catchItems.length
+    ? [{ q: 'What is Catch Your Plate?', a: `Pick your fish and how you'd like it cooked: ${catchItems.map((i) => `${i.name} ${money(fromPrice(i))}`).join(', ')}. You can also pick any fish from the market by the pound and we'll cook it for a $4.99 grill & dine-in fee.` }]
+    : []),
+  ...(lunch?.items.length
+    ? [{ q: 'Do you have lunch specials?', a: `Yes, from ${money(Math.min(...lunch.items.map(fromPrice)))}${lunch.note ? `, ${lunch.note.replace(' · ', ', ')}` : ''}.` }]
+    : []),
+  { q: 'How do rewards work?', a: 'Add your phone number to an order. Every 5 paid purchases with the same number earn a free gift platter; tell our staff at the counter to collect it.' },
+];
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<Base
+  title="Visit | Rimal Seafood, 7812 5th Ave, Bay Ridge, Brooklyn"
+  description="Rimal Seafood is at 7812 5th Ave, Brooklyn, NY 11209. Open daily 12–9 PM. Walk-ins welcome, or call (347) 497-4002 to reserve."
+>
+  <section class="wrap section">
+    <Eyebrow ar="زورونا" en="Visit" />
+    <h1>Visit us</h1>
+    <p class="intro">{business.reservations}</p>
+    <dl class="facts">
+      <div><dt>Address</dt><dd><a href={business.mapsUrl} target="_blank" rel="noopener">{addressLine}<span class="visually-hidden"> (opens Google Maps)</span></a></dd></div>
+      <div><dt>Hours</dt><dd>Open daily<br />{hoursText}</dd></div>
+      <div><dt>Phone</dt><dd><a href={`tel:${business.phone.tel}`}>{business.phone.display}</a></dd></div>
+    </dl>
+    <p><a class="btn" href={business.mapsUrl} target="_blank" rel="noopener">Get directions<span class="visually-hidden"> (opens Google Maps)</span></a></p>
+  </section>
+
+  <section class="section on-ink" aria-labelledby="delivery-title">
+    <div class="wrap">
+      <Eyebrow ar="توصيل" en="Delivery & pickup" />
+      <h2 id="delivery-title">Order delivery or pickup</h2>
+      <ul role="list" class="btn-row delivery">
+        {business.orderLinks.map((link, i) => (
+          <li><a class={i === 0 ? 'btn' : 'btn btn--ghost'} href={link.url} target="_blank" rel="noopener">{link.name}<span class="visually-hidden"> (opens in a new tab)</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap section" aria-labelledby="faq-title">
+    <Eyebrow ar="أسئلة شائعة" en="Questions" />
+    <h2 id="faq-title">Good to know</h2>
+    <dl class="faq">
+      {faqs.map((f) => (
+        <div>
+          <dt>{f.q}</dt>
+          <dd>{f.a}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(faqLd)} />
+</Base>
+
+<style>
+  .intro { margin-block: var(--s4) var(--s6); font-size: var(--fs-lg); }
+  .facts { display: grid; gap: var(--s5); grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); margin-bottom: var(--s6); }
+  dt { font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  dd { margin: var(--s1) 0 0; font-size: var(--fs-lg); }
+  .delivery { margin-top: var(--s5); }
+  .faq { margin-top: var(--s5); display: grid; gap: var(--s4); max-width: 48rem; }
+  .faq div { padding-bottom: var(--s4); border-bottom: 1px solid rgb(176 141 87 / 0.35); }
+  .faq dt { font-size: var(--fs-md); letter-spacing: 0; text-transform: none; color: var(--ink); font-weight: 600; }
+  .faq dd { font-size: var(--fs-md); color: var(--ink); }
+</style>

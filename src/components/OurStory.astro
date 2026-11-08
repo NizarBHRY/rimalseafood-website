@@ -1,0 +1,61 @@
+---
+// Our Story. Text and stats carried over from the current site's About page.
+// Motion (src/motion/story.ts): slight photo parallax on desktop; the numbers
+// count up once when they come into view. The final numbers are in the HTML.
+import Eyebrow from './Eyebrow.astro';
+import { photoUrl } from '../data/menu';
+
+const PHOTO = '1559847844-5315695dadae';
+const stats = [
+  { value: 2026, label: 'Newly opened', from: 2026 },
+  { value: 24, suffix: 'h', label: 'Dock to table', from: 0 },
+  { value: 7, label: 'Days a week', from: 0 },
+];
+---
+<section class="story wrap section" aria-labelledby="story-title" data-story>
+  <figure class="story-media" data-parallax>
+    <img
+      src={photoUrl(PHOTO, 800)}
+      srcset={[480, 800, 1200].map((w) => `${photoUrl(PHOTO, w)} ${w}w`).join(', ')}
+      sizes="(min-width: 64rem) 38vw, 100vw"
+      width="800"
+      height="1000"
+      loading="lazy"
+      decoding="async"
+      alt="A chef preparing fresh seafood"
+    />
+  </figure>
+  <div class="story-copy">
+    <Eyebrow ar="قصتنا" en="Our story" />
+    <h2 id="story-title">A table by the water, in spirit</h2>
+    <p>Rimal Seafood is a brand-new arrival to Brooklyn, opening its doors in 2026 with one belief: seafood should taste like the sea it came from, whether it's plated at our table or wrapped up from our fish market case.</p>
+    <p>Every fillet, shell, and claw is sourced within 24 hours of landing. Our kitchen handles it with a light touch for the dining room, and our market counter cleans, scales, and cuts it fresh to order for cooking at home.</p>
+    <dl class="stats">
+      {stats.map((s) => (
+        <div>
+          <dt>{s.label}</dt>
+          <dd><span data-count={s.value} data-from={s.from}>{s.value}</span>{s.suffix}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .story { display: grid; gap: var(--s6); align-items: center; }
+  .story-media { overflow: hidden; aspect-ratio: 4 / 5; max-height: 75vh; border: var(--hairline); border-radius: var(--radius) 10rem var(--radius) var(--radius); }
+  .story-media img { width: 100%; height: 115%; object-fit: cover; }
+  .story-copy p + p { margin-top: var(--s3); }
+  .story-copy h2 { margin-bottom: var(--s4); }
+  .stats { display: flex; flex-wrap: wrap; gap: var(--s5) var(--s7); margin-top: var(--s6); padding-top: var(--s5); border-top: var(--hairline); }
+  .stats div { display: flex; flex-direction: column-reverse; }
+  dt { font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  dd { margin: 0; font-family: var(--font-display); font-size: var(--fs-2xl); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  @media (min-width: 64rem) {
+    .story { grid-template-columns: 0.85fr 1.15fr; gap: var(--s8); }
+  }
+</style>
+
+<script>
+  import '../motion/story';
+</script>

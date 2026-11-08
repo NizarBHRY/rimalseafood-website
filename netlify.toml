@@ -1,13 +1,13 @@
-# Only the site/ folder is published. Everything else in this repository
-# (setup guides, database scripts, old price lists) never reaches the web.
-# Security and cache headers are in site/_headers, so they also apply when the
-# site folder is dragged into Netlify by hand. Missing pages show site/404.html.
+# The website is an Astro site built into dist/. Netlify runs `npm run build`,
+# which also copies the staff dashboard (site/manage.html) and writes
+# dist/_headers (security headers) — see scripts/postbuild.mjs.
 [build]
-  publish = "site"
+  command = "npm run build"
+  publish = "dist"
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "24"
 
 [functions]
   node_bundler = "esbuild"

@@ -1,0 +1,194 @@
+---
+import Base from '../layouts/Base.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import MenuSearch from '../components/islands/MenuSearch.tsx';
+import { business } from '../config/business';
+import { getMenu, sides, money, fromPrice, slug, categoryAr, photoUrl, type MenuItem } from '../data/menu';
+
+const { menu } = getMenu();
+
+const listOr = (v: string[]) => (v.length > 1 ? `${v.slice(0, -1).join(', ')} or ${v[v.length - 1]}` : v[0] ?? '');
+
+// Extra lines under a dish, skipping anything its description already says.
+function details(item: MenuItem): string[] {
+  const desc = (item.desc ?? '').toLowerCase();
+  const out: string[] = [];
+  if (item.sides && !desc.includes('side')) out.push(`With ${item.sides} ${item.sides === 1 ? 'side' : 'sides'} of your choice`);
+  for (const c of item.choices ?? []) {
+    if (c.values.every((v) => desc.includes(v.toLowerCase()))) continue;
+    out.push(`${c.key === 'style' ? 'Cooking style' : 'Choice of'}: ${listOr(c.values)}`);
+  }
+  if (item.serviceMode === 'togo') out.push('To go only');
+  if (item.serviceMode === 'stay') out.push('Dine-in only');
+  return out;
+}
+const searchText = (item: MenuItem, category: string) =>
+  [item.name, item.desc, category, ...(item.choices ?? []).flatMap((c) => c.values), ...(item.sizes ?? []).map((s) => s.label)]
+    .filter(Boolean)
+    .join(' ');
+
+// schema.org Menu for search engines, generated from the same data.
+const menuLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Menu',
+  name: `${business.name} Menu`,
+  url: new URL('/menu', Astro.site).href,
+  inLanguage: 'en',
+  hasMenuSection: menu.map((cat) => ({
+    '@type': 'MenuSection',
+    name: cat.label,
+    ...(cat.note ? { description: cat.note } : {}),
+    hasMenuItem: cat.items.map((item) => ({
+      '@type': 'MenuItem',
+      name: item.name,
+      ...(item.desc ? { description: item.desc } : {}),
+      offers: (item.sizes?.length ? item.sizes : [{ label: '', price: item.price }]).map((s) => ({
+        '@type': 'Offer',
+        ...(s.label ? { name: s.label } : {}),
+        price: s.price.toFixed(2),
+        priceCurrency: 'USD',
+      })),
+    })),
+  })),
+};
+---
+<Base
+  title="Menu | Rimal Seafood, Bay Ridge, Brooklyn"
+  description="The full Rimal Seafood menu with prices: lunch specials from $9.99, main plates, Catch Your Plate fresh fish, sides and salads, specials, drinks and desserts."
+>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(menuLd)} />
+
+  <div class="wrap section menu-page">
+    <header class="menu-head">
+      <Eyebrow ar="قائمة الطعام" en="Menu" />
+      <h1>Menu</h1>
+      <p>Every dish is cooked to order. Please ask our staff about allergens. Prices exclude 8.875% NYC sales tax on prepared food. To order by phone, call <a href={`tel:${business.phone.tel}`}>{business.phone.display}</a>.</p>
+    </header>
+
+    <nav class="cat-nav" aria-label="Menu sections">
+      <ul role="list">
+        {menu.map((cat) => <li><a href={`#${slug(cat.label)}`}>{cat.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <MenuSearch client:only="preact" />
+
+    {menu.map((cat) => (
+      <section class="category" id={slug(cat.label)} aria-labelledby={`${slug(cat.label)}-h`} data-menu-group>
+        <div class="cat-head">
+          {categoryAr[cat.id] && <p class="cat-ar" lang="ar" dir="rtl">{categoryAr[cat.id]}</p>}
+          <h2 id={`${slug(cat.label)}-h`}>{cat.label}</h2>
+          {cat.note && <p class="cat-note">{cat.note}</p>}
+        </div>
+        <ul role="list" class="items">
+          {cat.items.map((item) => (
+            <li class="item" data-menu-item data-search={searchText(item, cat.label)} data-photo={item.photo ? photoUrl(item.photo, 360) : undefined}>
+              <div class="item-line">
+                <h3 class="item-name">{item.name}</h3>
+                <span class="leader" aria-hidden="true"></span>
+                <p class="item-price">
+                  {item.sizes?.length
+                    ? item.sizes.map((s, i) => <span>{i > 0 && <span class="sep" aria-hidden="true"> · </span>}{s.label} {money(s.price)}</span>)
+                    : money(fromPrice(item))}
+                </p>
+              </div>
+              {item.desc && <p class="item-desc">{item.desc}</p>}
+              {details(item).map((d) => <p class="item-detail">{d}</p>)}
+              {item.photo && (
+                <details class="item-photo">
+                  <summary>Photo<span class="visually-hidden"> of {item.name}</span></summary>
+                  <img src={photoUrl(item.photo, 480)} width="480" height="360" loading="lazy" decoding="async" alt={item.name} />
+                </details>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <img class="float-photo" alt="" aria-hidden="true" data-float-photo />
+
+    <section class="category" aria-labelledby="sides-h">
+      <h2 id="sides-h" class="sides-h">Sides to choose from</h2>
+      <p class="item-desc">For dishes that come with sides: {sides.join(', ')}.</p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import '../motion/menu-hover';
+</script>
+
+<style>
+  .menu-head p { margin-top: var(--s4); }
+  .cat-nav {
+    position: sticky;
+    top: var(--topbar-h);
+    z-index: 30;
+    margin-block: var(--s6) var(--s4);
+    padding-block: var(--s2);
+    background: var(--sand);
+    border-block: var(--hairline);
+    overflow-x: auto;
+  }
+  .cat-nav ul { display: flex; gap: var(--s2); }
+  .cat-nav a {
+    display: inline-block;
+    padding: var(--s2) var(--s3);
+    white-space: nowrap;
+    font-size: var(--fs-sm);
+    color: var(--ink);
+    text-decoration: none;
+    border-radius: var(--radius);
+  }
+  .cat-nav a:hover { background: rgb(217 199 167 / 0.5); }
+  .category { padding-block: var(--s6) var(--s4); scroll-margin-top: calc(var(--topbar-h) + 4rem); }
+  .category[hidden] { display: none; }
+  .cat-head { margin-bottom: var(--s4); }
+  .cat-ar { width: fit-content; font-family: var(--font-arabic-label); color: var(--brass-ink); font-size: var(--fs-lg); }
+  .cat-head h2, .sides-h { font-size: var(--fs-xl); }
+  .cat-note { color: var(--muted); font-size: var(--fs-sm); margin-top: var(--s1); }
+  .items { display: grid; gap: var(--s4) var(--s7); }
+  @media (min-width: 56rem) { .items { grid-template-columns: 1fr 1fr; } }
+  .item { padding-bottom: var(--s3); border-bottom: 1px solid rgb(176 141 87 / 0.35); }
+  .item[hidden] { display: none; }
+  .item-line { display: flex; align-items: baseline; gap: var(--s2); }
+  .item-name { font-family: var(--font-body); font-size: var(--fs-md); font-weight: 600; line-height: 1.35; }
+  .leader { flex: 1; min-width: var(--s4); border-bottom: 1px dotted var(--brass); transform: translateY(-0.3em); }
+  .item-price { flex: none; max-width: 55%; text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .item-desc, .item-detail { font-size: var(--fs-sm); color: var(--muted); margin-top: var(--s1); }
+  .sep { color: var(--brass-ink); }
+  .item-photo { margin-top: var(--s2); }
+  .item-photo summary { display: inline-block; padding-block: var(--s1); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--sea-glass); cursor: pointer; list-style: none; }
+  .item-photo summary::-webkit-details-marker { display: none; }
+  .item-photo summary::before { content: '+ '; }
+  .item-photo[open] summary::before { content: '− '; }
+  .item-photo img { width: 100%; max-width: 22rem; aspect-ratio: 4 / 3; object-fit: cover; margin-top: var(--s2); border: var(--hairline); }
+  .float-photo {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 35;
+    width: 15rem;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: var(--hairline);
+    box-shadow: 0 18px 40px rgb(15 28 38 / 0.25);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .menu-page :global(.menu-search) { margin-bottom: var(--s2); }
+  .menu-page :global(.menu-search label) { display: block; font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--s2); }
+  .menu-page :global(.menu-search-row) { display: flex; gap: var(--s2); }
+  .menu-page :global(.menu-search input) {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 var(--s4);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    background: #fbf7f0;
+  }
+  .menu-page :global(.menu-search-status) { min-height: 1.6em; font-size: var(--fs-sm); color: var(--muted); margin-top: var(--s2); }
+</style>

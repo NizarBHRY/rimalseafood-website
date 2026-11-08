@@ -1,0 +1,58 @@
+---
+// Delivery and pickup links in a native popover: opens from any
+// <button popovertarget="order-sheet">, closes on Esc or outside click,
+// and needs no JavaScript.
+import { business } from '../config/business';
+---
+<div id="order-sheet" class="sheet" popover aria-labelledby="order-sheet-title" data-lenis-prevent>
+  <div class="sheet-head">
+    <h2 id="order-sheet-title">Order delivery or pickup</h2>
+    <button class="close" type="button" popovertarget="order-sheet" popovertargetaction="hide">
+      <span aria-hidden="true">×</span><span class="visually-hidden">Close</span>
+    </button>
+  </div>
+  <ul role="list" class="sheet-links">
+    {business.orderLinks.map((link, i) => (
+      <li>
+        <a class={i === 0 ? 'btn' : 'btn btn--ghost'} href={link.url} target="_blank" rel="noopener">
+          {link.name}<span class="visually-hidden"> (opens in a new tab)</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="sheet-note">Or call <a href={`tel:${business.phone.tel}`}>{business.phone.display}</a> to order for pickup.</p>
+</div>
+
+<style>
+  .sheet {
+    margin: auto auto 0;
+    width: min(100%, 28rem);
+    max-height: 85dvh;
+    padding: var(--s5) var(--gutter) calc(var(--s5) + env(safe-area-inset-bottom));
+    border: none;
+    border-top: 3px solid var(--brass);
+    background: var(--sand);
+    color: var(--ink);
+    box-shadow: 0 -12px 40px rgb(15 28 38 / 0.25);
+  }
+  .sheet::backdrop { background: rgb(15 28 38 / 0.55); }
+  @media (min-width: 40rem) {
+    .sheet { margin: auto; border: var(--hairline); border-top-width: 3px; }
+  }
+  .sheet-head { display: flex; align-items: start; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s4); }
+  .sheet-head h2 { font-size: var(--fs-xl); }
+  .close {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    background: transparent;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .sheet-links { display: grid; gap: var(--s2); }
+  .sheet-links .btn { width: 100%; }
+  .sheet-note { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--muted); }
+</style>

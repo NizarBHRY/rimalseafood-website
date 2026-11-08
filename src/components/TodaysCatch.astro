@@ -1,0 +1,65 @@
+---
+// Today's Catch ticker. Static wrapped list without JS or with reduced
+// motion; src/motion/marquee.ts turns it into a pausable ticker.
+// Names come from the market list; items the dashboard has at 0 stock (read
+// at build time) are struck through. Live updates between builds: Phase 3.
+import Eyebrow from './Eyebrow.astro';
+import { business } from '../config/business';
+import { getMenu, soldOut } from '../data/menu';
+
+const names = getMenu().market.flatMap((g) => g.items.map((i) => i.name));
+---
+<section class="catch on-ink" aria-labelledby="catch-title" data-marquee>
+  <div class="wrap catch-head">
+    <div>
+      <Eyebrow ar="صيد اليوم" en="Today's catch" />
+      <h2 id="catch-title">Fresh from the market case</h2>
+    </div>
+    <button type="button" class="btn btn--ghost catch-toggle" data-marquee-toggle>Pause</button>
+  </div>
+  <div class="viewport">
+    <div class="track" data-marquee-track>
+      <ul role="list">
+        {names.map((n) => (
+          <li class={soldOut.includes(n) ? 'sold-out' : undefined}>
+            {n}{soldOut.includes(n) && <span class="visually-hidden"> (sold out)</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <p class="wrap catch-note">Availability changes daily. <a href={`tel:${business.phone.tel}`}>Call {business.phone.display}</a> to check what's in.</p>
+</section>
+
+<style>
+  .catch { padding-block: var(--s7); overflow: hidden; }
+  .catch-head { display: flex; align-items: end; justify-content: space-between; gap: var(--s4); margin-bottom: var(--s5); }
+  .catch-toggle { display: none; min-height: 44px; padding-inline: var(--s4); }
+  .is-running .catch-toggle { display: inline-flex; }
+
+  .viewport { border-block: 1px solid rgb(176 141 87 / 0.5); padding-block: var(--s4); }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s2) 0;
+    width: min(100% - 2 * var(--gutter), var(--page-max));
+    margin-inline: auto;
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    line-height: 1.3;
+  }
+  li { white-space: nowrap; }
+  li::after { content: '✦'; color: var(--brass); font-size: 0.6em; margin-inline: var(--s4); vertical-align: 0.2em; }
+  .sold-out { text-decoration: line-through; text-decoration-color: var(--saffron); opacity: 0.6; }
+
+  /* Running: one line, two copies side by side, moved by GSAP. */
+  .is-running .track { display: flex; width: max-content; will-change: transform; }
+  .is-running ul { flex-wrap: nowrap; width: auto; margin: 0; font-size: var(--fs-2xl); }
+
+  .catch-note { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--wet-sand); }
+</style>
+
+<script>
+  import '../motion/marquee';
+</script>
