@@ -21,7 +21,9 @@ interface Props {
   noindex?: boolean;
 }
 const { title, description, noindex = false } = Astro.props;
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+// The build writes files (menu.html, index.html), but the site is served at
+// clean addresses (/menu, /), which are the ones the sitemap lists.
+const path = Astro.url.pathname.replace(/(\/index)?\.html$/, '').replace(/\/$/, '') || '/';
 const canonical = new URL(path, Astro.site).href;
 ---
 <!doctype html>
@@ -39,12 +41,15 @@ const canonical = new URL(path, Astro.site).href;
     <link rel="preconnect" href="https://images.unsplash.com" />
     <!-- "motion" class: motion code will run, so hero text may start hidden (see global.css failsafe). -->
     <script is:inline>if (matchMedia('(prefers-reduced-motion: no-preference)').matches) document.documentElement.classList.add('motion');</script>
-    <meta property="og:type" content="restaurant" />
+    <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Rimal Seafood" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL('/rimal-logo.webp', Astro.site).href} />
+    <meta property="og:image" content={new URL('/rimal-logo.jpg', Astro.site).href} />
+    <meta property="og:image:width" content="1125" />
+    <meta property="og:image:height" content="737" />
+    <meta property="og:image:alt" content="Rimal Seafood logo" />
     <meta name="twitter:card" content="summary" />
     <slot name="head" />
   </head>

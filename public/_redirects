@@ -1,3 +1,7 @@
+# The Netlify address shows the same site; send it to the real domain.
+# (Deploy previews use <id>--rimalseafood.netlify.app and are not affected.)
+https://rimalseafood.netlify.app/*  https://rimalseafood.com/:splat  301!
+
 # Old and short addresses for the staff dashboard.
 /admin        /manage.html  301
 /dashboard    /manage.html  301

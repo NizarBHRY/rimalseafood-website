@@ -46,7 +46,8 @@ test('staff page is hidden from search engines', async ({ page, request }) => {
   await page.goto('/manage.html');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/);
   const robots = await (await request.get('/robots.txt')).text();
-  expect(robots).toContain('Disallow: /manage.html');
+  // Not blocked in robots.txt, so crawlers can read the noindex.
+  expect(robots).not.toContain('Disallow: /manage');
   const sitemap = await (await request.get('/sitemap-0.xml')).text();
   expect(sitemap).not.toMatch(/manage|admin|404/);
 });

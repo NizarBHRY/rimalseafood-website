@@ -70,3 +70,18 @@ test.describe('rewards lookup', () => {
     await expect(page.getByText('No rewards yet')).toBeVisible();
   });
 });
+
+test('canonical and og:url use the clean addresses the sitemap lists', async ({ page, request }) => {
+  const sitemap = await (await request.get('/sitemap-0.xml')).text();
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  expect(urls.length).toBeGreaterThan(4);
+  for (const url of urls) {
+    await page.goto(new URL(url).pathname);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', url);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', url);
+    const title = await page.title();
+    expect(title.length, title).toBeLessThanOrEqual(70);
+  }
+  await page.goto('/');
+  await expect(page.locator('header a.brand')).toHaveAttribute('aria-current', 'page');
+});
