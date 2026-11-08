@@ -27,7 +27,7 @@ import { business, hoursText, liveSocials } from '../config/business';
       <h2 class="footer-h">More</h2>
       <ul role="list">
         {liveSocials.map((s) => (
-          <li><a href={s.url} target="_blank" rel="noopener">{s.name}</a></li>
+          <li><a href={s.url} target="_blank" rel="noopener me">{s.name}{'handle' in s && s.handle ? ` ${s.handle}` : ''}<span class="visually-hidden"> (opens in a new tab)</span></a></li>
         ))}
         {business.googleReviewUrl && <li><a href={business.googleReviewUrl} target="_blank" rel="noopener">Leave us a Google review</a></li>}
         <li><a href="/privacy">Privacy &amp; Accessibility</a></li>

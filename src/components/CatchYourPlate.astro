@@ -54,8 +54,8 @@ const steps = ['Pick your fish', 'Choose your style', 'Your plate'];
       </li>
       <li class="panel">
         <figure class="media media--styles" data-cyp-styles>
-          {styles.map((s, i) => STYLE_PHOTOS[s] && (
-            <img {...img(STYLE_PHOTOS[s])} sizes="(min-width: 64rem) 40vw, 85vw" width="800" height="1000" loading="lazy" decoding="async" alt={i === 0 ? `Fish cooked ${s.toLowerCase()}` : ''} data-style={s} />
+          {styles.map((s) => STYLE_PHOTOS[s] && (
+            <img {...img(STYLE_PHOTOS[s])} sizes="(min-width: 64rem) 40vw, 85vw" width="800" height="1000" loading="lazy" decoding="async" alt={s === 'Middle Eastern Style' ? 'Fish cooked Middle Eastern style' : `${s} fish`} data-style={s} />
           ))}
           <figcaption class="style-label" aria-hidden="true" data-cyp-style-label>{styles[0]}</figcaption>
         </figure>

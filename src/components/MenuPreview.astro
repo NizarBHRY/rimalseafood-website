@@ -26,7 +26,7 @@ const sections = menu
   <ul role="list" class="cards" data-preview-grid>
     {sections.flatMap((s) => s.items.map((item) => (
       <li class="card" data-cat={s.id}>
-        <img src={photoUrl(item.photo!, 480)} srcset={`${photoUrl(item.photo!, 480)} 480w, ${photoUrl(item.photo!, 800)} 800w`} sizes="(min-width: 64rem) 22vw, (min-width: 40rem) 45vw, 90vw" width="480" height="360" loading="lazy" decoding="async" alt="" />
+        <img src={photoUrl(item.photo!, 480)} srcset={`${photoUrl(item.photo!, 480)} 480w, ${photoUrl(item.photo!, 800)} 800w`} sizes="(min-width: 64rem) 22vw, (min-width: 40rem) 45vw, 90vw" width="480" height="360" loading="lazy" decoding="async" alt={item.name} />
         <div class="card-body">
           <p class="card-cat">{s.label}</p>
           <h3>{item.name}</h3>

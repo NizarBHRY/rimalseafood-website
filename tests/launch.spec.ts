@@ -85,3 +85,17 @@ test('canonical and og:url use the clean addresses the sitemap lists', async ({ 
   await page.goto('/');
   await expect(page.locator('header a.brand')).toHaveAttribute('aria-current', 'page');
 });
+
+test('every content image has alt text; Instagram is linked', async ({ page }) => {
+  for (const path of ['/', '/menu', '/market', '/visit', '/rewards']) {
+    await page.goto(path);
+    const missing = await page.locator('img:not([aria-hidden="true"])').evaluateAll((imgs) =>
+      imgs.filter((i) => !(i.getAttribute('alt') || '').trim()).map((i) => i.getAttribute('src')));
+    expect(missing, path).toEqual([]);
+  }
+  await page.goto('/');
+  await expect(page.locator('footer a[href="https://www.instagram.com/rimal_seafood/"]')).toBeVisible();
+  const ld = JSON.parse(await page.locator('script[type="application/ld+json"]').first().textContent() ?? '{}');
+  expect(ld.sameAs).toContain('https://www.instagram.com/rimal_seafood/');
+  expect((await page.title()).length).toBeLessThanOrEqual(60);
+});

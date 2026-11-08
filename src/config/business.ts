@@ -2,6 +2,7 @@
 // bottom bar and structured data read from here — change a fact once.
 
 export interface OrderLink {
+  handle?: string;
   name: string;
   url: string;
 }
@@ -47,7 +48,7 @@ export const business = {
 
   // Empty url = not shown. Fill in when confirmed.
   socials: [
-    { name: 'Instagram', url: '' },
+    { name: 'Instagram', url: 'https://www.instagram.com/rimal_seafood/', handle: '@rimal_seafood' },
     { name: 'Facebook', url: '' },
   ] satisfies OrderLink[],
   googleReviewUrl: '',
