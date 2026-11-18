@@ -15,3 +15,7 @@ dist/
 # Test output
 test-results/
 playwright-report/
+
+# Raw photo drop folder (originals stay local; processed copies go to public/photos/)
+new-photos/*
+!new-photos/README.txt

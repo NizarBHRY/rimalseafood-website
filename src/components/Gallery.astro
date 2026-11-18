@@ -1,15 +1,17 @@
 ---
-// Gallery strip: the current site's gallery photos. On desktop the photos
+// Gallery strip: Rimal's own dish photos (public/photos/). On desktop the photos
 // glide sideways as you scroll down (src/motion/gallery.ts); elsewhere it is
 // a native scrollable strip (swipe, trackpad, or arrow keys when focused).
 import Eyebrow from './Eyebrow.astro';
 import { photoUrl } from '../data/menu';
 
 const photos = [
-  { id: '1615141982883-c7ad0e69fd62', alt: 'Oysters on ice' },
-  { id: '1519708227418-c8fd9a32b7a2', alt: 'Salmon fillet with vegetables' },
-  { id: '1580959375944-abd7e991f971', alt: 'Grilled fish dish' },
-  { id: '1544025162-d76694265947', alt: 'Lobster dish' },
+  { id: 'table-spread-wide', alt: 'A table of Rimal dishes: seafood soups, a whole baked fish, shrimp, tajeen and wraps' },
+  { id: 'shrimp-cream-sauce', alt: 'Head-on shrimp in a creamy dill sauce' },
+  { id: 'oysters', alt: 'Six fresh oysters on ice with lemon and cocktail sauce' },
+  { id: 'seafood-wraps', alt: 'Grilled seafood wraps with fries' },
+  { id: 'shrimp-burger', alt: 'Shrimp burger with fries' },
+  { id: 'rice-pudding', alt: 'Baked rice pudding in a clay pot' },
 ];
 ---
 <section class="gallery section" aria-labelledby="gallery-title" data-gallery>

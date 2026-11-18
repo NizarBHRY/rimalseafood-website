@@ -17,6 +17,21 @@ for (const path of PAGES) {
 
     test('has no WCAG 2.2 AA violations', async ({ page }) => {
       await page.goto(path);
+      // Wait for the hero entrance fade (src/motion/hero.ts) to finish. Until
+      // then the buttons are hidden (axe skips them) or half-faded (axe
+      // measures blended colours and reports false contrast failures).
+      // Both checks are needed: before the script runs, CSS hides them with
+      // visibility while their opacity already reads 1.
+      await expect
+        .poll(() =>
+          page.locator('[data-hero-fade]').evaluateAll((els) =>
+            els.every((el) => {
+              const s = getComputedStyle(el);
+              return s.visibility === 'visible' && s.opacity === '1';
+            }),
+          ),
+        )
+        .toBe(true);
       const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
       const summary = results.violations.map((v) => `${v.id}: ${v.nodes.length} node(s) — ${v.help}`);
       expect(summary).toEqual([]);

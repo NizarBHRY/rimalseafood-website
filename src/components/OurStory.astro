@@ -3,9 +3,10 @@
 // Motion (src/motion/story.ts): slight photo parallax on desktop; the numbers
 // count up once when they come into view. The final numbers are in the HTML.
 import Eyebrow from './Eyebrow.astro';
-import { photoUrl } from '../data/menu';
+import { photoUrl, dishPhoto } from '../data/menu';
 
-const PHOTO = '1559847844-5315695dadae';
+// The Saiadia Rice dish photo from the menu (follows the dashboard).
+const PHOTO = dishPhoto('Saiadia Rice') ?? 'seafood-tajeen-red';
 const stats = [
   { value: 2026, label: 'Newly opened', from: 2026 },
   { value: 24, suffix: 'h', label: 'Dock to table', from: 0 },
@@ -22,7 +23,7 @@ const stats = [
       height="1000"
       loading="lazy"
       decoding="async"
-      alt="A chef preparing fresh seafood"
+      alt="Saiadia rice with a whole roasted fish"
     />
   </figure>
   <div class="story-copy">

@@ -25,7 +25,7 @@ var window = (typeof globalThis !== 'undefined')
 //   name     original dish name (also the dashboard key)
 //   price    dollars
 //   desc     optional, facts only
-//   photo    optional Unsplash photo id (representative photo)
+//   photo    optional photo: a Rimal photo name (public/photos/) or an Unsplash id
 //   choices  optional [{ key, label, values }]: every choice is required
 //   sides    optional number of included sides, picked from RIMAL_SIDES
 //   sizes    optional [{ label, price }]: priced options (Small/Large…)
@@ -79,8 +79,9 @@ window.RIMAL_MENU = [
     items: [
       { id: "lunch-mixed-shrimp-and-calamari", name: "Mixed Shrimp & Calamari", price: 18.00, desc: "Served with 2 sides of your choice.", photo: "1761314025807-34cfab3c18e6", choices: [{ key: "choice", label: "Fried or grilled?", values: ["Fried","Grilled"] }], sides: 2 },
       { id: "lunch-fish-and-chips", name: "Fish & Chips", price: 9.99, desc: "2 pc fried whiting or tilapia, with fries.", photo: "1579208030886-b937da0925dc", choices: [{ key: "choice", label: "Which fish?", values: ["Whiting","Tilapia"] }] },
-      { id: "lunch-shrimp-and-chips", name: "Shrimp and Chips", price: 9.99, desc: "Fried shrimp with fries.", photo: "1674207166635-7b2f0a58fea1", sizes: [{ label: "Small", price: 9.99 }, { label: "Large", price: 16.99 }] },
+      { id: "lunch-shrimp-and-chips", name: "Shrimp and Chips", price: 9.99, desc: "Fried shrimp with fries.", sizes: [{ label: "Small", price: 9.99 }, { label: "Large", price: 16.99 }] },
       { id: "lunch-shrimp-fish-and-chips", name: "Shrimp, Fish & Chips", price: 14.99, desc: "5 pc fried shrimp, 2 pc fried whiting, and fries.", photo: "1674207166635-7b2f0a58fea1" },
+      { id: "lunch-shell-pasta-with-shrimp", name: "Shell Pasta with Shrimp", price: 14.99, photo: "shell-pasta-shrimp" },
       { id: "lunch-whiting-fish", name: "Whiting Fish", price: 9.99, desc: "Fried whiting with fries.", photo: "1548704087-b11dab0fbec0", sizes: [{ label: "Small", price: 9.99 }, { label: "Large", price: 16.99 }] },
       { id: "lunch-fish-nuggets", name: "Fish Nuggets", price: 8.99, desc: "Fried fish bites with fries.", photo: "1562967916-eb82221dfb92", sizes: [{ label: "Small", price: 8.99 }, { label: "Large", price: 14.99 }] },
       { id: "lunch-grilled-salmon", name: "Grilled Salmon", price: 17.00, desc: "Served with 2 sides of your choice.", photo: "1539136788836-5699e78bfc75", sides: 2 },
@@ -91,12 +92,12 @@ window.RIMAL_MENU = [
     id: 'mains', label: "Main Plates",
     items: [
       { id: "mains-seafood-pizza", name: "Seafood Pizza", price: 29.99, photo: "1579751626657-72bc17010498" },
-      { id: "mains-chilled-oyster-trio", name: "Chilled Oyster Trio", price: 22.00, photo: "1615141982883-c7ad0e69fd62" },
+      { id: "mains-chilled-oyster-trio", name: "Chilled Oyster Trio", price: 22.00, photo: "oysters" },
       { id: "mains-rimal-seafood-tower", name: "Rimal Seafood Tower", price: 78.00, photo: "1651323018466-b36b7df1d2b1" },
       { id: "mains-char-grilled-octopus", name: "Char-Grilled Octopus", price: 28.00, photo: "1626232441076-a2a5ada2256a" },
       { id: "mains-whole-roasted-branzino", name: "Whole Roasted Branzino", price: 36.00, photo: "1644784643137-b9073dd262f6" },
-      { id: "mains-butter-poached-lobster", name: "Butter-Poached Lobster", price: 52.00, photo: "1655697253644-63c270874bb7" },
-      { id: "mains-rimal-cioppino", name: "Rimal Cioppino", price: 34.00, photo: "1504674999014-e8f0b689c560" }
+      { id: "mains-butter-poached-lobster", name: "Butter-Poached Lobster", price: 52.00, photo: "lobster-tail" },
+      { id: "mains-rimal-cioppino", name: "Rimal Cioppino", price: 34.00, photo: "seafood-wraps" }
     ]
   },
   {
@@ -121,8 +122,8 @@ window.RIMAL_MENU = [
       { id: "sides-mediterranean-salad", name: "Mediterranean Salad", price: 11.00, photo: "1505253716362-afaea1d3d1af", sizes: [{ label: "Small", price: 11.00 }, { label: "Large", price: 15.00 }] },
       { id: "sides-greek-salad", name: "Greek Salad", price: 12.00, photo: "1769481614068-47cfb4d1f125", sizes: [{ label: "Small", price: 12.00 }, { label: "Large", price: 16.00 }] },
       { id: "sides-moussaka", name: "Moussaka", price: 18.00, photo: "1777199311086-ec5ff230aefd" },
-      { id: "sides-seafood-soup", name: "Seafood Soup", price: 14.00, photo: "1571167366136-b57e07761625" },
-      { id: "sides-seafood-tajeen", name: "Seafood Tajeen", price: 28.00, desc: "Your choice of red or white sauce.", photo: "1578935149228-66b184c83e69", choices: [{ key: "choice", label: "Which sauce?", values: ["Red Sauce","White Sauce"] }] },
+      { id: "sides-seafood-soup", name: "Seafood Soup", price: 14.00, photo: "seafood-soup" },
+      { id: "sides-seafood-tajeen", name: "Seafood Tajeen", price: 28.00, desc: "Your choice of red or white sauce.", choices: [{ key: "choice", label: "Which sauce?", values: ["Red Sauce","White Sauce"] }] },
       { id: "sides-caesar-salad", name: "Caesar Salad", price: 12.00, sizes: [{ label: "Small", price: 12.00 }, { label: "Large", price: 16.00 }] },
       { id: "sides-regular-salad", name: "Regular Salad", price: 9.00, sizes: [{ label: "Small", price: 9.00 }, { label: "Large", price: 13.00 }] },
       { id: "sides-eggplant", name: "Eggplant", price: 9.00 },
@@ -218,15 +219,35 @@ window.RIMAL_MARKET = [
     { name: "Snow Crab Legs", price: 19.00, unit: 'lb', photo: '1677643612277-1509dce0b697', step: 0.5 },
     { name: "Little Neck Clams", price: 8.00, unit: 'dz', photo: '1763575392558-7a83929678fd', step: 1 },
     { name: "Blue Mussels", price: 6.00, unit: 'lb', photo: '1448043552756-e747b7a2b2b8', step: 0.5 },
-    { name: "Fresh Oysters", price: 2.50, unit: 'each', photo: '1633321094192-388268512e0f', step: 1, qty: 6 },
+    { name: "Fresh Oysters", price: 2.50, unit: 'each', photo: 'oysters', step: 1, qty: 6 },
     { name: "Calamari (Squid)", price: 9.00, unit: 'lb', photo: '1565062043758-ef4656ef275d', step: 0.5 },
     { name: "Octopus", price: 13.00, unit: 'lb', photo: '1569933044748-ab0fa292068a', step: 0.5 }
   ] }
 ];
 
 // Representative photo URL at a given width.
+// photoId is Rimal's own photo name (public/photos/, see scripts/add-photo.mjs)
+// or an Unsplash id (digits first). Same logic as photoUrl() in src/data/menu.ts.
 window.rimalPhotoUrl = function(photoId, width){
-  return 'https://images.unsplash.com/photo-' + photoId + '?q=75&w=' + (width || 480) + '&auto=format&fit=crop';
+  width = width || 480;
+  if (/^https?:/.test(photoId)) { return photoId; }
+  if (!/^\d/.test(photoId)) {
+    var w = width <= 480 ? 480 : width <= 800 ? 800 : width <= 1200 ? 1200 : 1600;
+    return '/photos/' + photoId + '-' + w + '.webp';
+  }
+  return 'https://images.unsplash.com/photo-' + photoId + '?q=75&w=' + width + '&auto=format&fit=crop';
+};
+
+// Rimal's own photos for items added in the Manager dashboard, matched by the
+// item's name (lowercase, trailing dots ignored). These win over the photo
+// uploaded in the dashboard. Items renamed in the dashboard keep the photo of
+// the built-in item above, e.g. "Rimal Cioppino" is shown as
+// "Rimal Fish Shawarma Box".
+window.RIMAL_DASHBOARD_PHOTOS = {
+  'rimal seafood tajeen': 'seafood-tajeen-white',
+  'fish burger': 'shrimp-burger',
+  'spicy potato': 'spicy-potatoes',
+  'shrimp meal': 'shrimp-cream-sauce'
 };
 
 // Always two decimals: $22.00, $9.99.
@@ -284,6 +305,8 @@ window.rimalApplyDashboard = function(overrides, customItems){
     var opts = (Array.isArray(c.options) ? c.options : []).filter(function(x){ return x && x.label && isFinite(Number(x.price)); });
     var item = { name: c.name, price: opts.length ? Number(opts[0].price) : Number(c.price), desc: c.description || '' };
     if (opts.length) item.sizes = opts.map(function(x){ return { label: x.label, price: Number(x.price) }; });
+    var photo = (window.RIMAL_DASHBOARD_PHOTOS || {})[String(c.name || '').trim().toLowerCase().replace(/[.\s]+$/, '')];
+    if (photo) item.photo = photo;
     if (c.category === 'market_fish' || c.category === 'market_shellfish') {
       item.unit = c.unit || '';
       market[c.category === 'market_fish' ? 0 : 1].items.push(item);

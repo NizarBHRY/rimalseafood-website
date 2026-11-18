@@ -37,14 +37,16 @@ interface Sandbox {
     RIMAL_MENU: MenuCategory[];
     RIMAL_MARKET: MarketGroup[];
     RIMAL_SIDES: string[];
+    RIMAL_DASHBOARD_PHOTOS?: Record<string, string>;
     RIMAL_CONFIG?: { SUPABASE_URL?: string; SUPABASE_ANON_KEY?: string };
     rimalApplyDashboard: (overrides: unknown[], customItems: unknown[]) => { menu: MenuCategory[]; market: MarketGroup[] };
     rimalCorrect: (d: { menu: MenuCategory[]; market: MarketGroup[] }) => { menu: MenuCategory[]; market: MarketGroup[] };
   };
 }
-interface OverrideRow { item_key: string; service_mode?: string | null }
+interface OverrideRow { item_key: string; service_mode?: string | null; image_url?: string | null }
 interface CustomRow {
   name: string;
+  image_url?: string | null;
   description?: string | null;
   category: string;
   price: number | string;
@@ -119,15 +121,28 @@ const cleanSizes = (opts: CustomRow['options']): Size[] =>
     .filter((o) => o && o.label && Number.isFinite(Number(o.price)))
     .map((o) => ({ label: o.label, price: Number(o.price) }));
 
+/** True for Rimal's own photos in public/photos/ (not Unsplash ids or URLs). */
+const isOwnPhoto = (id?: string) => !!id && !/^\d/.test(id) && !/^https?:/.test(id);
+/** Key into RIMAL_DASHBOARD_PHOTOS: lowercase, no trailing dots ("Fish Burger." -> "fish burger"). */
+const photoKey = (name: string) => name.trim().toLowerCase().replace(/[.\s]+$/, '');
+
 function build() {
   // Overrides go through the shared apply step; dashboard-added dishes are
   // placed here so every category (including Catch Your Plate) is supported.
   const { menu, market } = data.rimalApplyDashboard(live.overrides, []);
   const modeByKey = new Map(live.overrides.map((o) => [o.item_key, asMode(o.service_mode)]));
+  const imageByKey = new Map(live.overrides.map((o) => [o.item_key, o.image_url]));
   for (const cat of menu) {
     for (const it of cat.items as Tagged<MenuItem>[]) {
       const mode = it._key ? modeByKey.get(it._key) : undefined;
       if (mode) it.serviceMode = mode;
+      // Photo: Rimal's own photo first, then the one uploaded in the
+      // dashboard ('' there means the photo was removed), then stock.
+      const image = it._key ? imageByKey.get(it._key) : undefined;
+      if (image != null && !isOwnPhoto(it.photo)) {
+        if (image) it.photo = image;
+        else delete it.photo;
+      }
     }
   }
 
@@ -143,7 +158,8 @@ function build() {
     }
     const cat = menu.find((c) => c.id === MENU_CATEGORY[row.category]);
     if (!cat) { skipped++; continue; }
-    cat.items.push({ name: row.name, price, desc: row.description || undefined, ...(sizes.length ? { sizes } : {}), serviceMode: asMode(row.service_mode) });
+    const photo = data.RIMAL_DASHBOARD_PHOTOS?.[photoKey(row.name)] || row.image_url || undefined;
+    cat.items.push({ name: row.name, price, desc: row.description || undefined, ...(sizes.length ? { sizes } : {}), ...(photo ? { photo } : {}), serviceMode: asMode(row.service_mode) });
   }
   if (skipped) console.warn(`[menu] Skipped ${skipped} dashboard dish(es) with an unknown category or no price.`);
 
@@ -161,6 +177,12 @@ export function getMenu() {
   return built;
 }
 
+/** The photo of the menu dish with this name (as shown on the menu), if it has one. */
+export function dishPhoto(name: string): string | undefined {
+  const want = name.trim().toLowerCase();
+  return built.menu.flatMap((c) => c.items).find((i) => i.name.trim().toLowerCase() === want)?.photo;
+}
+
 /** True when the build read the live dashboard data. */
 export const isLive = live.live;
 
@@ -171,8 +193,16 @@ export const sides: readonly string[] = data.RIMAL_SIDES;
 
 export const money = (n: number) => `$${(Number(n) || 0).toFixed(2)}`;
 export const unitLabel = (unit: string) => ({ lb: 'lb', each: 'each', dz: 'dozen' })[unit] ?? unit;
+// A photo id is Rimal's own photo name (public/photos/, made with
+// scripts/add-photo.mjs), a full URL (a photo uploaded in the dashboard), or
+// an Unsplash photo id (digits first). Same logic as rimalPhotoUrl() in
+// site/menu-data.js.
+const LOCAL_WIDTHS = [480, 800, 1200, 1600];
 export const photoUrl = (id: string, width = 480) =>
-  `https://images.unsplash.com/photo-${id}?q=75&w=${width}&auto=format&fit=crop`;
+  /^https?:/.test(id) ? id
+  : /^\d/.test(id)
+    ? `https://images.unsplash.com/photo-${id}?q=75&w=${width}&auto=format&fit=crop`
+    : `/photos/${id}-${LOCAL_WIDTHS.find((w) => w >= width) ?? 1600}.webp`;
 
 /** Lowest price a customer can pay for an item (its smallest size, if sized). */
 export const fromPrice = (item: MenuItem) =>

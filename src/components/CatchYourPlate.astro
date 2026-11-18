@@ -4,7 +4,7 @@
 //   Desktop with motion: src/motion/catch-your-plate.ts pins the section and
 //     slides the steps sideways as you scroll, with a progress rail.
 //   Reduced motion: steps stack.
-// Photos are the existing site photos until the shoot (see project notes).
+// Photos: Rimal's own where we have them (public/photos/), stock otherwise.
 import Eyebrow from './Eyebrow.astro';
 import { getMenu, money, photoUrl } from '../data/menu';
 
@@ -17,9 +17,9 @@ const fishNames = fish?.choices?.find((c) => c.key === 'pick')?.values.slice(0, 
 // One existing photo per cooking style, in the menu's order.
 const STYLE_PHOTOS: Record<string, string> = {
   Grilled: '1600699899970-b1c9fadd8f9e',
-  Fried: '1548704087-b11dab0fbec0',
+  Fried: 'fried-small-fish',
   'Sautéed': '1539136788836-5699e78bfc75',
-  'Middle Eastern Style': '1578935149228-66b184c83e69',
+  'Middle Eastern Style': 'whole-fish-middle-eastern',
 };
 const PICK_PHOTO = '1764345960391-9b66a2541deb';
 const PLATE_PHOTO = '1644784643137-b9073dd262f6';
