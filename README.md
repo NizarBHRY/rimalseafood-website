@@ -15,6 +15,7 @@ rimalseafood.com: an [Astro](https://astro.build) site, deployed by Netlify from
 | `src/` | The website (pages, components, styles, motion) |
 | `site/` | The staff dashboard (`manage.html`) and the shared menu data (`menu-data.js`) |
 | `menu/` | Printed-menu PDFs. The QR code on the printed menu links here, so keep this path. |
+| `src/components/motion-lab/` | The motion principles page, `/motion-principles` (React + Tailwind + Framer Motion; not linked, noindex) |
 | `tests/` | Playwright + axe tests: `npm test` |
 | `*.sql`, `*.txt` | Database setup scripts and older guides |
 
