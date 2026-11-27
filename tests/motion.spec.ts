@@ -1,4 +1,20 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+
+// The site's motion rules (src/motion/tokens.ts, /motion-principles):
+// 200 ms or less, transform and opacity only, nothing decorative.
+
+/** Every running CSS transition and animation, with its duration in ms. */
+const runningDurations = (page: Page) =>
+  page.evaluate(() => {
+    const out: { what: string; ms: number }[] = [];
+    for (const a of document.getAnimations()) {
+      const t = a.effect?.getTiming();
+      const ms = Number(t?.duration ?? 0);
+      const el = (a.effect as KeyframeEffect | null)?.target as Element | null;
+      out.push({ what: `${a.constructor.name} on ${el?.className || el?.tagName}`, ms });
+    }
+    return out;
+  });
 
 test.describe('with motion', () => {
   test('hero headline ends fully visible', async ({ page }) => {
@@ -9,28 +25,42 @@ test.describe('with motion', () => {
     await expect(page.locator('[data-hero] .btn-row')).toBeVisible();
   });
 
-  test('ticker runs, and pauses with its button', async ({ page }) => {
+  test('hero entrance is done within a quarter second', async ({ page }) => {
     await page.goto('/');
-    const root = page.locator('[data-marquee]');
-    await expect(root).toHaveClass(/is-running/);
-    const toggle = root.locator('[data-marquee-toggle]');
-    await expect(toggle).toBeVisible();
-    // The copy for the loop is hidden from screen readers.
-    await expect(root.locator('ul[aria-hidden="true"]')).toHaveCount(1);
-    await expect(root.locator('ul:not([aria-hidden])')).toHaveCount(1);
+    const fades = page.locator('[data-hero-fade]');
+    // 200 ms + one 40 ms stagger step, plus a little slack for script start.
+    await page.waitForFunction(() => document.querySelector('[data-hero-fade]') && getComputedStyle(document.querySelector('[data-hero-fade]')!).visibility === 'visible');
+    await page.waitForTimeout(260);
+    expect(await fades.evaluateAll((els) => els.map((el) => getComputedStyle(el).opacity))).toEqual(['1', '1']);
+  });
 
-    await page.mouse.move(0, 0); // not hovering the ticker
-    const x = () => root.locator('[data-marquee-track]').evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41);
-    const a = await x();
+  test("today's catch is a still list", async ({ page }) => {
+    await page.goto('/');
+    const list = page.locator('.catch ul');
+    await expect(list).toHaveCount(1);
+    const box = await list.boundingBox();
     await page.waitForTimeout(400);
-    expect(await x()).not.toBe(a);
+    expect(await list.boundingBox()).toEqual(box);
+    await expect(page.getByRole('button', { name: /pause/i })).toHaveCount(0);
+  });
 
-    await toggle.click();
-    await expect(toggle).toHaveText('Play');
-    await page.mouse.move(0, 0);
-    const p = await x();
-    await page.waitForTimeout(400);
-    expect(await x()).toBe(p);
+  test('no CSS transition or animation runs longer than the spring', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Order delivery' }).first().click();
+    await page.waitForTimeout(50);
+    for (const { what, ms } of await runningDurations(page)) {
+      expect(ms, what).toBeLessThanOrEqual(450);
+    }
+  });
+
+  test('buttons give way on press and tint on hover, in 100 ms', async ({ page }, info) => {
+    test.skip(info.project.name !== 'desktop', 'pointer hover');
+    await page.goto('/menu');
+    const btn = page.locator('.btn').first();
+    const tint = () => btn.evaluate((el) => getComputedStyle(el, '::before').transitionDuration);
+    expect(await tint()).toBe('0.1s');
+    await btn.hover();
+    await expect.poll(() => btn.evaluate((el) => getComputedStyle(el, '::before').opacity)).toBe('1');
   });
 });
 
@@ -41,17 +71,15 @@ test.describe('reduced motion', () => {
     await page.goto('/');
     await expect(page.locator('html')).not.toHaveClass(/motion/);
     await expect(page.locator('[data-hero] h1')).toBeVisible();
-    const root = page.locator('[data-marquee]');
-    await expect(root).not.toHaveClass(/is-running/);
-    await expect(root.locator('[data-marquee-toggle]')).toBeHidden();
-    await expect(root.locator('ul')).toHaveCount(1);
-    await expect(page.locator('html')).not.toHaveClass(/lenis/);
+    await expect(page.locator('[data-hero-fade]').first()).toBeVisible();
+    await expect(page.locator('[data-gallery-strip]')).not.toHaveClass(/is-gliding/);
   });
 });
 
-test('smooth scroll is desktop-only', async ({ page }, info) => {
+test('scrolling is native: no smooth-scroll library', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
-  const lenis = await page.locator('html').evaluate((el) => el.classList.contains('lenis'));
-  expect(lenis).toBe(info.project.name === 'desktop');
+  expect(await page.locator('html').evaluate((el) => el.classList.contains('lenis'))).toBe(false);
+  await page.evaluate(() => window.scrollTo(0, 600));
+  expect(await page.evaluate(() => window.scrollY)).toBe(600);
 });

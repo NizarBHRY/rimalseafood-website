@@ -53,13 +53,25 @@ import { supabasePublic } from '../data/menu';
   :global(.rewards-status) { margin-top: var(--s4); min-height: 1.5em; }
   :global(.rewards-status .stamps) { margin-bottom: var(--s4); }
   :global(.rewards-error) { color: #9b2c1f; }
+  /* Earned stamps pop in from 0.97, 40 ms apart; the text fades up after. */
   :global(.stamps.is-live li.is-on) {
     background: var(--saffron);
     border-color: var(--saffron);
     color: var(--ink);
-    animation: stamp 420ms cubic-bezier(.2, .9, .3, 1.4) both;
-    animation-delay: calc(var(--i) * 120ms);
+    animation: stamp var(--dur) var(--ease-out) both;
+    animation-delay: calc(var(--i) * var(--stagger));
   }
-  @keyframes stamp { from { transform: scale(1.6) rotate(-12deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes stamp { from { transform: scale(var(--pop-from)); opacity: 0; } }
+  :global(.rewards-found > p), :global(.rewards-error), :global(.rewards-status > p) { animation: fade-up var(--dur) var(--ease-out) both; }
+  @keyframes fade-up { from { transform: translateY(var(--offset)); opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { :global(.stamps.is-live li.is-on) { animation: none; } }
+
+  :global(.rewards-submit) { display: inline-grid; place-items: center; }
+  :global(.rewards-label) { grid-area: 1 / 1; transition: opacity var(--dur) var(--ease-out); }
+  :global(.rewards-label.is-off) { opacity: 0; visibility: hidden; transition: opacity var(--dur-exit) var(--ease-in), visibility 0s var(--dur-exit); }
+
+  :global(.rewards-skeleton) { animation: fade-up var(--dur) var(--ease-out) both; }
+  :global(.rewards-skeleton .stamps li) { border-color: rgb(176 141 87 / 0.35); }
+  :global(.rewards-skeleton .stamps .prize) { width: 7.5rem; background: rgb(217 199 167 / 0.6); }
+  :global(.skeleton-line) { display: block; width: min(100%, 24rem); height: 1em; border-radius: var(--radius); background: rgb(217 199 167 / 0.6); }
 </style>

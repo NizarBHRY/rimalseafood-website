@@ -1,7 +1,9 @@
 // Menu preview filter. Chips appear only with JS; filtering is instant with
-// reduced motion and animated with GSAP Flip otherwise.
+// reduced motion. With motion (GSAP Flip): cards that stay slide to their new
+// places, new cards pop in from 0.97, leaving cards fade out a little quicker.
+// Everything takes 200 ms, staggered 40 ms.
 import { Flip } from 'gsap/Flip';
-import { gsap, MQ } from './core';
+import { gsap, MQ, DURATION, POP_FROM, STAGGER } from './core';
 
 gsap.registerPlugin(Flip);
 
@@ -24,12 +26,10 @@ if (root) {
     cards.forEach((c) => (c.hidden = filter !== 'all' && c.dataset.cat !== filter));
     if (state) {
       Flip.from(state, {
-        duration: 0.6,
-        ease: 'power3.inOut',
         absolute: true,
-        stagger: 0.04,
-        onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 0.5 }),
-        onLeave: (els) => gsap.to(els, { autoAlpha: 0, scale: 0.94, duration: 0.3 }),
+        stagger: STAGGER,
+        onEnter: (els) => gsap.fromTo(els, { autoAlpha: 0, scale: POP_FROM }, { autoAlpha: 1, scale: 1, stagger: STAGGER }),
+        onLeave: (els) => gsap.to(els, { autoAlpha: 0, scale: POP_FROM, duration: DURATION.exit, ease: 'exit' }),
       });
     }
   });

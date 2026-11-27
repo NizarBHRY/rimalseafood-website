@@ -17,11 +17,12 @@ test('menu preview chips filter dishes', async ({ page }) => {
   await expect(page.locator('[data-preview-grid] > li[hidden]')).toHaveCount(0);
 });
 
-test('story stats end on their real values', async ({ page }) => {
+test('story stats show their real values, with no count-up', async ({ page }) => {
   await page.goto('/');
-  await page.locator('[data-story] dl').scrollIntoViewIfNeeded();
-  await expect(page.locator('[data-story] [data-count="24"]')).toHaveText('24', { timeout: 4000 });
-  await expect(page.locator('[data-story] [data-count="7"]')).toHaveText('7');
+  const values = page.locator('[data-story] dd');
+  await expect(values).toHaveText(['2026', '24h', '7']);
+  await values.first().scrollIntoViewIfNeeded();
+  await expect(values).toHaveText(['2026', '24h', '7']);
 });
 
 test('gallery: scrolling the page moves it sideways on desktop; native strip on phones', async ({ page }, info) => {

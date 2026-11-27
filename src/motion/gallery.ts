@@ -1,6 +1,8 @@
-// Gallery: on desktop with motion, the photos glide sideways as the page
-// scrolls past the section (scroll-linked, no pinning, so the page never
-// stops). Phones, reduced motion and no-JS keep a native scrollable strip.
+// Gallery: on desktop with motion, the photos move sideways as the page
+// scrolls past the section, so all of them come into view without a
+// sideways scroll. Tied 1:1 to the scroll (no catch-up lag) and no pinning,
+// so the page never stops. Phones, reduced motion and no-JS keep a native
+// scrollable strip.
 import { gsap, mm, MQ } from './core';
 
 const root = document.querySelector<HTMLElement>('[data-gallery]');
@@ -21,7 +23,7 @@ if (root) {
         trigger: strip,
         start: 'top 85%',
         end: 'bottom 15%',
-        scrub: 0.6,
+        scrub: true,
         invalidateOnRefresh: true,
       },
     });

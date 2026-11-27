@@ -10,7 +10,9 @@ test('menu search filters dishes and announces the count', async ({ page }) => {
   await input.fill('zzzz');
   await expect(page.locator('.menu-search-status')).toContainText('No dishes match');
   await page.getByRole('button', { name: 'Clear' }).click();
-  expect(await page.locator('[data-menu-item][hidden]').count()).toBe(0);
+  await expect(page.locator('[data-menu-item][hidden]')).toHaveCount(0);
+  // Clear hides again, but keeps its space so the search box doesn't resize.
+  await expect(page.getByRole('button', { name: 'Clear' })).toHaveCount(0);
 });
 
 test('skip link moves focus to the content', async ({ page, browserName }, info) => {

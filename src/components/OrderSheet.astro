@@ -1,10 +1,11 @@
 ---
 // Delivery and pickup links in a native popover: opens from any
 // <button popovertarget="order-sheet">, closes on Esc or outside click,
-// and needs no JavaScript.
+// and needs no JavaScript. It fades up in 200 ms (ease-out) and leaves in
+// 150 ms (ease-in); browsers without @starting-style simply show and hide it.
 import { business } from '../config/business';
 ---
-<div id="order-sheet" class="sheet" popover aria-labelledby="order-sheet-title" data-lenis-prevent>
+<div id="order-sheet" class="sheet" popover aria-labelledby="order-sheet-title">
   <div class="sheet-head">
     <h2 id="order-sheet-title">Order delivery or pickup</h2>
     <button class="close" type="button" popovertarget="order-sheet" popovertargetaction="hide">
@@ -39,6 +40,32 @@ import { business } from '../config/business';
   @media (min-width: 40rem) {
     .sheet { margin: auto; border: var(--hairline); border-top-width: 3px; }
   }
+
+  /* Enter: opacity + an 8px rise (phones) or a pop from 0.97 (wider). Exit
+     goes back the same way, a little quicker and easing in. `display` and
+     `overlay` are kept until the exit has finished. */
+  .sheet, .sheet::backdrop {
+    transition-property: opacity, transform, display, overlay;
+    transition-duration: var(--dur-exit);
+    transition-timing-function: var(--ease-in);
+    transition-behavior: allow-discrete;
+  }
+  .sheet:not(:popover-open), .sheet:not(:popover-open)::backdrop { opacity: 0; }
+  .sheet:not(:popover-open) { transform: translateY(var(--offset)); }
+  .sheet:popover-open, .sheet:popover-open::backdrop {
+    transition-duration: var(--dur);
+    transition-timing-function: var(--ease-out);
+  }
+  @starting-style {
+    .sheet:popover-open, .sheet:popover-open::backdrop { opacity: 0; }
+    .sheet:popover-open { transform: translateY(var(--offset)); }
+  }
+  @media (min-width: 40rem) {
+    .sheet:not(:popover-open) { transform: scale(var(--pop-from)); }
+    @starting-style {
+      .sheet:popover-open { transform: scale(var(--pop-from)); }
+    }
+  }
   .sheet-head { display: flex; align-items: start; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s4); }
   .sheet-head h2 { font-size: var(--fs-xl); }
   .close {
@@ -51,7 +78,17 @@ import { business } from '../config/business';
     font-size: 1.5rem;
     line-height: 1;
     cursor: pointer;
+    position: relative;
   }
+  .close::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgb(15 28 38 / 0.08);
+    opacity: 0;
+    transition: opacity var(--dur-feedback) var(--ease-out);
+  }
+  .close:hover::before, .close:active::before { opacity: 1; }
   .sheet-links { display: grid; gap: var(--s2); }
   .sheet-links .btn { width: 100%; }
   .sheet-note { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--muted); }

@@ -61,19 +61,31 @@ export default function RewardsLookup({ url, anonKey, needed = 5 }: Props) {
             onInput={(e) => setPhone((e.currentTarget as HTMLInputElement).value)}
             aria-describedby="rewards-status"
           />
-          <button type="submit" class="btn" disabled={state.kind === 'loading'}>
-            {state.kind === 'loading' ? 'Checking…' : 'Check my stamps'}
+          {/* Both labels share one grid cell, so the button keeps the width
+              of the longer one and the label cross-fades instead of jumping. */}
+          <button type="submit" class="btn rewards-submit" disabled={state.kind === 'loading'}>
+            <span class={`rewards-label${state.kind === 'loading' ? ' is-off' : ''}`}>Check my stamps</span>
+            <span class={`rewards-label${state.kind === 'loading' ? '' : ' is-off'}`}>Checking…</span>
           </button>
         </div>
       </form>
 
       <div id="rewards-status" aria-live="polite" class="rewards-status">
+        {state.kind === 'loading' && (
+          // A skeleton of the stamp row holds the space the answer will take.
+          <div class="rewards-skeleton" aria-hidden="true">
+            <ol class="stamps" role="list">
+              {Array.from({ length: needed + 1 }, (_, i) => <li class={i === needed ? 'prize' : ''} />)}
+            </ol>
+            <span class="skeleton-line" />
+          </div>
+        )}
         {state.kind === 'error' && <p class="rewards-error">{state.message}</p>}
         {state.kind === 'none' && (
           <p>No rewards yet for that number. Give it at the counter with your next paid order and your first stamp is added.</p>
         )}
         {state.kind === 'found' && (
-          <>
+          <div class="rewards-found">
             <ol class="stamps is-live" role="list" aria-label={`${stamps} of ${needed} stamps toward your next free platter`}>
               {Array.from({ length: needed }, (_, i) => (
                 <li class={i < stamps ? 'is-on' : ''} style={{ '--i': i }} aria-hidden="true">{i + 1}</li>
@@ -86,7 +98,7 @@ export default function RewardsLookup({ url, anonKey, needed = 5 }: Props) {
                 <> You have <strong>{ready} free {ready === 1 ? 'platter' : 'platters'}</strong> waiting. Ask at the counter.</>
               )}
             </p>
-          </>
+          </div>
         )}
       </div>
     </div>

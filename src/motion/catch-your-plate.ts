@@ -1,7 +1,8 @@
 // Catch Your Plate.
 //   Desktop + motion: pin the section; vertical scroll slides the three steps
-//     sideways (scrub, ~1.5 screens). In step 2 the photo cross-fades through
-//     the cooking styles as it crosses the screen. A rail shows the step.
+//     sideways, tied 1:1 to the scroll (~1.5 screens). In step 2 the photo
+//     cross-fades (200 ms) through the cooking styles as it crosses the
+//     screen. A rail shows the step.
 //   Phones / tablets: the native swipe carousel gets prev/next buttons and
 //     left/right arrow keys.
 import { gsap, ScrollTrigger, mm, MQ } from './core';
@@ -22,7 +23,7 @@ if (root) {
 
   const setActive = (i: number) => railItems.forEach((li, n) => li.classList.toggle('is-active', n === i));
   const showStyle = (i: number) => {
-    styleImgs.forEach((img, n) => gsap.to(img, { autoAlpha: n === i ? 1 : 0, duration: 0.3, overwrite: true }));
+    styleImgs.forEach((img, n) => gsap.to(img, n === i ? { autoAlpha: 1, overwrite: true } : { autoAlpha: 0, ease: 'exit', overwrite: true }));
     if (styleLabel && styleImgs[i]) styleLabel.textContent = styleImgs[i].dataset.style ?? '';
   };
 
@@ -41,7 +42,7 @@ if (root) {
         start: 'top top',
         end: '+=150%',
         pin: true,
-        scrub: 1,
+        scrub: true,
         invalidateOnRefresh: true,
         onUpdate: (self) => setActive(Math.min(panels.length - 1, Math.round(self.progress * (panels.length - 1)))),
       },

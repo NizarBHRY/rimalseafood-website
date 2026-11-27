@@ -112,15 +112,36 @@ a:hover { text-decoration-thickness: 2px; }
   letter-spacing: 0.04em;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s;
+  /* Feedback: hover tints through an opacity layer (::before) instead of
+     repainting the background; a press gives way to 97% and springs back. */
+  position: relative;
+  isolation: isolate;
+  transition: transform var(--dur-spring) var(--ease-out);
 }
-.btn:hover { background: var(--saffron-hover); }
+@supports (transition-timing-function: linear(0, 1)) {
+  .btn { transition-timing-function: var(--ease-spring); }
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--saffron-hover);
+  opacity: 0;
+  transition: opacity var(--dur-feedback) var(--ease-out);
+}
+.btn:hover::before, .btn:active::before { opacity: 1; }
+.btn:active { transform: scale(var(--pop-from)); transition: transform var(--dur-feedback) var(--ease-out); }
+.btn:disabled { cursor: default; }
+.btn:disabled::before { opacity: 0; }
+.btn:disabled:active { transform: none; }
 .btn--ghost { background: transparent; border-color: currentColor; color: inherit; }
 /* Buttons keep their own colors inside dark sections (beats `.on-ink a`). */
 .on-ink .btn { color: var(--ink); }
 .on-ink .btn--ghost { color: var(--sand); }
-.btn--ghost:hover { background: rgb(15 28 38 / 0.06); }
-.on-ink .btn--ghost:hover { background: rgb(239 230 214 / 0.1); }
+.btn--ghost::before { inset: 0; background: rgb(15 28 38 / 0.06); }
+.on-ink .btn--ghost::before { background: rgb(239 230 214 / 0.1); }
 .btn-row { display: flex; flex-wrap: wrap; gap: var(--s3); }
 
 /* ---------- Cards ---------- */
@@ -158,6 +179,9 @@ a:hover { text-decoration-thickness: 2px; }
   }
 }
 
+/* Reduced motion: nothing moves. (Colour and opacity changes still happen,
+   instantly.) */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; }
+  .btn:active { transform: none; }
 }

@@ -1,20 +1,19 @@
 ---
 // Our Story. Text and stats carried over from the current site's About page.
-// Motion (src/motion/story.ts): slight photo parallax on desktop; the numbers
-// count up once when they come into view. The final numbers are in the HTML.
+// No motion: the photo and the numbers are content, not decoration.
 import Eyebrow from './Eyebrow.astro';
 import { photoUrl, dishPhoto } from '../data/menu';
 
 // The Saiadia Rice dish photo from the menu (follows the dashboard).
 const PHOTO = dishPhoto('Saiadia Rice') ?? 'seafood-tajeen-red';
 const stats = [
-  { value: 2026, label: 'Newly opened', from: 2026 },
-  { value: 24, suffix: 'h', label: 'Dock to table', from: 0 },
-  { value: 7, label: 'Days a week', from: 0 },
+  { value: 2026, label: 'Newly opened' },
+  { value: 24, suffix: 'h', label: 'Dock to table' },
+  { value: 7, label: 'Days a week' },
 ];
 ---
 <section class="story wrap section" aria-labelledby="story-title" data-story>
-  <figure class="story-media" data-parallax>
+  <figure class="story-media">
     <img
       src={photoUrl(PHOTO, 800)}
       srcset={[480, 800, 1200].map((w) => `${photoUrl(PHOTO, w)} ${w}w`).join(', ')}
@@ -35,7 +34,7 @@ const stats = [
       {stats.map((s) => (
         <div>
           <dt>{s.label}</dt>
-          <dd><span data-count={s.value} data-from={s.from}>{s.value}</span>{s.suffix}</dd>
+          <dd>{s.value}{s.suffix}</dd>
         </div>
       ))}
     </dl>
@@ -45,7 +44,7 @@ const stats = [
 <style>
   .story { display: grid; gap: var(--s6); align-items: center; }
   .story-media { overflow: hidden; aspect-ratio: 4 / 5; max-height: 75vh; border: var(--hairline); border-radius: var(--radius) 10rem var(--radius) var(--radius); }
-  .story-media img { width: 100%; height: 115%; object-fit: cover; }
+  .story-media img { width: 100%; height: 100%; object-fit: cover; }
   .story-copy p + p { margin-top: var(--s3); }
   .story-copy h2 { margin-bottom: var(--s4); }
   .stats { display: flex; flex-wrap: wrap; gap: var(--s5) var(--s7); margin-top: var(--s6); padding-top: var(--s5); border-top: var(--hairline); }
@@ -57,6 +56,3 @@ const stats = [
   }
 </style>
 
-<script>
-  import '../motion/story';
-</script>

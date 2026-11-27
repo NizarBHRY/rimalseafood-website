@@ -44,6 +44,21 @@
   --focus-ring: 3px solid var(--sea-glass);
   --topbar-h: 2.25rem;
   --bottombar-h: 4rem;
+
+  /* Motion: the same values as src/motion/tokens.ts. 200 ms ceiling; ease
+     out to enter, ease in to leave; transform and opacity only. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.64, 0, 0.78, 0);
+  --dur-feedback: 100ms;
+  --dur: 200ms;
+  --dur-exit: 150ms;
+  --stagger: 40ms;
+  --offset: 8px;
+  --pop-from: 0.97;
+  /* Press release: a spring (stiffness 300, damping 25) as a linear() curve.
+     Browsers without linear() use --ease-out (see .btn). */
+  --dur-spring: 450ms;
+  --ease-spring: linear(0, 0.045, 0.153, 0.291, 0.437, 0.575, 0.697, 0.798, 0.879, 0.939, 0.982, 1.01, 1.027, 1.036, 1.038, 1.036, 1.032, 1.027, 1.021, 1.016, 1.011, 1.008, 1.005, 1.002, 1);
 }
 
 @media (min-width: 48rem) {

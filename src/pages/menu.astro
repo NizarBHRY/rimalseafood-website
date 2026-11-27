@@ -140,8 +140,20 @@ const menuLd = {
     color: var(--ink);
     text-decoration: none;
     border-radius: var(--radius);
+    position: relative;
+    isolation: isolate;
   }
-  .cat-nav a:hover { background: rgb(217 199 167 / 0.5); }
+  .cat-nav a::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: rgb(217 199 167 / 0.5);
+    opacity: 0;
+    transition: opacity var(--dur-feedback) var(--ease-out);
+  }
+  .cat-nav a:hover::before, .cat-nav a:active::before { opacity: 1; }
   .category { padding-block: var(--s6) var(--s4); scroll-margin-top: calc(var(--topbar-h) + 4rem); }
   .category[hidden] { display: none; }
   .cat-head { margin-bottom: var(--s4); }
@@ -164,6 +176,9 @@ const menuLd = {
   .item-photo summary::before { content: '+ '; }
   .item-photo[open] summary::before { content: '− '; }
   .item-photo img { width: 100%; max-width: 22rem; aspect-ratio: 4 / 3; object-fit: cover; margin-top: var(--s2); border: var(--hairline); }
+  /* Opening a dish photo: it fades up 8px into its reserved 4:3 box. */
+  .item-photo[open] img { animation: photo-in var(--dur) var(--ease-out); }
+  @keyframes photo-in { from { opacity: 0; transform: translateY(var(--offset)); } }
   .float-photo {
     position: fixed;
     left: 0;
@@ -181,6 +196,10 @@ const menuLd = {
   .menu-page :global(.menu-search) { margin-bottom: var(--s2); }
   .menu-page :global(.menu-search label) { display: block; font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--s2); }
   .menu-page :global(.menu-search-row) { display: flex; gap: var(--s2); }
+  /* Clear keeps its space while hidden, so the box never changes width. */
+  .menu-page :global(.menu-search-clear) { transition: opacity var(--dur-exit) var(--ease-in), visibility 0s var(--dur-exit), transform var(--dur-feedback) var(--ease-out); }
+  .menu-page :global(.menu-search-clear.is-hidden) { opacity: 0; visibility: hidden; }
+  .menu-page :global(.menu-search-clear:not(.is-hidden)) { transition: opacity var(--dur) var(--ease-out), visibility 0s, transform var(--dur-feedback) var(--ease-out); }
   .menu-page :global(.menu-search input) {
     flex: 1;
     min-width: 0;

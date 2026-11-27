@@ -46,7 +46,20 @@ import { business } from '../config/business';
     font-weight: 500;
     text-decoration: none;
     cursor: pointer;
+    position: relative;
+    isolation: isolate;
   }
+  .bottombar a::before, .bottombar button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(239 230 214 / 0.12);
+    opacity: 0;
+    transition: opacity var(--dur-feedback) var(--ease-out);
+  }
+  .bottombar button::before { background: var(--saffron-hover); }
+  .bottombar a:active::before, .bottombar button:active::before { opacity: 1; }
   .bottombar button { color: var(--ink); background: var(--saffron); font-weight: 600; }
   .bottombar svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   @media (min-width: 64rem) { .bottombar { display: none; } }

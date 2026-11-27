@@ -96,9 +96,11 @@ const steps = ['Pick your fish', 'Choose your style', 'Your plate'];
 
   .rail { display: none; gap: var(--s5); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
   .rail li { display: flex; align-items: center; gap: var(--s2); }
-  .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--brass); }
+  .dot { position: relative; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--brass); }
+  /* The fill fades in and out (opacity, 200 ms) as the step changes. */
+  .dot::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: var(--brass); opacity: 0; transition: opacity var(--dur-exit) var(--ease-in); }
   .rail .is-active { color: var(--ink); }
-  .rail .is-active .dot { background: var(--brass); }
+  .rail .is-active .dot::after { opacity: 1; transition: opacity var(--dur) var(--ease-out); }
 
   /* Default (no JS, phones, tablets): native swipe carousel, next card peeks. */
   .viewport {

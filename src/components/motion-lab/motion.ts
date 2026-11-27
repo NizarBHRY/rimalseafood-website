@@ -1,31 +1,15 @@
-// Motion tokens for the motion principles page. Every "After" example uses
-// these and nothing else, so the whole page moves the same way (principle 14).
-// The same values exist as CSS in motion-lab.css (@theme) for Tailwind classes.
+// Framer Motion versions of the site's motion tokens (src/motion/tokens.ts).
+// Every "After" example uses these and nothing else, so the page moves the
+// same way as the rest of the site (principle 14). Tailwind gets the same
+// values in motion-lab.css (@theme).
 import { useEffect, useState } from 'react';
 import type { Transition, Variants } from 'framer-motion';
 
-/** Entrances: decelerate into place. */
-export const EASE_OUT = [0.22, 1, 0.36, 1] as const;
-/** Exits: the mirror curve, accelerating away. */
-export const EASE_IN = [0.64, 0, 0.78, 0] as const;
+import { DURATION, EASE_IN, EASE_OUT, OFFSET, POP_FROM, STAGGER, SPRING as SPRING_PARAMS } from '../../motion/tokens';
 
-export const DURATION = {
-  /** Hover and press feedback. */
-  feedback: 0.1,
-  /** Entrances and state changes. The ceiling for every animation. */
-  base: 0.2,
-  /** Exits are a little quicker than entrances. */
-  exit: 0.15,
-} as const;
-
-/** Delay between list items (30-50 ms band). */
-export const STAGGER = 0.04;
-/** Small offset for fades, in px. One step of the 8px spacing system. */
-export const OFFSET = 8;
-/** Pop-ins start here, never from 0. */
-export const POP_FROM = 0.97;
+export { DURATION, EASE_IN, EASE_OUT, OFFSET, POP_FROM, STAGGER };
 /** Press physics. */
-export const SPRING: Transition = { type: 'spring', stiffness: 300, damping: 25 };
+export const SPRING: Transition = { type: 'spring', ...SPRING_PARAMS };
 
 export const enter: Transition = { duration: DURATION.base, ease: EASE_OUT };
 export const exit: Transition = { duration: DURATION.exit, ease: EASE_IN };

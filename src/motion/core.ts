@@ -1,15 +1,22 @@
-// Shared motion setup: GSAP + ScrollTrigger, media-query branches, and Lenis smooth
-// scrolling (desktop pointers only, never with reduced motion).
+// Shared motion setup: GSAP + ScrollTrigger, the site's two easing curves,
+// and media-query branches.
 //
-// Rules: animate transform and opacity only; content is in the HTML and
-// readable without this file; reduced motion shows final states instantly.
+// Rules (src/motion/tokens.ts): 200 ms or less, ease out to enter and ease in
+// to leave, transform and opacity only, nothing moves just to decorate.
+// Content is in the HTML and readable without this file; reduced motion
+// shows final states instantly. Scrolling is the browser's own: no smoothing,
+// so the page always moves exactly with the wheel or finger.
 import { gsap } from 'gsap';
+import { CustomEase } from 'gsap/CustomEase';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css';
+import { DURATION, EASE_IN, EASE_OUT, OFFSET, POP_FROM, STAGGER } from './tokens';
 
-gsap.registerPlugin(ScrollTrigger);
-gsap.defaults({ ease: 'power3.out', duration: 0.8 });
+gsap.registerPlugin(ScrollTrigger, CustomEase);
+
+/** GSAP names for the two curves: ease: 'enter' / ease: 'exit'. */
+CustomEase.create('enter', EASE_OUT.join(','));
+CustomEase.create('exit', EASE_IN.join(','));
+gsap.defaults({ ease: 'enter', duration: DURATION.base });
 
 export const MQ = {
   motion: '(prefers-reduced-motion: no-preference)',
@@ -20,25 +27,4 @@ export const MQ = {
 /** One gsap.matchMedia() for the page; each feature adds its own branches. */
 export const mm = gsap.matchMedia();
 
-// ---------- Lenis ----------
-let lenis: Lenis | null = null;
-const raf = (time: number) => lenis?.raf(time * 1000);
-const smooth = window.matchMedia(`(pointer: fine) and ${MQ.motion}`);
-
-function syncLenis() {
-  if (smooth.matches && !lenis) {
-    // Elements marked data-lenis-prevent (dialogs, popovers) scroll natively.
-    lenis = new Lenis({ autoRaf: false, anchors: true });
-    lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
-  } else if (!smooth.matches && lenis) {
-    gsap.ticker.remove(raf);
-    lenis.destroy();
-    lenis = null;
-  }
-}
-smooth.addEventListener('change', syncLenis);
-syncLenis();
-
-export { gsap, ScrollTrigger };
+export { gsap, ScrollTrigger, DURATION, OFFSET, POP_FROM, STAGGER };

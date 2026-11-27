@@ -44,11 +44,17 @@ export default function MenuSearch() {
           value={query}
           onInput={(e) => setQuery((e.currentTarget as HTMLInputElement).value)}
         />
-        {query && (
-          <button type="button" class="btn btn--ghost" onClick={() => setQuery('')}>
-            Clear
-          </button>
-        )}
+        {/* Always rendered (hidden while empty) so the search box never
+            changes width when it appears. */}
+        <button
+          type="button"
+          class={`btn btn--ghost menu-search-clear${query ? '' : ' is-hidden'}`}
+          aria-hidden={!query}
+          tabIndex={query ? 0 : -1}
+          onClick={() => setQuery('')}
+        >
+          Clear
+        </button>
       </div>
       <p class="menu-search-status" aria-live="polite">
         {count === null ? '' : count === 0 ? 'No dishes match. Try another word, or call us.' : `${count} ${count === 1 ? 'dish' : 'dishes'} found`}
