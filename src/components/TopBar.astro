@@ -6,29 +6,38 @@ import { business, hoursShort } from '../config/business';
     <span>Open daily {hoursShort}</span>
     <span aria-hidden="true" class="dot">·</span>
     <a href={`tel:${business.phone.tel}`}>{business.phone.display}</a>
-    <span aria-hidden="true" class="dot">·</span>
-    <a href={business.mapsUrl} target="_blank" rel="noopener">Directions<span class="visually-hidden"> (opens Google Maps)</span></a>
+    <span aria-hidden="true" class="dot dot--wide">·</span>
+    <a class="wide-only" href={business.mapsUrl} target="_blank" rel="noopener">Directions<span class="visually-hidden"> (opens Google Maps)</span></a>
   </div>
 </div>
 
 <style>
+  /* Phones: one line that scrolls away with the page (the bottom bar already
+     has Call and Directions, so Directions is left out here). Desktop: the
+     full line, pinned to the top. */
   .topbar {
-    position: sticky;
-    top: 0;
-    z-index: 40;
     font-size: var(--fs-xs);
     letter-spacing: 0.03em;
     border-bottom: 1px solid rgb(176 141 87 / 0.5);
+    padding-top: env(safe-area-inset-top);
   }
   .topbar-inner {
-    min-height: var(--topbar-h);
+    min-height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--s2);
-    flex-wrap: wrap;
+    white-space: nowrap;
   }
-  .topbar a { color: var(--sand); text-decoration: none; }
-  .topbar a:hover { text-decoration: underline; }
+  .topbar a { display: inline-flex; align-items: center; min-height: 44px; color: var(--sand); text-decoration: none; }
+  @media (hover: hover) { .topbar a:hover { text-decoration: underline; } }
+  .topbar .wide-only, .topbar .dot--wide { display: none; }
+  @media (min-width: 64rem) {
+    .topbar { position: sticky; top: 0; z-index: 40; padding-top: 0; }
+    .topbar-inner { min-height: var(--topbar-h); }
+    .topbar a { min-height: 0; }
+    .topbar .wide-only { display: inline-flex; }
+    .topbar .dot--wide { display: inline; }
+  }
   .dot { color: var(--brass); }
 </style>

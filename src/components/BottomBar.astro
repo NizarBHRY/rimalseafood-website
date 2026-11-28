@@ -28,8 +28,9 @@ import { business } from '../config/business';
     z-index: 40;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    min-height: var(--bottombar-h);
+    min-height: calc(var(--bottombar-h) + env(safe-area-inset-bottom));
     padding-bottom: env(safe-area-inset-bottom);
+    padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
     border-top: 1px solid var(--brass);
   }
   .bottombar a, .bottombar button {

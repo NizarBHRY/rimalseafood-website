@@ -123,7 +123,7 @@ const menuLd = {
   .menu-head p { margin-top: var(--s4); }
   .cat-nav {
     position: sticky;
-    top: var(--topbar-h);
+    top: var(--sticky-top);
     z-index: 30;
     margin-block: var(--s6) var(--s4);
     padding-block: var(--s2);
@@ -133,8 +133,10 @@ const menuLd = {
   }
   .cat-nav ul { display: flex; gap: var(--s2); }
   .cat-nav a {
-    display: inline-block;
-    padding: var(--s2) var(--s3);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--s3);
     white-space: nowrap;
     font-size: var(--fs-sm);
     color: var(--ink);
@@ -153,8 +155,9 @@ const menuLd = {
     opacity: 0;
     transition: opacity var(--dur-feedback) var(--ease-out);
   }
-  .cat-nav a:hover::before, .cat-nav a:active::before { opacity: 1; }
-  .category { padding-block: var(--s6) var(--s4); scroll-margin-top: calc(var(--topbar-h) + 4rem); }
+  @media (hover: hover) { .cat-nav a:hover::before { opacity: 1; } }
+  .cat-nav a:active::before { opacity: 1; }
+  .category { padding-block: var(--s6) var(--s4); scroll-margin-top: calc(var(--sticky-top) + 4.5rem); }
   .category[hidden] { display: none; }
   .cat-head { margin-bottom: var(--s4); }
   .cat-ar { width: fit-content; font-family: var(--font-arabic-label); color: var(--brass-ink); font-size: var(--fs-lg); }
@@ -164,16 +167,20 @@ const menuLd = {
   @media (min-width: 56rem) { .items { grid-template-columns: 1fr 1fr; } }
   .item { padding-bottom: var(--s3); border-bottom: 1px solid rgb(176 141 87 / 0.35); }
   .item[hidden] { display: none; }
-  .item-line { display: flex; align-items: baseline; gap: var(--s2); }
-  .item-name { font-family: var(--font-body); font-size: var(--fs-md); font-weight: 600; line-height: 1.35; }
-  .leader { flex: 1; min-width: var(--s4); border-bottom: 1px dotted var(--brass); transform: translateY(-0.3em); }
-  .item-price { flex: none; max-width: 55%; text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  /* Name, dotted leader, price. When a long price (Small · Large) doesn't fit
+     beside the name, it moves to its own line, right-aligned, instead of
+     squeezing the name. */
+  .item-line { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--s2); }
+  .item-name { flex: 0 1 auto; font-family: var(--font-body); font-size: var(--fs-md); font-weight: 600; line-height: 1.35; }
+  .leader { flex: 1 0 var(--s3); border-bottom: 1px dotted var(--brass); transform: translateY(-0.3em); }
+  .item-price { flex: none; margin-left: auto; text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
   .item-desc, .item-detail { font-size: var(--fs-sm); color: var(--muted); margin-top: var(--s1); }
   .sep { color: var(--brass-ink); }
   .item-photo { margin-top: var(--s2); }
-  .item-photo summary { display: inline-block; padding-block: var(--s1); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--sea-glass); cursor: pointer; list-style: none; }
+  /* A full 44px tap target, without adding space between dishes. */
+  .item-photo summary { display: inline-flex; align-items: center; min-height: 44px; margin-block: calc(var(--s2) * -1); font-size: var(--fs-xs); letter-spacing: 0.1em; text-transform: uppercase; color: var(--sea-glass); cursor: pointer; list-style: none; }
   .item-photo summary::-webkit-details-marker { display: none; }
-  .item-photo summary::before { content: '+ '; }
+  .item-photo summary::before { content: '+ '; white-space: pre; }
   .item-photo[open] summary::before { content: '− '; }
   .item-photo img { width: 100%; max-width: 22rem; aspect-ratio: 4 / 3; object-fit: cover; margin-top: var(--s2); border: var(--hairline); }
   /* Opening a dish photo: it fades up 8px into its reserved 4:3 box. */
@@ -195,14 +202,17 @@ const menuLd = {
 
   .menu-page :global(.menu-search) { margin-bottom: var(--s2); }
   .menu-page :global(.menu-search label) { display: block; font-size: var(--fs-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--s2); }
-  .menu-page :global(.menu-search-row) { display: flex; gap: var(--s2); }
-  /* Clear keeps its space while hidden, so the box never changes width. */
+  /* Clear sits inside the box at its right end, so the box is full width
+     and never changes size when Clear appears. */
+  .menu-page :global(.menu-search-row) { position: relative; }
+  .menu-page :global(.menu-search-row:has(.menu-search-clear:not(.is-hidden)) input) { padding-right: 6rem; }
+  .menu-page :global(.menu-search input::-webkit-search-cancel-button) { display: none; }
+  .menu-page :global(.menu-search-clear) { position: absolute; top: 2px; right: 2px; bottom: 2px; min-height: 0; padding-inline: var(--s3); border-color: transparent; }
   .menu-page :global(.menu-search-clear) { transition: opacity var(--dur-exit) var(--ease-in), visibility 0s var(--dur-exit), transform var(--dur-feedback) var(--ease-out); }
   .menu-page :global(.menu-search-clear.is-hidden) { opacity: 0; visibility: hidden; }
   .menu-page :global(.menu-search-clear:not(.is-hidden)) { transition: opacity var(--dur) var(--ease-out), visibility 0s, transform var(--dur-feedback) var(--ease-out); }
   .menu-page :global(.menu-search input) {
-    flex: 1;
-    min-width: 0;
+    width: 100%;
     min-height: 48px;
     padding: 0 var(--s4);
     border: 1px solid var(--ink);

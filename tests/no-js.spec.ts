@@ -34,5 +34,6 @@ test('Call, Directions and hours are on every page', async ({ page }) => {
   await page.goto('/visit');
   await expect(page.locator('.topbar')).toContainText('Open daily');
   await expect(page.locator('.topbar a[href^="tel:"]')).toBeVisible();
-  await expect(page.locator('.topbar a[href*="google.com/maps"]')).toBeVisible();
+  // Directions: in the top bar on desktop; on phones the bottom bar has it.
+  await expect(page.locator('.topbar a[href*="google.com/maps"], .bottombar a[href*="google.com/maps"]').locator('visible=true')).toHaveCount(1);
 });

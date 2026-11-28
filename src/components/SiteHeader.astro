@@ -38,19 +38,22 @@ const nav = [
   }
   .brand img { width: 96px; }
   nav { grid-column: 1 / -1; overflow-x: auto; }
-  nav ul { display: flex; gap: var(--s5); padding-block: var(--s1); }
+  /* Phones: the four links spread across the width and shrink a little on
+     the narrowest screens, so all of them always fit; each is 44px tall. */
+  nav ul { display: flex; justify-content: space-between; gap: var(--s3); }
   nav a {
-    display: inline-block;
-    padding-block: var(--s2);
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     color: var(--ink);
     text-decoration: none;
-    font-size: var(--fs-sm);
-    letter-spacing: 0.06em;
+    font-size: clamp(0.8125rem, 0.6rem + 1.1vw, 0.9375rem);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
     border-bottom: 2px solid transparent;
   }
-  nav a:hover { border-bottom-color: var(--wet-sand); }
+  @media (hover: hover) { nav a:hover { border-bottom-color: var(--wet-sand); } }
   nav a[aria-current='page'] { border-bottom-color: var(--brass); }
   .header-order { display: none; }
 
@@ -58,6 +61,8 @@ const nav = [
     .header-inner { grid-template-columns: auto 1fr auto; }
     .brand img { width: 120px; }
     nav { grid-column: auto; justify-self: end; }
+    nav ul { justify-content: flex-start; gap: var(--s5); }
+    nav a { letter-spacing: 0.06em; }
     .header-order { display: inline-flex; }
   }
 </style>

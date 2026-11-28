@@ -88,7 +88,8 @@ import { business } from '../config/business';
     opacity: 0;
     transition: opacity var(--dur-feedback) var(--ease-out);
   }
-  .close:hover::before, .close:active::before { opacity: 1; }
+  @media (hover: hover) { .close:hover::before { opacity: 1; } }
+  .close:active::before { opacity: 1; }
   .sheet-links { display: grid; gap: var(--s2); }
   .sheet-links .btn { width: 100%; }
   .sheet-note { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--muted); }

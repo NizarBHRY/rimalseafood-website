@@ -36,13 +36,17 @@
   --s8: 4.5rem;
   --s9: 6.5rem;
 
-  --gutter: 16px;
+  /* Side margin; never less than the notch / rounded corner in landscape. */
+  --gutter: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
   --measure: 62ch;
   --page-max: 72rem;
   --radius: 2px;
   --hairline: 1px solid var(--brass);
   --focus-ring: 3px solid var(--sea-glass);
   --topbar-h: 2.25rem;
+  /* How much of the top of the screen stays covered by sticky bars. On
+     phones the top bar scrolls away, so nothing does. */
+  --sticky-top: 0px;
   --bottombar-h: 4rem;
 
   /* Motion: the same values as src/motion/tokens.ts. 200 ms ceiling; ease
@@ -62,5 +66,8 @@
 }
 
 @media (min-width: 48rem) {
-  :root { --gutter: 32px; }
+  :root { --gutter: max(32px, env(safe-area-inset-left), env(safe-area-inset-right)); }
+}
+@media (min-width: 64rem) {
+  :root { --sticky-top: var(--topbar-h); }
 }

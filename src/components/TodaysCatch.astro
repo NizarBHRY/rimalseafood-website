@@ -45,10 +45,14 @@ const names = getMenu().market.flatMap((g) => g.items.map((i) => i.name));
     font-size: var(--fs-xl);
     line-height: 1.3;
   }
-  /* Phones: one size smaller, so the still list stays compact. */
-  @media (max-width: 40rem) { ul { font-size: var(--fs-lg); } }
   li { white-space: nowrap; }
   li::after { content: '✦'; color: var(--brass); font-size: 0.6em; margin-inline: var(--s4); vertical-align: 0.2em; }
+  /* Phones: two neat columns instead of a long centred wrap. */
+  @media (max-width: 40rem) {
+    ul { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2) var(--s4); font-size: var(--fs-md); line-height: 1.3; }
+    li { white-space: normal; }
+    li::after { content: none; }
+  }
   .sold-out { text-decoration: line-through; text-decoration-color: var(--saffron); opacity: 0.6; }
 
   .catch-note { margin-top: var(--s4); font-size: var(--fs-sm); color: var(--wet-sand); }
